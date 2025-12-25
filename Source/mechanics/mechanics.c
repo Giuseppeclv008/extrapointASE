@@ -11,6 +11,9 @@
 
 int playing_field[HEIGHT][WIDTH] = {0};
 
+// x ed y sono le coordinate di ancoraggio del pezzo rispetto all'arena, si riferiscono all'angolo 
+// sinisto della matrice shape 
+
 typedef struct{
 	int x; // coordinata x del pezzo nel playing field 
 	int y; // coordinata y del pezzo nel playing field 
@@ -20,6 +23,8 @@ typedef struct{
 activeTetromino currentPiece;
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 
+//matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
+// per orgni riga ho tutte le possibili rotazioni del pezzo 
 const uint8_t TETROMINOS[7][4][4][4] = {
     // --- PEZZO I (Linea) ---
     {
