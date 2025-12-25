@@ -24,7 +24,8 @@ activeTetromino currentPiece;
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
-// per orgni riga ho tutte le possibili rotazioni del pezzo 
+// per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
+// ogni pezzo è rappresenatato da una matrice 4x4
 const uint8_t TETROMINOS[7][4][4][4] = {
     // --- PEZZO I (Linea) ---
     {
