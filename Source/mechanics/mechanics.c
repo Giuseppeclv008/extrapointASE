@@ -185,24 +185,34 @@ void init_piece(){
 	currentPiece.shape = shape;
 }
 
+void SpawnNewPiece(){
+    // wrapper per la generazione di un nuovo pezzo che si occupa 
+    // di generare un numero casuale fra 0 e 6 per la scelta del pezzo 
+    // ed un numero casuale fra 0 e 4 per la scelta casuale della rotazione 
+    int pieceIndex = rand() % 7;
+    // la posizione iniziale è di sicuro in alto X = 0 ma puntando le nostre coordinate 
+    // all'angolo sinistro in alto della matrice rappresentate un pezzo 
+    // la posizione limite che previene uno sforamento dell'arena è (0, 6)
+    int initialX = rand() % 7;
+    SpawnPiece(pieceIndex, initialX, 0);
+}
 
-// pieceIndex è un numero casuale da 0 a 6
-void SpawnPiece(int pieceIndex) {
+void SpawnPiece(int pieceIndex, int initialX, int initialY) {
     // 1. Imposta coordinate iniziali 
-    // Se l'arena è larga 10, partiamo dalla colonna 3
-    currentPiece.x = 3; 
-    currentPiece.y = 0; 
+    currentPiece.x = initialX; 
+    currentPiece.y = initialY; 
     
     // 2. Salviamo il tipo e resettiamo la rotazione
+    int rotationIndex = 0;
     currentPiece.type = pieceIndex;
-    currentPiece.rotation = 0; 
+    currentPiece.rotation = rotationIndex; 
 
     // 3. Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             
             // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
-            currentPiece.shape[r][c] = TETROMINOS[pieceIndex][0][r][c];
+            currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
             
         }
     }
