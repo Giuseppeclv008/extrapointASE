@@ -14,13 +14,17 @@ int playing_field[HEIGHT][WIDTH] = {0};
 // x ed y sono le coordinate di ancoraggio del pezzo rispetto all'arena, si riferiscono all'angolo 
 // sinisto della matrice shape 
 
+// considerando un'arena 20x10 la coordinata massima per il current piece può essere (16,0)
+// posizionando al limite la matrice 4x4 e non uscire fuori dai bordi 
 typedef struct{
 	int x; // coordinata x del pezzo nel playing field 
 	int y; // coordinata y del pezzo nel playing field 
+    int type; //lo uso per vedere se sono permesse delle posizioni iniziali nell'arena
+    int rotation; //per determinare la posizione e muovermi nella matrice per le posizioni 
 	int shape[4][4];
-} activeTetromino;
+} ActiveTetromino;
 
-activeTetromino currentPiece;
+ActiveTetromino currentPiece;
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
@@ -179,4 +183,27 @@ void init_piece(){
 	currentPiece.y = 0;
     int shape[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 	currentPiece.shape = shape;
+}
+
+
+// pieceIndex è un numero casuale da 0 a 6
+void SpawnPiece(int pieceIndex) {
+    // 1. Imposta coordinate iniziali 
+    // Se l'arena è larga 10, partiamo dalla colonna 3
+    currentPiece.x = 3; 
+    currentPiece.y = 0; 
+    
+    // 2. Salviamo il tipo e resettiamo la rotazione
+    currentPiece.type = pieceIndex;
+    currentPiece.rotation = 0; 
+
+    // 3. Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            
+            // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
+            currentPiece.shape[r][c] = TETROMINOS[pieceIndex][0][r][c];
+            
+        }
+    }
 }
