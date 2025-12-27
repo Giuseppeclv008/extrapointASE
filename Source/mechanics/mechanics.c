@@ -8,7 +8,16 @@
 
 #define HEIGHT 20
 #define WIDTH 10
+#define PIECE_I_INDEX 0 // Indice del pezzo I nell'array TETROMINOS
+#define PIECE_O_INDEX 1 // Indice del pezzo O nell'array TETROMINOS
+#define PIECE_T_INDEX 2 // Indice del pezzo T nell'array TETROMINOS
+#define PIECE_J_INDEX 3 // Indice del pezzo J nell'array TETROMINOS
+#define PIECE_L_INDEX 4 // Indice del pezzo L nell'array TETROMINOS
+#define PIECE_S_INDEX 5 // Indice del pezzo S nell'array TETROMINOS
+#define PIECE_Z_INDEX 6 // Indice del pezzo Z nell'array TETROMINOS
 
+
+// variabili globali
 int playing_field[HEIGHT][WIDTH] = {0};
 int score = 0;
 int HighScore = 0;
@@ -248,6 +257,46 @@ void movePieceDown() {
 }
 
 
+
+void handlePieceLock(void) {
+    // 1. Solidifica il pezzo nella matrice dell'arena
+    lockPiece();
+
+    // 2. Controlla le linee e ottieni il numero
+    int linesRemoved = deleteFullLines();
+
+    // 3. LOGICA DELL'AZIONE SPECIALE
+    if (linesRemoved > 0) {
+        
+        // Caso "TETRIS": 4 Linee cancellate con il pezzo I
+        if (linesRemoved == 4 && currentPiece.type == PIECE_I_INDEX) {
+            
+            // A. Assegna un punteggio bonus enorme
+            score += 600; // Bonus extra per il TETRIS
+            
+            // B. Feedback Visivo sulla LandTiger 
+            #Todo: Implementa la funzione UpdateScoreDisplay(score);
+            
+            // C. Feedback Sonoro (se usi il DAC/Speaker)
+            // PlaySound(SOUND_TETRIS_EFFECT);
+            
+        } else {
+            // Punteggio normale per 1, 2 o 3 linee
+            // Esempio classico Nintendo: 40, 100, 300 punti
+            switch(linesRemoved) {
+                case 1: score += 100; break;
+                case 2: score += 200; break;
+                case 3: score += 300; break;
+            }
+        }
+        
+        // Ridisegna l'interfaccia col nuovo punteggio
+        // TODO: UpdateScoreDisplay(score);
+        
+        // Ridisegna l'arena pulita
+        // TODO : RedrawArena();
+    }
+}
 void lockPiece() {
     // Blocca il pezzo corrente nell'arena
     for (int r = 0; r < 4; r++) {
@@ -261,35 +310,46 @@ void lockPiece() {
             }
         }
     }
+    score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 
 }
 
-void checkAndClearLines() {
-    for (int r = 0; r < HEIGHT; r++) {
-        int isFullLine = 1;
-        for (int c = 0; c < WIDTH; c++) {
-            if (playing_field[r][c] == 0) {
-                isFullLine = 0;
-                break;
-            }
-        }
-        if (isFullLine) {
-            // Libera la linea se completa
-            for (int c = 0; c < WIDTH; c++) {
-                playing_field[r][c] = 0;
-            }
-            // Sposta tutte le linee sopra verso il basso
-            for (int row = r; row > 0; row--) {
-                for (int col = 0; col < WIDTH; col++) {
-                    playing_field[row][col] = playing_field[row - 1][col];
-                }
-            }
-            // Clear the top line
-            for (int col = 0; col < WIDTH; col++) {
-                playing_field[0][col] = 0;
-            }
-            // aumenta il punteggio
-            score += 100;
-        }
-    }
+int deleteFullLines(void) {
+  int linesCleared = 0;
+  int y, x;
+
+  // Scansioniamo dal basso (riga 19) verso l'alto
+  for (y = HEIGHT - 1; y >= 0; y--) {
+      int isFull = 1;
+      
+      for (x = 0; x < WIDTH; x++) {
+          if (arena[y][x] == 0) {
+              isFull = 0;
+              break;
+          }
+      }
+
+      if (isFull) {
+          linesCleared++; 
+          
+          // Fai scendere tutto ciò che c'è sopra
+          // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
+          for (int r = y; r > 0; r--) {
+              for (int c = 0; c < WIDTH; c++) {
+                  arena[r][c] = arena[r-1][c];
+              }
+          }
+          // Pulisci la riga 0 (quella nuova che entra dall'alto)
+          for (int c = 0; c < WIDTH; c++) {
+              arena[0][c] = 0;
+          }
+          
+          // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 
+          // la riga attuale 'y' al prossimo giro, quindi incrementiamo y
+          // (che verrà decrementato dal for loop subito dopo)
+          y++; 
+      }
+  }
+  
+  return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
