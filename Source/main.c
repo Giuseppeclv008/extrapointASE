@@ -18,7 +18,14 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "timer/timer.h"
+#include "mechanics/mechanics.h"
 
+// external variables from mechanics.c
+extern int score;
+extern int HighScore;
+extern int game_started;
+extern int game_over;
+extern int paused;
 /* Led external variables from funct_led */
 extern unsigned char led_value;					/* defined in lib_led								*/
 #ifdef SIMULATOR
@@ -30,13 +37,17 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
 int main (void) {
   	
 	SystemInit();  												/* System Initialization (i.e., PLL)  */
-  LED_init();                           /* LED Initialization                 */
-  BUTTON_init();												/* BUTTON Initialization              */
+  	LED_init();                           /* LED Initialization                 */
+  	BUTTON_init();												/* BUTTON Initialization              */
+
+	while (game_started == 0){
+		//attendo che venga premuto il tasto per iniziare il gioco
+	}
 	
 	
 	init_timer(2,0.007*25*1000000, 0.023*25*1000000 );							/* TIMER2 Initialization MR0 MR1          */
 	init_timer(3,0.07*25000000, 0.23*25*1000000 );						/* TIMER3 Inizialization MR0 MR1 */
-	/* quello che passiamo init_timer è K */	/* K = T*Fr = [s]*[Hz] = [s]*[1/s]	  */
+	/* quello che passiamo init_timer ï¿½ K */	/* K = T*Fr = [s]*[Hz] = [s]*[1/s]	  */
 																						/* T = K / Fr = 0x017D7840 / 25MHz    */
 																						/* T = K / Fr = 25000000 / 25MHz      */
 																						/* T = 1s	(one second)   							*/
