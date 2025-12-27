@@ -25,15 +25,15 @@ volatile int game_started = 0;
 volatile int game_over = 0;
 volatile int paused = 0;
 
-// x ed y sono le coordinate di ancoraggio del pezzo rispetto all'arena, si riferiscono all'angolo 
+// x ed y sono le coordinate di ancoraggio del pezzo rispetto all'playing_field, si riferiscono all'angolo 
 // sinisto della matrice shape 
 
-// considerando un'arena 20x10 la coordinata massima per il current piece può essere (16,0)
+// considerando un'playing_field 20x10 la coordinata massima per il current piece può essere (16,0)
 // posizionando al limite la matrice 4x4 e non uscire fuori dai bordi 
 typedef struct{
 	int x; // coordinata x del pezzo nel playing field 
 	int y; // coordinata y del pezzo nel playing field 
-    int type; //lo uso per vedere se sono permesse delle posizioni iniziali nell'arena
+    int type; //lo uso per vedere se sono permesse delle posizioni iniziali nell'playing_field
     int rotation; //per determinare la posizione e muovermi nella matrice per le posizioni 
 	int shape[4][4];
 } ActiveTetromino;
@@ -206,7 +206,7 @@ void SpawnNewPiece(){
     int pieceIndex = rand() % 7;
     // la posizione iniziale è di sicuro in alto X = 0 ma puntando le nostre coordinate 
     // all'angolo sinistro in alto della matrice rappresentate un pezzo 
-    // la posizione limite che previene uno sforamento dell'arena è (0, 6)
+    // la posizione limite che previene uno sforamento dell'playing_field è (0, 6)
     int initialX = rand() % 7;
     SpawnPiece(pieceIndex, initialX, 0);
 }
@@ -222,8 +222,9 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
     currentPiece.rotation = rotationIndex; 
 
     // 3. Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
-    for (int r = 0; r < 4; r++) {
-        for (int c = 0; c < 4; c++) {
+    int r,c;
+    for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) {
             
             // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
             currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
@@ -237,8 +238,10 @@ void rotatePiece() {
     currentPiece.rotation = (currentPiece.rotation + 1) % 4;
 
     // Aggiorna la matrice shape del pezzo corrente
-    for (int r = 0; r < 4; r++) {
-        for (int c = 0; c < 4; c++) {
+	  int r ;
+	  int c ;
+    for ( r = 0; r < 4; r++) {
+        for( c = 0; c < 4; c++) {
             currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
         }
     }
@@ -259,7 +262,7 @@ void movePieceDown() {
 
 
 void handlePieceLock(void) {
-    // 1. Solidifica il pezzo nella matrice dell'arena
+    // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
 
     // 2. Controlla le linee e ottieni il numero
@@ -275,9 +278,9 @@ void handlePieceLock(void) {
             score += 600; // Bonus extra per il TETRIS
             
             // B. Feedback Visivo sulla LandTiger 
-            #Todo: Implementa la funzione UpdateScoreDisplay(score);
+            //Todo: Implementa la funzione UpdateScoreDisplay(score);
             
-            // C. Feedback Sonoro (se usi il DAC/Speaker)
+            // C. Feedback Sonoro  
             // PlaySound(SOUND_TETRIS_EFFECT);
             
         } else {
@@ -293,14 +296,15 @@ void handlePieceLock(void) {
         // Ridisegna l'interfaccia col nuovo punteggio
         // TODO: UpdateScoreDisplay(score);
         
-        // Ridisegna l'arena pulita
-        // TODO : RedrawArena();
+        // Ridisegna l'playing_field pulita
+        // TODO : Redrawplaying_field();
     }
 }
 void lockPiece() {
-    // Blocca il pezzo corrente nell'arena
-    for (int r = 0; r < 4; r++) {
-        for (int c = 0; c < 4; c++) {
+    // Blocca il pezzo corrente nell'playing_field
+    int r,c;
+    for (r = 0; r < 4; r++) {
+        for ( c = 0; c < 4; c++) {
             if (currentPiece.shape[r][c] != 0) {
                 int fieldX = currentPiece.x + c;
                 int fieldY = currentPiece.y + r;
@@ -323,7 +327,7 @@ int deleteFullLines(void) {
       int isFull = 1;
       
       for (x = 0; x < WIDTH; x++) {
-          if (arena[y][x] == 0) {
+          if (playing_field[y][x] == 0) {
               isFull = 0;
               break;
           }
@@ -334,14 +338,16 @@ int deleteFullLines(void) {
           
           // Fai scendere tutto ciò che c'è sopra
           // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
-          for (int r = y; r > 0; r--) {
-              for (int c = 0; c < WIDTH; c++) {
-                  arena[r][c] = arena[r-1][c];
+          int c, r;
+          for (r = y; r > 0; r--) {
+              for (c = 0; c < WIDTH; c++) {
+                  playing_field[r][c] = playing_field[r-1][c];
               }
           }
           // Pulisci la riga 0 (quella nuova che entra dall'alto)
-          for (int c = 0; c < WIDTH; c++) {
-              arena[0][c] = 0;
+          
+          for (c = 0; c < WIDTH; c++) {
+              playing_field[0][c] = 0;
           }
           
           // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 

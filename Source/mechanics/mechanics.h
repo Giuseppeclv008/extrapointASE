@@ -27,13 +27,13 @@ typedef struct {
 } ActiveTetromino;
 
 /* --- VARIABILI GLOBALI (EXTERN) --- */
-// Usiamo 'extern' per dire: "Queste variabili esistono, ma sono definite nel .c"
-extern int playing_field[HEIGHT][WIDTH];
-extern int score;
-extern int HighScore;
-extern int game_started;
-extern int game_over;
-extern int paused;
+
+extern volatile int playing_field[HEIGHT][WIDTH];
+extern volatile int score;
+extern volatile int HighScore;
+extern volatile int game_started;
+extern volatile int game_over;
+extern volatile int paused;
 
 extern ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];
