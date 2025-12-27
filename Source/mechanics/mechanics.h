@@ -17,7 +17,12 @@
 #define PIECE_Z_INDEX 6
 
 /* --- STRUTTURE DATI --- */
-// Spostiamo la typedef qui affinché sia visibile a tutti i file che includono mechanics.h
+// x ed y sono le coordinate di ancoraggio del pezzo rispetto all'playing_field, si riferiscono all'angolo 
+// sinisto della matrice shape 
+
+// considerando un'playing_field 20x10 la coordinata massima per il current piece può essere (16,0)
+// posizionando al limite la matrice 4x4 e non uscire fuori dai bordi 
+
 typedef struct {
     int x;              // coordinata x nell'arena
     int y;              // coordinata y nell'arena
@@ -35,7 +40,7 @@ extern volatile int game_started;
 extern volatile int game_over;
 extern volatile int paused;
 
-extern ActiveTetromino currentPiece;
+extern volatile ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];
 
 /* --- PROTOTIPI DI FUNZIONE --- */

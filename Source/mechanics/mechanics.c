@@ -25,26 +25,13 @@ volatile int game_started = 0;
 volatile int game_over = 0;
 volatile int paused = 0;
 
-// x ed y sono le coordinate di ancoraggio del pezzo rispetto all'playing_field, si riferiscono all'angolo 
-// sinisto della matrice shape 
-
-// considerando un'playing_field 20x10 la coordinata massima per il current piece può essere (16,0)
-// posizionando al limite la matrice 4x4 e non uscire fuori dai bordi 
-typedef struct{
-	int x; // coordinata x del pezzo nel playing field 
-	int y; // coordinata y del pezzo nel playing field 
-    int type; //lo uso per vedere se sono permesse delle posizioni iniziali nell'playing_field
-    int rotation; //per determinare la posizione e muovermi nella matrice per le posizioni 
-	int shape[4][4];
-} ActiveTetromino;
-
-ActiveTetromino currentPiece;
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
-
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
 // per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
 // ogni pezzo è rappresenatato da una matrice 4x4
 const uint8_t TETROMINOS[7][4][4][4] = {
+	
+	
     // --- PEZZO I (Linea) ---
     {
         { {0,0,0,0}, 
@@ -192,11 +179,17 @@ const uint8_t TETROMINOS[7][4][4][4] = {
     }
 };
 
-void init_piece(){
-	currentPiece.x = 0;
-	currentPiece.y = 0;
-    int shape[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-	currentPiece.shape = shape;
+void init_piece() {
+    currentPiece.x = 0;
+    currentPiece.y = 0;
+
+    // Resettiamo la matrice cella per cella
+		int r,c;
+    for ( r = 0; r < 4; r++) {
+        for ( c = 0; c < 4; c++) {
+            currentPiece.shape[r][c] = 0;
+        }
+    }
 }
 
 void SpawnNewPiece(){
