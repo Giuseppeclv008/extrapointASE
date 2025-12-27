@@ -18,12 +18,12 @@
 
 
 // variabili globali
-int playing_field[HEIGHT][WIDTH] = {0};
-int score = 0;
-int HighScore = 0;
-int game_started = 0;
-int game_over = 0;
-int paused = 0;
+volatile int playing_field[HEIGHT][WIDTH] = {0};
+volatile int score = 0;
+volatile int HighScore = 0;
+volatile int game_started = 0;
+volatile int game_over = 0;
+volatile int paused = 0;
 
 // x ed y sono le coordinate di ancoraggio del pezzo rispetto all'arena, si riferiscono all'angolo 
 // sinisto della matrice shape 
