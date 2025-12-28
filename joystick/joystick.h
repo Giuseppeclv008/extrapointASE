@@ -1,12 +1,22 @@
-																			 /*********************************************************************************************************
-**--------------File Info---------------------------------------------------------------------------------
-** File name:           joystick.h
-** Last modified Date:  2018-12-30
-** Last Version:        V1.00
-** Descriptions:        Prototypes of functions included in the lib_joystick, funct_joystick .c files
-** Correlated files:    lib_joystick.c, funct_joystick.c
-**--------------------------------------------------------------------------------------------------------       
-*********************************************************************************************************/
+/**************************************************************************
+** File name:       joystick.h
+** Descriptions:    Prototypes & Definitions
+**************************************************************************/
+#ifndef __JOYSTICK_H 
+#define __JOYSTICK_H
 
-/* lib_joystick */
+#include "LPC17xx.h"
+
+/* Definizione dei valori di ritorno per la lettura */
+#define JOY_NONE    0
+#define JOY_SEL     1
+#define JOY_DOWN    2
+#define JOY_LEFT    3
+#define JOY_RIGHT   4
+#define JOY_UP      5
+
+/* Prototipi delle funzioni */
 void joystick_init(void);
+uint8_t joystick_read(void);
+
+#endif
