@@ -11,9 +11,6 @@
 #define P1_28_RIGHT_MASK  (1 << 28)
 #define P1_29_UP_MASK     (1 << 29)
 
-/* Maschera cumulativa per configurazione veloce */
-#define JOY_ALL_MASK      (P1_25_SEL_MASK | P1_26_DOWN_MASK | P1_27_LEFT_MASK | P1_28_RIGHT_MASK | P1_29_UP_MASK)
-
 /*----------------------------------------------------------------------------
   Function: joystick_init
   Purpose:  Configures P1.25-P1.29 as Inputs and GPIO function
@@ -42,44 +39,34 @@ void joystick_init(void) {
 
     /* 2. Configurazione Direzione (FIODIR)
        Impostiamo i pin come INPUT (scrivendo 0) */
-    LPC_GPIO1->FIODIR &= ~(JOY_ALL_MASK);
+	LPC_GPIO1->FIODIR &= ~(P1_25_SEL_MASK | P1_26_DOWN_MASK | P1_27_LEFT_MASK | P1_28_RIGHT_MASK | P1_29_UP_MASK);
 }
 
-/*----------------------------------------------------------------------------
-  Function: joystick_read
-  Purpose:  Returns the code of the pressed button, or 0 if none.
- *----------------------------------------------------------------------------*/
+
 uint8_t joystick_read(void) {
     /* Acquisizione istantanea dello stato della Porta 1 */
     uint32_t pin_state = LPC_GPIO1->FIOPIN;
 
     /* Verifica logica Active Low (0 = Premuto) */
-    
-    // Verifica SELECT (P1.25)
+
     if ( (pin_state & P1_25_SEL_MASK) == 0 ) {
         return JOY_SEL;
     }
-    
-    // Verifica DOWN (P1.26)
+
     if ( (pin_state & P1_26_DOWN_MASK) == 0 ) {
         return JOY_DOWN;
     }
-    
-    // Verifica LEFT (P1.27)
+
     if ( (pin_state & P1_27_LEFT_MASK) == 0 ) {
         return JOY_LEFT;
     }
-    
-    // Verifica RIGHT (P1.28)
+
     if ( (pin_state & P1_28_RIGHT_MASK) == 0 ) {
         return JOY_RIGHT;
     }
-    
-    // Verifica UP (P1.29)
+
     if ( (pin_state & P1_29_UP_MASK) == 0 ) {
         return JOY_UP;
-    }
-
-    /* Nessun tasto premuto */
+	}
     return JOY_NONE;
 }
