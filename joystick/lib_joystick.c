@@ -44,10 +44,13 @@ void joystick_init(void) {
 
 
 uint8_t joystick_read(void) {
-    /* Acquisizione istantanea dello stato della Porta 1 */
+
+	// acquisisce lo stato di tutti i pin della porta 1
+	// e lo memorizza nella variabile pin_state
+	// in FIOPIN, ogni bit rappresenta lo stato di un pin specifico
     uint32_t pin_state = LPC_GPIO1->FIOPIN;
 
-    /* Verifica logica Active Low (0 = Premuto) */
+    // Il joystick è attivo LOW, quindi controlliamo se un pin è LOW (0)
 
     if ( (pin_state & P1_25_SEL_MASK) == 0 ) {
         return JOY_SEL;

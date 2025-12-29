@@ -13,45 +13,69 @@
 #include "../joystick/joystick.h"
 #include "../mechanics/mechanics.h"
 
-
-/******************************************************************************
-** Function name:		RIT_IRQHandler
-**
-** Descriptions:		REPETITIVE INTERRUPT TIMER handler
-**
-** parameters:			None
-** Returned value:		None
-**
-******************************************************************************/
-
-volatile int down=0;
+volatile int down = 0;
 
 void RIT_IRQHandler (void)
-{					
-	// Setto il flag per la lettura del joystick
-	uint8_t joy_value = joystick_read();
+{			
+	// il joystick non interromper mai il RIT
 
-	switch (joy_value) {
-		case JOY_LEFT:
-			movePieceLeft();
-			break;
-		case JOY_RIGHT:
-			movePieceRight();
-			break;
-		case JOY_DOWN:
-			down=1;
-			movePieceDown();
-			break;
-		case JOY_UP:
-			rotatePiece();
-			break;
-		default:
-			break;
+	static uint8_t old_joy = 0;
+	uint8_t current_joy = joystick_read();
+	
+	// entriamo nel blocco solo se il joystick cambia stato rispetto all'ultima lettura
+	if ((current_joy != 0) && (current_joy != old_joy)) {
+		switch(current_joy){
+			case JOY_UP:
+				rotatePiece();
+				break;
+			case JOY_DOWN:
+				movePieceDown();
+				break;
+			case JOY_LEFT:
+				movePieceLeft();
+				break;
+			case JOY_RIGHT:
+				movePieceRight();
+				break;
+			case JOY_SEL:
+				// Azione per select
+				break;
+			default:
+				break;
+		}
 	}
-  return;
+	old_joy = current_joy;
 
 
-}
+	// gestione di KEY 1, debouncing con RIT
+	if(down != 0) { // Se down != 0 significa che EINT1 ha attivato la sequenza
+		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	/* KEY1 ancora premuto */
+			down++;
+			switch(down){
+				case 1: // Primo tick valido (50ms dopo la pressione)
+					paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
+					if (paused)
+						LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
+					else
+						LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
+									break;
+				default:
+					break;
+			}
+		}
+		else {	/* KEY1 rilasciato */
+			down = 0;
+			// non disabilito il RIT per permettere al joystick di funzionare
+			
+			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+			LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
+		}
+	}			
+	
+	LPC_RIT->RICTRL |= 1;	
+}	
+
+
 
 /******************************************************************************
 **                            End Of File
