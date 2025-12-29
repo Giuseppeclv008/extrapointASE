@@ -23,33 +23,38 @@ void RIT_IRQHandler (void)
 	uint8_t current_joy = joystick_read();
 	
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
-	if (current_joy != old_joy) {
-		switch(current_joy){
-			case JOY_UP:
-				rotatePiece();
-				break;
-			case JOY_DOWN:
-				LPC_TIM0->MR0 = 0.5 * 25000000; 
-				LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-				LED_On(3);      / 
-				break;
-			case JOY_LEFT:
-				movePieceLeft();
-				break;
-			case JOY_RIGHT:
-				movePieceRight();
-				break;
-			case JOY_SEL:
-				// Azione per select
-				break;
-			default:
-				break;
+	if(game_started && !paused && !game_over) {
+		if (current_joy != old_joy) {
+			switch(current_joy){
+				case JOY_UP:
+					rotatePiece();
+					break;
+				case JOY_DOWN:
+					LPC_TIM0->MR0 = 0.5 * 25000000; 
+					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+					LED_On(3);      / 
+					break;
+				case JOY_LEFT:
+					movePieceLeft();
+					break;
+				case JOY_RIGHT:
+					movePieceRight();
+					break;
+				case JOY_SEL:
+					// Azione per select
+					break;
+				default:
+					break;
+			}
 		}
-	}
-	else if (old_joy == JOY_DOWN && current_joy != JOY_DOWN) {
-		// riporto la velocità del pezzo a quella normale
-		LPC_TIM0->MR0 = 1 * 25000000; 
-		LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+		else if (old_joy == JOY_DOWN ) {
+			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
+			if(current_joy != JOY_DOWN){
+			LPC_TIM0->MR0 = 1 * 25000000; 
+			LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+			}
+			
+		}
 	}
 	old_joy = current_joy;
 
@@ -66,7 +71,7 @@ void RIT_IRQHandler (void)
 				down = 0;   // resetto down per evitare di rieseguire questa parte
 				return;
 			}
-			
+
 			else {
 			switch(down){
 				case 1: 
@@ -90,8 +95,8 @@ void RIT_IRQHandler (void)
 	}			
 	
 	LPC_RIT->RICTRL |= 1;	
-}	
+	return;
+	}	
 
 
-
-
+}

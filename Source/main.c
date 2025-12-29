@@ -74,38 +74,7 @@ int main (void) {
 		}
 	}
 
-	while(1) {
-        
-        /* Gestione stato del gioco */
-        if (game_started && !paused && !game_over) {
-            // Qui normalmente si mette il rinfresco del display se è pesante
-            // O semplicemente si dorme
-            __ASM("wfi"); // Low Power Mode: CPU si ferma qui
-        }
-        else if (game_over) {
-            GUI_Text(..., "GAME OVER");
-            // Blocco il gioco finché non si resetta
-            while(game_over) {
-                 __ASM("wfi"); // Dormi in attesa magari del tasto Reset
-            }
-        }
-        else {
-            // Gioco in pausa o non iniziato
-            __ASM("wfi"); // Dormi e aspetta input (es. Tasto Select per iniziare)
-        }
-    }
 }
-	if(game_started){
-		while(!paused && !game_over){
-			// main game loop
-		}
-	}
 
-	LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
-	LPC_SC->PCON &= 0xFFFFFFFFD;						
 		
-  while (1) {                           /* Loop forever                       */	
-		__ASM("wfi");
-  }
 
-}
