@@ -44,13 +44,63 @@ int main (void) {
   	BUTTON_init();											/* BUTTON Initialization              */
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	enable_timer(0);
-	
-	while (game_started){
-		//attendo che venga premuto il tasto per iniziare il gioco
-		
+	initializeGame();	
+
+	GUI_Init();
+
+	GUI_SetBkColor(Black);
+	LCD_Clear(Black);
+    GUI_Text(..., "PRESS KEY1 TO START");
+
+	while(1){
+		if(game_started && !paused && !game_over){ 
+			// main game loop
+			// inserisco refresh del display qui se pesante
+			// oppure semplicemente dormo
+			__ASM("wfi");
+		}
+		else if(game_over){
+			HighScore = if(score > HighScore) ? score : HighScore;
+			GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
+
+			// blocco il gioco finché non si resetta
+			while(game_over){
+				__ASM("wfi");
+			}
+		}
+		else{
+			// gioco in pausa o non iniziato
+			__ASM("wfi");
+		}
 	}
-	
-	
+
+	while(1) {
+        
+        /* Gestione stato del gioco */
+        if (game_started && !paused && !game_over) {
+            // Qui normalmente si mette il rinfresco del display se è pesante
+            // O semplicemente si dorme
+            __ASM("wfi"); // Low Power Mode: CPU si ferma qui
+        }
+        else if (game_over) {
+            GUI_Text(..., "GAME OVER");
+            // Blocco il gioco finché non si resetta
+            while(game_over) {
+                 __ASM("wfi"); // Dormi in attesa magari del tasto Reset
+            }
+        }
+        else {
+            // Gioco in pausa o non iniziato
+            __ASM("wfi"); // Dormi e aspetta input (es. Tasto Select per iniziare)
+        }
+    }
+}
+	if(game_started){
+		while(!paused && !game_over){
+			// main game loop
+		}
+	}
+
 	LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
 	LPC_SC->PCON &= 0xFFFFFFFFD;						
 		

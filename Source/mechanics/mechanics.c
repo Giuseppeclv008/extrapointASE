@@ -19,11 +19,11 @@
 
 // variabili globali
 volatile int playing_field[HEIGHT][WIDTH] ;
-volatile int score = 0;
+volatile int score;
 volatile int HighScore = 0;
-volatile int game_started = 1;
-volatile int game_over = 0;
-volatile int paused = 0;
+volatile int game_started ;
+volatile int game_over ;
+volatile int paused;
 
 volatile ActiveTetromino currentPiece;
 
@@ -185,10 +185,9 @@ const uint8_t TETROMINOS[7][4][4][4] = {
 void initializeGame() {
     initializePlayingField();
     score = 0;
-    HighScore = 0;
     game_started = 1;
     game_over = 0;
-    paused = 0;
+    paused = 1;
     init_piece();
     SpawnNewPiece();
 }
@@ -363,6 +362,7 @@ void lockPiece() {
                    if(fieldY < 0){
                        // Il pezzo è bloccato sopra il bordo superiore, gioco finito
                        game_over = 1;
+                       game_started = 0;
                        return;
                    }
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];

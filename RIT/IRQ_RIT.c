@@ -58,6 +58,16 @@ void RIT_IRQHandler (void)
 	if(down != 0) { // Se down != 0 significa che EINT1 ha attivato la sequenza
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	/* KEY1 ancora premuto */
 			down++;
+
+			if(game_over || !game_started) {
+				// se il gioco è finito o non è iniziato, resetto il gioco
+				initializeGame();
+				LED_Off(1); // spengo il led di pausa se era acceso
+				down = 0;   // resetto down per evitare di rieseguire questa parte
+				return;
+			}
+			
+			else {
 			switch(down){
 				case 1: 
 					paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
