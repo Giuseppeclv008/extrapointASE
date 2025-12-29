@@ -12,6 +12,7 @@
 #include "../led/led.h"
 #include "../joystick/joystick.h"
 #include "../mechanics/mechanics.h"
+#include "../timer/timer.h"
 
 volatile int down = 0;
 extern volatile int paused;
@@ -21,14 +22,16 @@ void RIT_IRQHandler (void)
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
 	
-	// entriamo nel blocco solo se il joystick cambia stato rispetto all'ultima lettura
-	if ((current_joy != 0) && (current_joy != old_joy)) {
+	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
+	if (current_joy != old_joy) {
 		switch(current_joy){
 			case JOY_UP:
 				rotatePiece();
 				break;
 			case JOY_DOWN:
-				movePieceDown();
+				LPC_TIM0->MR0 = 0.5 * 25000000; 
+				LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+				LED_On(3);      / 
 				break;
 			case JOY_LEFT:
 				movePieceLeft();
@@ -42,6 +45,11 @@ void RIT_IRQHandler (void)
 			default:
 				break;
 		}
+	}
+	else if (old_joy == JOY_DOWN && current_joy != JOY_DOWN) {
+		// riporto la velocità del pezzo a quella normale
+		LPC_TIM0->MR0 = 1 * 25000000; 
+		LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 	}
 	old_joy = current_joy;
 

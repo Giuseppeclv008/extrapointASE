@@ -21,14 +21,14 @@
 ******************************************************************************/
 void enable_timer( uint8_t timer_num )
 {
-  if ( timer_num == 0 )
-  {
+	if ( timer_num == 0 )
+	{
 	LPC_TIM0->TCR = 1;
-  }
-  else if ( timer_num == 1 )
-  {
+	}
+	else if ( timer_num == 1 )
+	{
 	LPC_TIM1->TCR = 1;
-  }
+	}
 	else if ( timer_num == 2 )
 	{
 			LPC_TIM2->TCR = 1;
@@ -109,12 +109,14 @@ void reset_timer( uint8_t timer_num )
   return;
 }
 
-uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval, uint32_t timerInterval2 )
+uint32_t init_timer ( uint8_t timer_num, uint32_t TimeInterval)
 {
+  uint32_t count = TimeInterval * 25000000; // conto per un secondo
   if ( timer_num == 0 )
   {
-	LPC_TIM0->MR0 = TimerInterval;
-	LPC_TIM0->MR1 = timerInterval2;
+
+	LPC_TIM0->MR0 = count;
+	LPC_TIM0->MR1 = 2 * count;
 
 		
 // <<< Use Configuration Wizard in Context Menu >>>
@@ -172,15 +174,13 @@ uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval, uint32_t timerI
 
 
 	NVIC_EnableIRQ(TIMER0_IRQn);
-	/*NVIC_SetPriority(TIMER0_IRQn, 4);*/		/* less priority than buttons */
-	NVIC_SetPriority(TIMER0_IRQn, 0);		/* more priority than buttons */
+	NVIC_SetPriority(TIMER0_IRQn, 1);		
 	return (1);
   }
   else if ( timer_num == 1 )
   {
-		LPC_TIM1->MR0 = TimerInterval;
-		LPC_TIM0->MR1 = timerInterval2;
-	
+		LPC_TIM1->MR0 = count;
+		LPC_TIM1->MR1 = 2 * count;
 		// <h> timer1 MCR
 //   <e.0> MR0I
 //	 <i> 1 Interrupt on MR0: an interrupt is generated when MR0 matches the value in the TC. 0
@@ -234,15 +234,15 @@ uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval, uint32_t timerI
 // </h>			
 
 	NVIC_EnableIRQ(TIMER1_IRQn);
-	NVIC_SetPriority(TIMER1_IRQn, 5);	/* less priority than buttons and timer0*/
+	NVIC_SetPriority(TIMER1_IRQn, 5);	
 	return (1);
   }
 		
 	else if ( timer_num == 2 )
   {
 		
-	LPC_TIM2->MR0 = TimerInterval;
-	LPC_TIM2->MR1 = timerInterval2;
+	LPC_TIM2->MR0 = count;
+	LPC_TIM2->MR1 = 2 * count;
 
 		// <h> timer2 MCR
 //   <e.0> MR0I
@@ -302,8 +302,8 @@ uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval, uint32_t timerI
   }
 	else if ( timer_num == 3 )
   {
-		LPC_TIM3->MR0 = TimerInterval;
-		LPC_TIM3->MR1 =timerInterval2;
+		LPC_TIM3->MR0 = count;
+		LPC_TIM3->MR1 = 2* count;
 		// <h> timer3 MCR
 //   <e.0> MR0I
 //	 <i> 1 Interrupt on MR0: an interrupt is generated when MR0 matches the value in the TC. 0

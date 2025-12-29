@@ -11,7 +11,7 @@
 #define __TIMER_H
 
 /* init_timer.c */
-extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval, uint32_t timerInterval2 );
+extern uint32_t init_timer( uint8_t timer_num, uint32_t TimeInterval);
 extern void enable_timer( uint8_t timer_num );
 extern void disable_timer( uint8_t timer_num );
 extern void reset_timer( uint8_t timer_num );

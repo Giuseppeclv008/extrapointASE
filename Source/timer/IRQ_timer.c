@@ -10,7 +10,7 @@
 #include "LPC17xx.h"
 #include "timer.h"
 #include "../led/led.h"
-
+#include "mechanics/mechanics.h"
 /******************************************************************************
 ** Function name:		Timer0_IRQHandler
 **
@@ -21,28 +21,22 @@
 **
 ******************************************************************************/
 extern unsigned char led_value;					/* defined in funct_led								*/
+extern volatile int paused;
+extern volatile int game_over;
+extern volatile int game_started;
+
 void TIMER0_IRQHandler (void)
 {
-	static uint8_t position = 7;
-	static uint8_t sw_count = 0;
-	sw_count++;	
-	if(sw_count == 2){
-		
-		LED_Off(position);
-		if(position == 7)
-			position = 2;
-		else
-			position++;
-		LED_On(position);
-			
-		sw_count = 0;
+	if(paused || game_over || !game_started) {
+		LPC_TIM0->IR |= 1;			/* clear interrupt flag */
+		return;
 	}
-	/* alternatively to LED_On and LED_off try to use LED_Out */
-	//LED_Out((1<<position)|(led_value & 0x3));							
-	/* LED_Out is CRITICAL due to the shared led_value variable */
-	/* LED_Out MUST NOT BE INTERRUPTED */
-  LPC_TIM0->IR |= 1;			/* clear interrupt flag */
-  return;
+	else{
+		movePieceDown();
+		LPC_TIM0->IR |= 1;			/* clear interrupt flag */
+		return;
+	}
+
 }
 
 
@@ -74,15 +68,8 @@ void TIMER1_IRQHandler (void)
 ******************************************************************************/
 void TIMER2_IRQHandler (void)
 {
-	if (LPC_TIM2->IR & (1 << 0)) {
-        LED_Off(4);
-    }
 
-    // MR1 match? ? LED ON (nuovo periodo)
-    if (LPC_TIM2->IR & (1 << 1)) {
-        LED_On(4);
-    }
-		 LPC_TIM2->IR |= 1;
+  LPC_TIM2->IR |= 1;
   return;
 }
 
@@ -97,15 +84,8 @@ void TIMER2_IRQHandler (void)
 ******************************************************************************/
 void TIMER3_IRQHandler (void)
 {
-	if (LPC_TIM3->IR & (1 << 0)) {
-        LED_Off(2);
-    }
 
-    // MR1 match? ? LED ON (nuovo periodo)
-    if (LPC_TIM3->IR & (1 << 1)) {
-        LED_On(2);
-    }
-		 LPC_TIM3->IR |= 1;
+  LPC_TIM3->IR |= 1;
   return;
 }
 /******************************************************************************

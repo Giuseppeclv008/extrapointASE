@@ -37,30 +37,18 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
  *----------------------------------------------------------------------------*/
 int main (void) {
   	
-	SystemInit();  												/* System Initialization (i.e., PLL)  */
-  BUTTON_init();												/* BUTTON Initialization              */
+	SystemInit();  											/* System Initialization (i.e., PLL)  */
+	BUTTON_init();											/* BUTTON Initialization              */
 	init_RIT(0x004C4B40);									/* RIT Initialization 50 msec       */
-  LED_init();                           /* LED Initialization                 */
-  BUTTON_init();												/* BUTTON Initialization              */
-
+  	LED_init();                           					/* LED Initialization                 */
+  	BUTTON_init();											/* BUTTON Initialization              */
+	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	enable_timer(0);
 	while (game_started){
 		//attendo che venga premuto il tasto per iniziare il gioco
 		if
 	}
 	
-	
-	init_timer(2,0.007*25*1000000, 0.023*25*1000000 );							/* TIMER2 Initialization MR0 MR1          */
-	init_timer(3,0.07*25000000, 0.23*25*1000000 );						/* TIMER3 Inizialization MR0 MR1 */
-	/* quello che passiamo init_timer � K */	/* K = T*Fr = [s]*[Hz] = [s]*[1/s]	  */
-																						/* T = K / Fr = 0x017D7840 / 25MHz    */
-																						/* T = K / Fr = 25000000 / 25MHz      */
-																						/* T = 1s	(one second)   							*/
-			
-																						/* T = 1ms - Fr = 25MHz								*/
-																						/* K = T * F = 1*10^-3 * 25*10^6			*/																
-
-	enable_timer(2);
-	enable_timer(3);
 	
 	LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
 	LPC_SC->PCON &= 0xFFFFFFFFD;						
