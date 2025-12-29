@@ -18,7 +18,6 @@ volatile int down = 0;
 void RIT_IRQHandler (void)
 {			
 	// il joystick non interromper mai il RIT
-
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
 	
@@ -52,13 +51,13 @@ void RIT_IRQHandler (void)
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	/* KEY1 ancora premuto */
 			down++;
 			switch(down){
-				case 1: // Primo tick valido (50ms dopo la pressione)
+				case 1: 
 					paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
 					if (paused)
 						LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 					else
 						LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
-									break;
+						break;
 				default:
 					break;
 			}
@@ -77,6 +76,4 @@ void RIT_IRQHandler (void)
 
 
 
-/******************************************************************************
-**                            End Of File
-******************************************************************************/
+
