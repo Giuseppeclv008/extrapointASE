@@ -18,7 +18,7 @@
 
 
 // variabili globali
-volatile int playing_field[HEIGHT][WIDTH] = {0};
+volatile int playing_field[HEIGHT][WIDTH] ;
 volatile int score = 0;
 volatile int HighScore = 0;
 volatile int game_started = 1;
@@ -182,6 +182,26 @@ const uint8_t TETROMINOS[7][4][4][4] = {
     }
 };
 
+void initializeGame() {
+    initializePlayingField();
+    score = 0;
+    HighScore = 0;
+    game_started = 1;
+    game_over = 0;
+    paused = 0;
+    init_piece();
+    SpawnNewPiece();
+}
+
+void initializePlayingField() {
+    int r, c;
+    for (r = 0; r < HEIGHT; r++) {
+        for (c = 0; c < WIDTH; c++) {
+            playing_field[r][c] = 0;
+        }
+    }
+}
+
 void init_piece() {
     currentPiece.x = 0;
     currentPiece.y = 0;
@@ -195,6 +215,7 @@ void init_piece() {
     }
 }
 
+//wrapper per SpawnPiece
 void SpawnNewPiece(){
     // wrapper per la generazione di un nuovo pezzo che si occupa 
     // di generare un numero casuale fra 0 e 6 per la scelta del pezzo 
@@ -255,6 +276,40 @@ void movePieceDown() {
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
 }
 
+void futurePosition(){
+    // funzione che calcola la posizione futura del pezzo in caduta
+    // e gestisce il blocco del pezzo e la cancellazione delle linee
+    // quando il pezzo raggiunge il fondo o un altro pezzo
+    if (canMoveDown()) {
+        movePieceDown();
+    } else {
+        handlePieceLock();
+        SpawnNewPiece();
+    }
+}
+
+int canMoveDown() {
+    int r, c;
+    for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) {
+            if (currentPiece.shape[r][c] != 0) {
+                int fieldX = currentPiece.x + c;
+                int fieldY = currentPiece.y + r + 1; // Controlliamo la riga sotto
+
+                // Controlla i limiti del playing_field
+                if (fieldY >= HEIGHT) {
+                    return 0; // Non può muoversi giù, ha raggiunto il fondo
+                }
+
+                // Controlla se c'è un pezzo già presente
+                if (playing_field[fieldY][fieldX] != 0) {
+                    return 0; // Non può muoversi giù, c'è un pezzo sotto
+                }
+            }
+        }
+    }
+    return 1; // Può muoversi giù
+}
 
 
 void handlePieceLock(void) {
@@ -305,11 +360,17 @@ void lockPiece() {
                 int fieldX = currentPiece.x + c;
                 int fieldY = currentPiece.y + r;
                 if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                   if(fieldY < 0){
+                       // Il pezzo è bloccato sopra il bordo superiore, gioco finito
+                       game_over = 1;
+                       return;
+                   }
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
                 }
             }
         }
     }
+    
     score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 
 }

@@ -44,9 +44,10 @@ int main (void) {
   	BUTTON_init();											/* BUTTON Initialization              */
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	enable_timer(0);
+	
 	while (game_started){
 		//attendo che venga premuto il tasto per iniziare il gioco
-		if
+		
 	}
 	
 	
