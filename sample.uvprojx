@@ -396,14 +396,14 @@
           <GroupName>main</GroupName>
           <Files>
             <File>
-              <FileName>sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\sample.c</FilePath>
-            </File>
-            <File>
               <FileName>tetris.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\tetris.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -504,6 +504,61 @@
               <FileName>mpu_armv7.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Source\CMSIS_core\mpu_armv7.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>mechanics</GroupName>
+          <Files>
+            <File>
+              <FileName>mechanics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\mechanics\mechanics.c</FilePath>
+            </File>
+            <File>
+              <FileName>mechanics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\mechanics\mechanics.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>joystick</GroupName>
+          <Files>
+            <File>
+              <FileName>funct_joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\joystick\funct_joystick.c</FilePath>
+            </File>
+            <File>
+              <FileName>joystick.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\joystick\joystick.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\joystick\lib_joystick.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>RIT</GroupName>
+          <Files>
+            <File>
+              <FileName>IRQ_RIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RIT\IRQ_RIT.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_RIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RIT\lib_RIT.c</FilePath>
+            </File>
+            <File>
+              <FileName>RIT.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\RIT\RIT.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -902,14 +957,14 @@
           <GroupName>main</GroupName>
           <Files>
             <File>
-              <FileName>sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\sample.c</FilePath>
-            </File>
-            <File>
               <FileName>tetris.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\tetris.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1010,6 +1065,61 @@
               <FileName>mpu_armv7.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Source\CMSIS_core\mpu_armv7.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>mechanics</GroupName>
+          <Files>
+            <File>
+              <FileName>mechanics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\mechanics\mechanics.c</FilePath>
+            </File>
+            <File>
+              <FileName>mechanics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\mechanics\mechanics.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>joystick</GroupName>
+          <Files>
+            <File>
+              <FileName>funct_joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\joystick\funct_joystick.c</FilePath>
+            </File>
+            <File>
+              <FileName>joystick.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\joystick\joystick.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\joystick\lib_joystick.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>RIT</GroupName>
+          <Files>
+            <File>
+              <FileName>IRQ_RIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RIT\IRQ_RIT.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_RIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RIT\lib_RIT.c</FilePath>
+            </File>
+            <File>
+              <FileName>RIT.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\RIT\RIT.h</FilePath>
             </File>
           </Files>
         </Group>

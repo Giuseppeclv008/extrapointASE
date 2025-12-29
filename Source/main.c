@@ -21,11 +21,11 @@
 #include "mechanics/mechanics.h"
 
 // external variables from mechanics.c
-extern int score;
-extern int HighScore;
-extern int game_started;
-extern int game_over;
-extern int paused;
+extern volatile int score;
+extern volatile int HighScore;
+extern volatile int game_started;
+extern volatile int game_over;
+extern volatile int paused;
 /* Led external variables from funct_led */
 extern unsigned char led_value;					/* defined in lib_led								*/
 
