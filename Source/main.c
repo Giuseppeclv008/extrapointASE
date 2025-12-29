@@ -60,7 +60,7 @@ int main (void) {
 			__ASM("wfi");
 		}
 		else if(game_over){
-			HighScore = if(score > HighScore) ? score : HighScore;
+			HighScore =(score > HighScore) ? score : HighScore;
 			GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
 
 			// blocco il gioco finché non si resetta
