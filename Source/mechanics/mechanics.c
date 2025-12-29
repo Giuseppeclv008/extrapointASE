@@ -21,9 +21,12 @@
 volatile int playing_field[HEIGHT][WIDTH] = {0};
 volatile int score = 0;
 volatile int HighScore = 0;
-volatile int game_started = 0;
+volatile int game_started = 1;
 volatile int game_over = 0;
 volatile int paused = 0;
+
+volatile ActiveTetromino currentPiece;
+
 
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 

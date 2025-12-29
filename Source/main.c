@@ -38,11 +38,14 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
 int main (void) {
   	
 	SystemInit();  												/* System Initialization (i.e., PLL)  */
-  	LED_init();                           /* LED Initialization                 */
-  	BUTTON_init();												/* BUTTON Initialization              */
+  BUTTON_init();												/* BUTTON Initialization              */
+	init_RIT(0x004C4B40);									/* RIT Initialization 50 msec       */
+  LED_init();                           /* LED Initialization                 */
+  BUTTON_init();												/* BUTTON Initialization              */
 
-	while (game_started == 0){
+	while (game_started){
 		//attendo che venga premuto il tasto per iniziare il gioco
+		if
 	}
 	
 	
@@ -55,12 +58,6 @@ int main (void) {
 			
 																						/* T = 1ms - Fr = 25MHz								*/
 																						/* K = T * F = 1*10^-3 * 25*10^6			*/																
-//	init_timer(0,0x000061A8);
-	
-//	init_timer(0,0xFFFFFFFF);							// 5min 43sec
-	//init_timer(0,0x00B41780);							// 1min 0x2CB41780
-//	init_timer(0,0x0EE6B280);								// 10 sec
-	
 
 	enable_timer(2);
 	enable_timer(3);

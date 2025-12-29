@@ -6,7 +6,7 @@
 #include "../timer/timer.h"
 #include "mechanics/mechanics.h"
 
-volatile int paused = 0;
+
 extern volatile int down;
 void EINT0_IRQHandler (void)	  	/* INT0														 */
 {

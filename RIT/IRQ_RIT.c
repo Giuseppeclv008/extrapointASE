@@ -14,7 +14,7 @@
 #include "../mechanics/mechanics.h"
 
 volatile int down = 0;
-
+extern volatile int paused;
 void RIT_IRQHandler (void)
 {			
 	// il joystick non interromper mai il RIT
