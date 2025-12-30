@@ -4,7 +4,7 @@
 **************************************************************************/
 #include "joystick.h"
 
-/* Maschere hardware (interne alla libreria) */
+/* Maschere hardware per selezione del pin corretto da FIODIR */
 #define P1_25_SEL_MASK    (1 << 25)
 #define P1_26_DOWN_MASK   (1 << 26)
 #define P1_27_LEFT_MASK   (1 << 27)
