@@ -20,7 +20,7 @@ void EINT1_IRQHandler (void)	  	/* KEY1														 */
 	LPC_PINCON->PINSEL4 &= ~(1<<22);
 	NVIC_DisableIRQ(EINT1_IRQn);/* inizio sequenza di debouncing	 */
 	enable_RIT();										/* enable RIT to count 50ms				 */
-	
+	down=1;
 	LPC_SC->EXTINT &= (1 << 1);     /* clear pending interrupt         */
 }
 
