@@ -185,7 +185,7 @@ const uint8_t TETROMINOS[7][4][4][4] = {
 void initializeGame() {
     initializePlayingField();
     score = 0;
-    game_started = 1;
+    game_started = 0;
     game_over = 0;
     paused = 1;
     init_piece();

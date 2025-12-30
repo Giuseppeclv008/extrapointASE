@@ -58,8 +58,9 @@ void RIT_IRQHandler (void)
 	}
 	old_joy = current_joy;
 
-
-	// gestione di KEY 1, debouncing con RIT
+	/* *********************************************** */
+	/* gestione di KEY 1, debouncing con RIT		   */ 
+	/* *********************************************** */
 	// nell'if verifico se il pin P2.11 (KEY1) è ancora basso (premuto)
 	// se è ancora basso incremento il contatore down
 	// se è stato rilasciato (alto) resetto il contatore down
@@ -80,6 +81,7 @@ void RIT_IRQHandler (void)
 				initializeGame();
 				enable_timer(0);
 				LED_Off(1); // spengo il led di pausa se era acceso
+				srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
 				down = 0;   // resetto down per evitare di rieseguire questa parte
 				break;
 			}

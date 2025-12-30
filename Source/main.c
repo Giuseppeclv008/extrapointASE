@@ -40,9 +40,11 @@ int main (void) {
   	uint8_t first = 1;
 	SystemInit();  											/* System Initialization (i.e., PLL)  */
 	BUTTON_init();											/* BUTTON Initialization              */
+	LED_init();                           					/* LED Initialization                 */
+	
 	init_RIT(0x004C4B40);									/* RIT Initialization 50 msec       */
-  	LED_init();                           					/* LED Initialization                 */
-  	BUTTON_init();											/* BUTTON Initialization              */
+	enable_RIT();
+	
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	
 	
