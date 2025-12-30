@@ -37,24 +37,31 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
   Main Program
  *----------------------------------------------------------------------------*/
 int main (void) {
-  	
+  	uint8_t first = 1;
 	SystemInit();  											/* System Initialization (i.e., PLL)  */
 	BUTTON_init();											/* BUTTON Initialization              */
 	init_RIT(0x004C4B40);									/* RIT Initialization 50 msec       */
   	LED_init();                           					/* LED Initialization                 */
   	BUTTON_init();											/* BUTTON Initialization              */
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
-	enable_timer(0);
-	initializeGame();	
+	
+	
 
 	//GUI_Init();
 
 	//GUI_SetBkColor(Black);
 	//LCD_Clear(Black);
   //GUI_Text(..., "PRESS KEY1 TO START");
-
+   initializeGame();
+   
 	while(1){
-		if(game_started && !paused && !game_over){ 
+
+		if(game_started && !paused && !game_over){
+			if (first){
+				first = 0;
+				enable_timer(0);
+			}
+				
 			// main game loop
 			// inserisco refresh del display qui se pesante
 			// oppure semplicemente dormo
@@ -63,7 +70,8 @@ int main (void) {
 		else if(game_over){
 			HighScore =(score > HighScore) ? score : HighScore;
 		//	GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
-
+			disable_timer(0);
+			first = 1;
 			// blocco il gioco finché non si resetta
 			while(game_over){
 				__ASM("wfi");
