@@ -97,15 +97,15 @@ void RIT_IRQHandler (void)
 				break;
 		}
 
+	}else{	/* KEY1 rilasciato */
+			down = 0;
+			// rinconfiguro il pin P2.11 come EINT1
+			LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
+			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+			
 		}
 	}
-	else{	/* KEY1 rilasciato */
-		down = 0;
-		// rinconfiguro il pin P2.11 come EINT1
-		LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
-		NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
-		
-	}
+	
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
