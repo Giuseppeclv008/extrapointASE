@@ -70,12 +70,11 @@ void RIT_IRQHandler (void)
 	// se sono in modalità EINT1, sono in "01" e sono collegato al controller degli interrupt esterni 
 	// verifico quindi nell'if che il pin sia in modalità GPIO (00)
 	
-	if((LPC_PINCON->PINSEL4 & (1 << 22)) == 0){
-		down++;
+	if(down>=1){
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	// KEY1 ancora premuto , attivo basso 
 			// sul FIOPIN leggo lo stato del pin P2.11 (KEY1)
 		switch(down){
-			case 1: 
+			case 2: 
 			if(game_over || !game_started) {
 				// se il gioco è finito o non è iniziato, resetto il gioco
 				initializeGame();
@@ -96,15 +95,15 @@ void RIT_IRQHandler (void)
 			default:
 				break;
 		}
-
+		down++;
 		}
 	}
 	else{	/* KEY1 rilasciato */
 		down = 0;
+				NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
 		// rinconfiguro il pin P2.11 come EINT1
 		LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
-		NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
-		
+
 	}
 	LPC_RIT->RICTRL |= 1;	
 	return;
