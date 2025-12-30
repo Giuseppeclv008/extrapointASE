@@ -10,14 +10,15 @@
 extern volatile int down;
 void EINT0_IRQHandler (void)	  	/* INT0														 */
 {
-
+	
 	LPC_SC->EXTINT &= (1 << 0);     /* clear pending interrupt         */
 }
 
 
 void EINT1_IRQHandler (void)	  	/* KEY1														 */
 {	
-	down = 1;							/* inizio sequenza di debouncing	 */
+	LPC_PINCON->PINSEL4 &= ~(1<<22);
+	NVIC_DisableIRQ(EINT1_IRQn);/* inizio sequenza di debouncing	 */
 	enable_RIT();										/* enable RIT to count 50ms				 */
 	
 	LPC_SC->EXTINT &= (1 << 1);     /* clear pending interrupt         */

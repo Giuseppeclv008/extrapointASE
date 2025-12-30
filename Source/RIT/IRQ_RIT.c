@@ -18,7 +18,7 @@ volatile int down = 0;
 extern volatile int paused;
 void RIT_IRQHandler (void)
 {			
-	// il joystick non interromper mai il RIT
+	// il joystick non interrompere mai il RIT
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
 	
@@ -60,41 +60,47 @@ void RIT_IRQHandler (void)
 
 
 	// gestione di KEY 1, debouncing con RIT
-	if(down != 0) { // Se down != 0 significa che EINT1 ha attivato la sequenza
+	
+	if((LPC_PINCON->PINSEL4 & (1 << 22)) == 0){
+		down++;
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	/* KEY1 ancora premuto */
-			down++;
 
-			if(game_over || !game_started) {
-				// se il gioco è finito o non è iniziato, resetto il gioco
-				initializeGame();
-				LED_Off(1); // spengo il led di pausa se era acceso
-				down = 0;   // resetto down per evitare di rieseguire questa parte
-				return;
-			}
-
-			else {
-			switch(down){
-				case 1: 
-					paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
-					if (paused)
-						LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
-					else
-						LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
-						break;
-				default:
-					break;
-			}
+		if(game_over || !game_started) {
+			// se il gioco è finito o non è iniziato, resetto il gioco
+			initializeGame();
+			LED_Off(1); // spengo il led di pausa se era acceso
+			down = 0;   // resetto down per evitare di rieseguire questa parte
+			disable_RIT();
+			reset_RIT();
+			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+			return;
 		}
 	}
-		else{	/* KEY1 rilasciato */
-			down = 0;
-			// non disabilito il RIT per permettere al joystick di funzionare
-			
-			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
-			LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
+	else {
+		switch(down){
+			case 1: 
+				paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
+				if (paused)
+					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
+				else
+					LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
+					break;
+			default:
+				break;
 		}
-	}			
-	
+		}
+	}
+	else{	/* KEY1 rilasciato */
+		down = 0;
+		// non disabilito il RIT per permettere al joystick di funzionare
+		
+		NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+		LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
+	}
 	LPC_RIT->RICTRL |= 1;	
 	return;
-	}	
+}
+	
+
+			
+	
