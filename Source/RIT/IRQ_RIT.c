@@ -32,7 +32,7 @@ void RIT_IRQHandler (void)
 				case JOY_DOWN:
 					LPC_TIM0->MR0 = 0.5 * 25000000; 
 					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-					LED_On(3);      / 
+					LED_On(3);      
 					break;
 				case JOY_LEFT:
 					movePieceLeft();
@@ -85,7 +85,8 @@ void RIT_IRQHandler (void)
 					break;
 			}
 		}
-		else {	/* KEY1 rilasciato */
+	}
+		else{	/* KEY1 rilasciato */
 			down = 0;
 			// non disabilito il RIT per permettere al joystick di funzionare
 			
@@ -97,6 +98,3 @@ void RIT_IRQHandler (void)
 	LPC_RIT->RICTRL |= 1;	
 	return;
 	}	
-
-
-}

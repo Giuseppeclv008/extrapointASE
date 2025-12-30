@@ -47,11 +47,11 @@ int main (void) {
 	enable_timer(0);
 	initializeGame();	
 
-	GUI_Init();
+	//GUI_Init();
 
-	GUI_SetBkColor(Black);
-	LCD_Clear(Black);
-    GUI_Text(..., "PRESS KEY1 TO START");
+	//GUI_SetBkColor(Black);
+	//LCD_Clear(Black);
+  //GUI_Text(..., "PRESS KEY1 TO START");
 
 	while(1){
 		if(game_started && !paused && !game_over){ 
@@ -62,7 +62,7 @@ int main (void) {
 		}
 		else if(game_over){
 			HighScore =(score > HighScore) ? score : HighScore;
-			GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
+		//	GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
 
 			// blocco il gioco finché non si resetta
 			while(game_over){
