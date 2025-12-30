@@ -19,6 +19,7 @@
 #include "button_EXINT/button.h"
 #include "timer/timer.h"
 #include "mechanics/mechanics.h"
+#include "GLCD/GLCD.h"
 
 // external variables from mechanics.c
 extern volatile int score;
