@@ -29,8 +29,8 @@ void RIT_IRQHandler (void)
 				case JOY_UP:
 					rotatePiece();
 					break;
-				case JOY_DOWN:
-					LPC_TIM0->MR0 = 0.5 * 25000000; 
+				case JOY_DOWN:						
+					LPC_TIM0->MR0 = 12500000; // velocità aumentata di 2 volte, 2 square al secondo 
 					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 					LED_On(3);      
 					break;
@@ -50,7 +50,7 @@ void RIT_IRQHandler (void)
 		else if (old_joy == JOY_DOWN ) {
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = 1 * 25000000; 
+			LPC_TIM0->MR0 = 25000000;  // velocità normale 1 square al secondo
 			LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 			}
 			
@@ -60,42 +60,49 @@ void RIT_IRQHandler (void)
 
 
 	// gestione di KEY 1, debouncing con RIT
+	// nell'if verifico se il pin P2.11 (KEY1) è ancora basso (premuto)
+	// se è ancora basso incremento il contatore down
+	// se è stato rilasciato (alto) resetto il contatore down
+	// in base al valore di down eseguo l'azione corrispondente
+	// disabilito EINT1 per evitare che l'interrupt del tasto interferisca
+	// se LPC_PINCON->PINSEL4 è pari a 00 allora sono in modalità GPIO, semplice Input/Output GP
+	// se sono in modalità EINT1, sono in "01" e sono collegato al controller degli interrupt esterni 
+	// verifico quindi nell'if che il pin sia in modalità GPIO (00)
 	
 	if((LPC_PINCON->PINSEL4 & (1 << 22)) == 0){
 		down++;
-		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	/* KEY1 ancora premuto */
-
-		if(game_over || !game_started) {
-			// se il gioco è finito o non è iniziato, resetto il gioco
-			initializeGame();
-			LED_Off(1); // spengo il led di pausa se era acceso
-			down = 0;   // resetto down per evitare di rieseguire questa parte
-			disable_RIT();
-			reset_RIT();
-			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
-			return;
-		}
-	}
-	else {
+		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	// KEY1 ancora premuto , attivo basso 
+			// sul FIOPIN leggo lo stato del pin P2.11 (KEY1)
 		switch(down){
 			case 1: 
+			if(game_over || !game_started) {
+				// se il gioco è finito o non è iniziato, resetto il gioco
+				initializeGame();
+				enable_timer(0);
+				LED_Off(1); // spengo il led di pausa se era acceso
+				down = 0;   // resetto down per evitare di rieseguire questa parte
+				break;
+			}
+			else{
 				paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
 				if (paused)
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				else
 					LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
 					break;
+			}
 			default:
 				break;
 		}
+
 		}
 	}
 	else{	/* KEY1 rilasciato */
 		down = 0;
-		// non disabilito il RIT per permettere al joystick di funzionare
-		
-		NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+		// rinconfiguro il pin P2.11 come EINT1
 		LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
+		NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+		
 	}
 	LPC_RIT->RICTRL |= 1;	
 	return;
