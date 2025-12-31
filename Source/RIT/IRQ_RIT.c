@@ -76,7 +76,7 @@ void RIT_IRQHandler (void)
 			// sul FIOPIN leggo lo stato del pin P2.11 (KEY1)
 		switch(down){
 			case 2: 
-			if(game_over || !game_started) {
+			if(game_over) {
 				// se il gioco è finito o non è iniziato, resetto il gioco
 				initializeGame();
 				enable_timer(0);
@@ -86,10 +86,13 @@ void RIT_IRQHandler (void)
 			}
 			else{
 				paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
-				if (paused)
+				if (paused){
+					disable_timer(0);
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
-				else
-					LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 		
+				}else{
+					enable_timer(0);
+					LED_Off(1); 
+				}					// spengo il led 1 per indicare che il gioco è ripreso 		
 			}
 				break;
 			default:

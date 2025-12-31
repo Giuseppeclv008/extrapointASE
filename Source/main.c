@@ -57,12 +57,13 @@ int main (void) {
    initializeGame();
    
 	while(1){
-
-		if(game_started && !paused && !game_over){
-			if (first){
+		if (first){
 				first = 0;
+				game_started = 1;
 				enable_timer(0);
 			}
+		if(game_started && !paused && !game_over){
+		
 				
 			// main game loop
 			// inserisco refresh del display qui se pesante
