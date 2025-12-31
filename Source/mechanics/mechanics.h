@@ -2,7 +2,7 @@
 #define MECHANICS_H
 
 #include <stdint.h>
-
+#include "GLCD/GLCD.h"
 /* --- DEFINIZIONI COSTANTI --- */
 #define HEIGHT 20
 #define WIDTH 10
