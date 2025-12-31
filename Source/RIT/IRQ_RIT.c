@@ -55,9 +55,10 @@ void RIT_IRQHandler (void)
 			}
 			
 		}
-	}
-	old_joy = current_joy;
+		old_joy = current_joy;
 
+	}
+	
 	/* *********************************************** */
 	/* gestione di KEY 1, debouncing con RIT		   */ 
 	/* *********************************************** */
@@ -80,7 +81,6 @@ void RIT_IRQHandler (void)
 				initializeGame();
 				enable_timer(0);
 				LED_Off(1); // spengo il led di pausa se era acceso
-				srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
 				down = 0;   // resetto down per evitare di rieseguire questa parte
 				break;
 			}
@@ -89,16 +89,16 @@ void RIT_IRQHandler (void)
 				if (paused)
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				else
-					LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 
-					break;
+					LED_Off(1);     // spengo il led 1 per indicare che il gioco è ripreso 		
 			}
+				break;
 			default:
 				break;
 		}
 		down++;
 	}else{	/* KEY1 rilasciato */
 			down = 0;
-				NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
+			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
 			// rinconfiguro il pin P2.11 come EINT1
 			LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
 		

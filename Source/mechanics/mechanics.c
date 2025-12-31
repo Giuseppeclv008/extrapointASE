@@ -184,6 +184,7 @@ const uint8_t TETROMINOS[7][4][4][4] = {
 
 void initializeGame() {
     initializePlayingField();
+		srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
     score = 0;
     game_started = 0;
     game_over = 0;
