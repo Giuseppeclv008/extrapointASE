@@ -598,6 +598,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>GUI</GroupName>
+          <Files>
+            <File>
+              <FileName>GUI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GUI\GUI.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUI.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\GUI\GUI.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
@@ -1190,6 +1205,21 @@
               <FileName>RIT.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Source\RIT\RIT.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>GUI</GroupName>
+          <Files>
+            <File>
+              <FileName>GUI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GUI\GUI.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUI.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Source\GUI\GUI.h</FilePath>
             </File>
           </Files>
         </Group>

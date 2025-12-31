@@ -46,12 +46,10 @@ int main (void) {
 	enable_RIT();
 	
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
-	
-	
+	LCD_Initialization();
+	// Disegna l'interfaccia statica una volta sola
+   Tetris_DrawStaticInterface();
 
-	//GUI_Init();
-
-	//GUI_SetBkColor(Black);
 	//LCD_Clear(Black);
   //GUI_Text(..., "PRESS KEY1 TO START");
    initializeGame();
@@ -66,7 +64,7 @@ int main (void) {
 		
 				
 			// main game loop
-			// inserisco refresh del display qui se pesante
+			// inserisco refresh del display qui se presante
 			// oppure semplicemente dormo
 			__ASM("wfi");
 		}
