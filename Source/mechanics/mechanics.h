@@ -30,6 +30,15 @@ typedef struct {
     int rotation;       // rotazione corrente (0-3)
     int shape[4][4];    // matrice locale del pezzo
 } ActiveTetromino;
+const uint16_t TETROMINO_COLORS[7] = { 
+    Cyan,    // I (Linea)
+    Yellow,  // O (Quadrato)
+    Magenta, // T
+    Blue,    // J   
+    0xFD20,  // L (Orange non è definito in GLCD.h standard, puoi usare 
+    Green,   // S
+    Red      // Z
+};
 
 /* --- VARIABILI GLOBALI (EXTERN) --- */
 
