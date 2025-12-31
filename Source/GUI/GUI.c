@@ -27,15 +27,15 @@ void GUI_DrawInterface(void){
     // Disegna la sezione del punteggio
     
     // Etichetta Punteggio
-    GUI_Text(SCORE_X, SCORE_Y - 20, "SCORE", TEXT_COLOR, BACKGROUND_COLOR );
+    GUI_Text(SCORE_X, SCORE_Y - 20, (uint8_t*)"SCORE", TEXT_COLOR, BACKGROUND_COLOR );
     // Valore Punteggio
-    GUI_Text(SCORE_X, SCORE_Y + 10, "000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
+    GUI_Text(SCORE_X, SCORE_Y + 10, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
     
     
     // Etichetta High Score
-    GUI_Text(SCORE_X, HIGH_SCORE_Y - 20, "HIGH SCORE", TEXT_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y - 20, (uint8_t*)"HIGH SCORE", TEXT_COLOR, BACKGROUND_COLOR);
     // Valore High Score
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 10, "000000", NUMBER_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 10, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR);
     
      // fare in modo di aggiornare l'high score durante il gioco
     

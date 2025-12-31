@@ -20,6 +20,7 @@
 #include "timer/timer.h"
 #include "mechanics/mechanics.h"
 #include "GLCD/GLCD.h"
+#include "GUI/GUI.h"
 
 // external variables from mechanics.c
 extern volatile int score;
@@ -48,7 +49,7 @@ int main (void) {
 	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
-   Tetris_DrawStaticInterface();
+   GUI_DrawInterface();
 
 	//LCD_Clear(Black);
   //GUI_Text(..., "PRESS KEY1 TO START");
