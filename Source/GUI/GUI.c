@@ -42,3 +42,18 @@ void GUI_DrawInterface(void){
 
     //opzionalmente aggiungere la sezione per il next piece
 }
+
+void GUI_pauseScreen(void){
+    // Disegna la schermata di pausa
+    GUI_Text(60, 150, (uint8_t*)"PAUSED - PRESS KEY1 TO CONTINUE", TEXT_COLOR, BACKGROUND_COLOR);
+
+}
+void GUI_resumeScreen(void){
+    GUI_Text(60, 150, (uint8_t*)"PAUSED - PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
+    // TODO: RefreshSCreen();
+}
+
+void GUI_gameOverScreen(void){
+    // Disegna la schermata di game over
+    GUI_Text(40, 150, (uint8_t*)"GAME OVER - PRESS KEY1 TO PLAY AGAIN", TEXT_COLOR, BACKGROUND_COLOR);
+}

@@ -13,7 +13,7 @@
 #include "../joystick/joystick.h"
 #include "../mechanics/mechanics.h"
 #include "../timer/timer.h"
-
+#include "../GUI/GUI.h"
 volatile int down = 0;
 extern volatile int paused;
 void RIT_IRQHandler (void)
@@ -87,6 +87,7 @@ void RIT_IRQHandler (void)
 			else{
 				paused = !paused; // attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
 				if (paused){
+					GUI_pauseScreen();
 					disable_timer(0);
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				}else{
