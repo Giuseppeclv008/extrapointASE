@@ -33,7 +33,6 @@ void TIMER0_IRQHandler (void)
 	}
 	else{
 		movePieceDown();
-		GUI_RefreshInterface();
 		LPC_TIM0->IR |= 1;			/* clear interrupt flag */
 		return;
 	}
