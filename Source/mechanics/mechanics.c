@@ -311,7 +311,8 @@ int checkCollisionLeft(){
 }
 int checkCollisionRight(){ 
     int r, c;
-    for (r = 0; r < 4; r++) {
+    if (currentPiece.x < WIDTH - 4){
+      for (r = 0; r < 4; r++) {
         for (c = 0; c < 4; c++) {
             if (currentPiece.shape[r][c] != 0) {
                 int fieldX = currentPiece.x + c + 1;
@@ -322,7 +323,9 @@ int checkCollisionRight(){
                 }
             }
         }
+     }
     }
+
     return 1; // Nessuna collisione a destra
 }
 
