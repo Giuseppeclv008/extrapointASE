@@ -234,6 +234,12 @@ void SpawnNewPiece(){
     // la posizione limite che previene uno sforamento dell'playing_field è (0, 6)
     int initialX = rand() % 7;
     SpawnPiece(pieceIndex, initialX, 0);
+ 
+    if(isOverlapping()){ //eseguo il controllo per il gamover subito
+      game_over = 1;
+      game_started = 0;
+      return;
+    }
 }
 
 void SpawnPiece(int pieceIndex, int initialX, int initialY) {
@@ -323,7 +329,31 @@ int canMoveDown() {
     return 1; // Può muoversi giù
 }
 
+int isOverlapping() {
+  int r, c;
+    for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) {
+            if (currentPiece.shape[r][c] != 0) {
+            
+                int fieldX = currentPiece.x + c;
+                int fieldY = currentPiece.y + r;
 
+                if(fieldX < 0 || fieldX >= WIDTH || fieldY < 0 || fieldY >= HEIGHT)
+                  return 1;
+                // Controlla se c'è un pezzo già presente
+                if(fieldY >= 0){
+
+                  if (playing_field[fieldY][fieldX] != 0) {
+                    return 1; // si sovrappone ad un pezzo
+                }
+                
+                }
+                
+            }
+        }
+    }
+    return 0; // Non si sovrappone a nessun pezzo 
+}
 void handlePieceLock(void) {
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
@@ -366,24 +396,19 @@ void handlePieceLock(void) {
 void lockPiece() {
     // Blocca il pezzo corrente nell'playing_field
     int r,c;
+
     for (r = 0; r < 4; r++) {
         for ( c = 0; c < 4; c++) {
             if (currentPiece.shape[r][c] != 0) {
                 int fieldX = currentPiece.x + c;
                 int fieldY = currentPiece.y + r;
                 if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
-                   if(fieldY < 0){
-                       // Il pezzo è bloccato sopra il bordo superiore, gioco finito
-                       game_over = 1;
-                       game_started = 0;
-                       return;
-                   }
+
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
                 }
             }
         }
     }
-    
     score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 
 }

@@ -91,6 +91,7 @@ void RIT_IRQHandler (void)
 					disable_timer(0);
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				}else{
+					GUI_resumeScreen();
 					enable_timer(0);
 					LED_Off(1); 
 				}					// spengo il led 1 per indicare che il gioco è ripreso 		

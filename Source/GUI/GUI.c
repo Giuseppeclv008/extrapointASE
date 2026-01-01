@@ -45,11 +45,11 @@ void GUI_DrawInterface(void){
 
 void GUI_pauseScreen(void){
     // Disegna la schermata di pausa
-    GUI_Text(60, 150, (uint8_t*)"PAUSED - PRESS KEY1 TO CONTINUE", TEXT_COLOR, BACKGROUND_COLOR);
+    GUI_Text(30, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", TEXT_COLOR, BACKGROUND_COLOR);
 
 }
 void GUI_resumeScreen(void){
-    GUI_Text(60, 150, (uint8_t*)"PAUSED - PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
+    GUI_Text(30, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
     // TODO: RefreshSCreen();
 }
 
