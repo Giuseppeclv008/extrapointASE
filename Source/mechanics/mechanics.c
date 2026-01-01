@@ -280,19 +280,23 @@ void movePieceRight() {
   if (currentPiece.x < WIDTH - 4) currentPiece.x++;
 }
 void movePieceDown() {
+  if(futurePosition()){
     currentPiece.y++;
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+  }
+  return;
 }
 
-void futurePosition(){
+int futurePosition(){
     // funzione che calcola la posizione futura del pezzo in caduta
     // e gestisce il blocco del pezzo e la cancellazione delle linee
     // quando il pezzo raggiunge il fondo o un altro pezzo
     if (canMoveDown()) {
-        movePieceDown();
+        return 1; // può muoversi giù
     } else {
         handlePieceLock();
         SpawnNewPiece();
+        return 0; // non può muoversi giù
     }
 }
 
