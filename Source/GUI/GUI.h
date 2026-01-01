@@ -5,6 +5,7 @@
 #include "GLCD/GLCD.h"
 #include "GLCD/AsciiLib.h"
 #include "stdint.h"
+#include <stdio.h>
 
 
 // --- DIMENSIONI PLAYING FIELD SUL DISPLAY ---
