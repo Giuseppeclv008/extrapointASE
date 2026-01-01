@@ -55,7 +55,6 @@ void movePieceDown(void);
 void handlePieceLock(void);
 void lockPiece(void);
 int deleteFullLines(void);
-int canMoveDown(void);
 int futurePosition(void);
 void initializeGame(void);
 void initializePlayingField(void);
