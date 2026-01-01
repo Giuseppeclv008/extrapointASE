@@ -238,6 +238,7 @@ void SpawnNewPiece(){
     if(isOverlapping()){ //eseguo il controllo per il gamover subito
       game_over = 1;
       game_started = 0;
+      paused = 1;
       return;
     }
 }
@@ -346,7 +347,7 @@ int isOverlapping() {
                   if (playing_field[fieldY][fieldX] != 0) {
                     return 1; // si sovrappone ad un pezzo
                 }
-                
+
                 }
                 
             }

@@ -51,6 +51,7 @@ int main (void) {
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();
    GUI_pauseScreen();
+   
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
 	//LCD_Clear(Black);
   //GUI_Text(..., "PRESS KEY1 TO START");
