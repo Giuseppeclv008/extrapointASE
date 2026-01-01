@@ -38,5 +38,9 @@ void GUI_UpdateHighScore(void);
 void GUI_pauseScreen(void);
 void GUI_resumeScreen(void);
 void GUI_gameOverScreen(void);
+void GUI_RefreshScreen(void);
+void GUI_clearGameOverScreen(void);
+void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color);
+
 
 #endif

@@ -48,12 +48,15 @@ void GUI_DrawInterface(void){
 void GUI_RefreshInterface(){
     LCD_Clear(BACKGROUND_COLOR);
     GUI_DrawInterface();
-    // Aggiorna il punteggio
-    GUI_UpdateScore();
     // Aggiorna il high score
     GUI_UpdateHighScore();
 }
+void GUI_RefreshScreen(){
+    int r, c;
+    // TODO 
+    // ridisegno i pezzi fissati
 
+}
 void GUI_UpdateScore(){
     // Aggiorna il punteggio visualizzato
     uint8_t scoreStr[7];
@@ -74,11 +77,29 @@ void GUI_pauseScreen(void){
 
 }
 void GUI_resumeScreen(void){
-    GUI_Text(5, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
-    // TODO: RefreshSCreen();
+    GUI_RefreshInterface()
 }
 
 void GUI_gameOverScreen(void){
     // Disegna la schermata di game over
     GUI_Text(5, 150, (uint8_t*)"GAME OVER-PRESS KEY1 TO PLAY AGAIN", TEXT_COLOR, BACKGROUND_COLOR);
+}
+
+void GUI_clearGameOverScreen(void){
+    // Cancella la schermata di game over
+    GUI_RefreshInterface();
+}
+
+void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
+    // Disegna un blocco del pezzo alla posizione (x,y) con il colore specificato
+    // TODO
+    int i, j;
+    int x_start = FIELD_X + (x * BLOCK_SIZE);
+    int y_start = FIELD_Y + (y * BLOCK_SIZE);
+
+    for(i = 0; i < BLOCK_SIZE; i++){
+        for(j = 0; j < BLOCK_SIZE; j++){
+            LCD_SetPoint(x + i, y + j, color);
+        }
+    }
 }
