@@ -35,9 +35,7 @@ void GUI_DrawInterface(void){
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
-    uint8_t highScoreStr[7];
-    sprintf((char*)highScoreStr, "%06d", HighScore); // formatta l'high score come stringa a 6 cifre con zeri iniziali
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highScoreStr, NUMBER_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR);
     
      // fare in modo di aggiornare l'high score durante il gioco
     
