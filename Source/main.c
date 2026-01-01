@@ -53,7 +53,7 @@ int main (void) {
    GUI_pauseScreen();
    
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
-	//LCD_Clear(Black);
+   LCD_Clear(Black);
   //GUI_Text(..., "PRESS KEY1 TO START");
    initializeGame();
    

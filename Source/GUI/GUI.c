@@ -5,7 +5,7 @@
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
 extern volatile int HighScore;
-
+extern volatile int score;
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -35,7 +35,9 @@ void GUI_DrawInterface(void){
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR);
+    uint8_t highScoreStr[7];
+    sprintf((char*)highScoreStr, "%06d", HighScore); // formatta l'high score come stringa a 6 cifre con zeri iniziali
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highScoreStr NUMBER_COLOR, BACKGROUND_COLOR);
     
      // fare in modo di aggiornare l'high score durante il gioco
     
@@ -43,17 +45,40 @@ void GUI_DrawInterface(void){
     //opzionalmente aggiungere la sezione per il next piece
 }
 
+void GUI_RefreshInterface(){
+    LCD_Clear(BACKGROUND_COLOR);
+    GUI_DrawInterface();
+    // Aggiorna il punteggio
+    GUI_UpdateScore();
+    // Aggiorna il high score
+    GUI_UpdateHighScore();
+}
+
+void GUI_UpdateScore(){
+    // Aggiorna il punteggio visualizzato
+    uint8_t scoreStr[7];
+    sprintf((char*)scoreStr, "%06d", score); // formatta il punteggio come stringa a 6 cifre con zeri iniziali
+    GUI_Text(SCORE_X, SCORE_Y + 20, score, NUMBER_COLOR, BACKGROUND_COLOR);
+}
+
+void GUI_UpdateHighScore(){
+    // Aggiorna l'high score visualizzato
+    uint8_t highScoreStr[7];
+    sprintf((char*)highScoreStr, "%06d", HighScore); // formatta l'high score come stringa a 6 cifre con zeri iniziali
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highScoreStr, NUMBER_COLOR, BACKGROUND_COLOR);
+}
+
 void GUI_pauseScreen(void){
     // Disegna la schermata di pausa
-    GUI_Text(30, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", TEXT_COLOR, BACKGROUND_COLOR);
+    GUI_Text(5, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", TEXT_COLOR, BACKGROUND_COLOR);
 
 }
 void GUI_resumeScreen(void){
-    GUI_Text(30, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
+    GUI_Text(5, 150, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
     // TODO: RefreshSCreen();
 }
 
 void GUI_gameOverScreen(void){
     // Disegna la schermata di game over
-    GUI_Text(40, 150, (uint8_t*)"GAME OVER - PRESS KEY1 TO PLAY AGAIN", TEXT_COLOR, BACKGROUND_COLOR);
+    GUI_Text(5, 150, (uint8_t*)"GAME OVER-PRESS KEY1 TO PLAY AGAIN", TEXT_COLOR, BACKGROUND_COLOR);
 }
