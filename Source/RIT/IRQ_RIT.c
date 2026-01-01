@@ -53,7 +53,6 @@ void RIT_IRQHandler (void)
 			LPC_TIM0->MR0 = 25000000;  // velocità normale 1 square al secondo
 			LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 			}
-			
 		}
 		old_joy = current_joy;
 
@@ -92,6 +91,7 @@ void RIT_IRQHandler (void)
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				}else{
 					GUI_resumeScreen();
+					GUI_RefreshInterface();
 					enable_timer(0);
 					LED_Off(1); 
 				}					// spengo il led 1 per indicare che il gioco è ripreso 
