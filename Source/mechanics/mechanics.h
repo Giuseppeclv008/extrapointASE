@@ -31,6 +31,15 @@ typedef struct {
     int shape[4][4];    // matrice locale del pezzo
 } ActiveTetromino;
 
+const uint16_t TETROMINO_COLORS[7] = { 
+    Cyan,    // I
+    Yellow,  // O
+    Magenta, // T
+    Blue,    // J   
+    Orange,  // L 
+    Green,   // S
+    Red      // Z
+};
 
 /* --- VARIABILI GLOBALI (EXTERN) --- */
 extern volatile uint8_t timer_tick;

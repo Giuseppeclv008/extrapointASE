@@ -27,15 +27,7 @@ volatile int paused;
 
 volatile ActiveTetromino currentPiece;
 
-const uint16_t TETROMINO_COLORS[7] = { 
-    Cyan,    // I
-    Yellow,  // O
-    Magenta, // T
-    Blue,    // J   
-    Orange,  // L 
-    Green,   // S
-    Red      // Z
-};
+
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
 // per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
