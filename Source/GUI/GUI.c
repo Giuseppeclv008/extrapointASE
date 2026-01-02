@@ -1,11 +1,12 @@
 #include "GUI/GUI.h"
+#include "mechanics/mechanics.h"
 
 /*********************************************************************************************************
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
 extern volatile int HighScore;
-
+extern volatile int score;
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -51,19 +52,35 @@ void GUI_RefreshInterface(){
 }
 void GUI_RefreshScreen(){
     int r, c;
-    // TODO 
-    // ridisegno i pezzi fissati
+    for (r = 0; r < HEIGHT; r++) {
+        for (c = 0; c < WIDTH; c++) {
+            if (playing_field[r][c] != 0) {
+                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]]);
+            }
+        }
+    }   
 
 }
-void GUI_UpdateScore(){
+
+void GUI_UpdateScore(int previous_score){
+    uint32_t sccore_to_erase = previous_score;
+    uint8_t score_str_erase[7]; // 6 cifre + terminatore nulle
+    uint32_t score_to_display = score;
+    uint8_t score_str[7]; // 6 cifre + terminatore nulle
+    snprintf((char*)score_str, sizeof(score_str), "%06lu", score_to_display);
+    snprintf((char*)score_str_erase, sizeof(score_str_erase), "%06lu", sccore_to_erase);
+    GUI_Text(SCORE_X, SCORE_Y + 20, score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
-    //TODO
+    GUI_Text(SCORE_X, SCORE_Y + 20, score_str, NUMBER_COLOR, BACKGROUND_COLOR);
 
 }
 
 void GUI_UpdateHighScore(){
     // Aggiorna l'high score visualizzato
-    //TODO
+    uint32_t highscore_to_display = HighScore;
+    uint8_t highscore_str[7]; // 6 cifre + terminatore nulle
+    snprintf((char*)highscore_str, sizeof(highscore_str), "%06lu", highscore_to_display);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
 
 void GUI_pauseScreen(void){
@@ -82,7 +99,7 @@ void GUI_gameOverScreen(void){
 
 void GUI_clearGameOverScreen(void){
     // Cancella la schermata di game over
-    //TODO
+    GUI_RefreshInterface();
 }
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){

@@ -74,7 +74,9 @@ int main (void) {
 			if(timer_tick==1)
 			{
 			timer_tick=0;
+			int previous_score = score;
 				movePieceDown();
+				GUI_UpdateScore(previous_score);
 			}
 
 			// main game loop
@@ -84,7 +86,7 @@ int main (void) {
 		}
 		else if(game_over){
 			HighScore =(score > HighScore) ? score : HighScore;
-		//	GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
+			GUI_gameOverScreen();
 			first = 1;
 			// blocco il gioco finché non si resetta
 			while(game_over){
