@@ -95,7 +95,12 @@ void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
         for(j = 0; j < BLOCK_SIZE; j++){
             if(i == 0 || i == BLOCK_SIZE - 1 || j == 0 || j == BLOCK_SIZE - 1){
                 // Disegna il bordo del blocco
+                if(color == BACKGROUND_COLOR){
+                    // Se il colore è lo sfondo, disegna solo l'interno
+                    LCD_SetPoint(x_start + j, y_start + i, color);
+                } else {
                 LCD_SetPoint(x_start + j, y_start + i, BLOCK_BORDER_COLOR);
+                }
             } else {
                 // Disegna l'interno del blocco
                 LCD_SetPoint(x_start + j, y_start + i, color);

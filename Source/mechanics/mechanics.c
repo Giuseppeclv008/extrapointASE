@@ -324,7 +324,7 @@ int checkCollisionLeft(){
 }
 int checkCollisionRight(){ 
   int r, c;
-  if (currentPiece.x < WIDTH-4) {
+  if (currentPiece.x < WIDTH-3) {
     for (r = 0; r < 4; r++) {
       for (c = 0; c < 4; c++) {
           if (currentPiece.shape[r][c] != 0) {
