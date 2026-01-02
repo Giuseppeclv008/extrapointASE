@@ -214,7 +214,6 @@ void initializeGame() {
     game_over = 0;
     paused = 1;
     init_piece();
-    SpawnNewPiece();
 }
 
 void initializePlayingField() {

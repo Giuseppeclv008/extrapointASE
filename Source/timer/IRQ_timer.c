@@ -24,7 +24,7 @@ extern unsigned char led_value;					/* defined in funct_led								*/
 extern volatile int paused;
 extern volatile int game_over;
 extern volatile int game_started;
-extern volatile uint8_t timer_tick = 0;
+volatile uint8_t timer_tick = 0;
 void TIMER0_IRQHandler (void)
 {
 	LPC_TIM0->IR |= 1;	
