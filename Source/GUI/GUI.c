@@ -1,6 +1,6 @@
 #include "GUI/GUI.h"
 #include "mechanics/mechanics.h"
-#include "stdio.h"
+#include <stdio.h>
 /*********************************************************************************************************
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
@@ -68,11 +68,11 @@ void GUI_UpdateScore(int previous_score){
     uint8_t score_str_erase[7]; // 6 cifre + terminatore nulle
     uint32_t score_to_display = score;
     uint8_t score_str[7]; // 6 cifre + terminatore nulle
-    snprintf((char*)score_str, sizeof(score_str), "%06u", score_to_display);
-    snprintf((char*)score_str_erase, sizeof(score_str_erase), "%06u", sccore_to_erase);
-    GUI_Text(SCORE_X, SCORE_Y + 20, score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
+    sprintf((char*)score_str, "%06u", score_to_display);
+    sprintf((char*)score_str_erase,"%06u", sccore_to_erase);
+    GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
-    GUI_Text(SCORE_X, SCORE_Y + 20, score_str, NUMBER_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
 
 }
 
@@ -80,8 +80,8 @@ void GUI_UpdateHighScore(){
     // Aggiorna l'high score visualizzato
     uint32_t highscore_to_display = HighScore;
     uint8_t highscore_str[7]; // 6 cifre + terminatore nulle
-    snprintf((char*)highscore_str, sizeof(highscore_str), "%06lu", highscore_to_display);
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
+    sprintf((char*)highscore_str,"%06u", highscore_to_display);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
 
 void GUI_pauseScreen(void){
