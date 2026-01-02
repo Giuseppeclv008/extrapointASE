@@ -4,6 +4,7 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "timer/timer.h"
+#include "GUI/GUI.h"
 
 
 #define HEIGHT 20
@@ -284,12 +285,16 @@ void movePieceLeft() {
 }
 
 void movePieceRight() {
-  if (currentPiece.x < WIDTH - 4) currentPiece.x++;
+  if (currentPiece.x < WIDTH - 4) {
+    currentPiece.x++;
+  }
 }
 void movePieceDown() {
   if(futurePosition()){
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
     currentPiece.y++;
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
   }
   return;
 }
@@ -355,6 +360,26 @@ int isOverlapping() {
     }
     return 0; // Non si sovrappone a nessun pezzo 
 }
+
+
+void DrawCurrentPiece(uint16_t color){
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          // Prendo in considerazione le cordinate del pezzo dove nella matrice corrisponde un blocco (1)
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c;
+              int fieldY = currentPiece.y + r;
+              
+              // mi assicuro di non uscire dai limiti del playing_field
+              if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                  GUI_DrawBlock(fieldX, fieldY, color);
+              }
+          }
+      }   
+  }
+}
+
 void handlePieceLock(void) {
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
