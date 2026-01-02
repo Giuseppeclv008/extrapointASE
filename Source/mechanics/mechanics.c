@@ -214,7 +214,6 @@ void initializeGame() {
     game_over = 0;
     paused = 1;
     init_piece();
-    SpawnNewPiece();
 }
 
 void initializePlayingField() {
@@ -282,46 +281,6 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
   }
 }
 
-void rotatePiece() {
-  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-  // Aggiorna l'indice di rotazione
-  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
-
-    // Aggiorna la matrice shape del pezzo corrente
-	  int r ;
-	  int c ;
-    for ( r = 0; r < 4; r++) {
-        for( c = 0; c < 4; c++) {
-            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
-        }
-    }
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
-}
-
-void movePieceLeft() {
-  if(checkCollisionLeft()){
-    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-    currentPiece.x--;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-}
-
-void movePieceRight() {
-  if(checkCollisionRight()) {
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.x++;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-}
-void movePieceDown() {
-  if(futurePosition()){
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.y++;
-    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-  return;
-}
 int checkCollisionLeft(){
     int r, c;
     for (r = 0; r < 4; r++) {
@@ -419,8 +378,46 @@ int isOverlapping() {
     }
     return 0; // Non si sovrappone a nessun pezzo 
 }
+void rotatePiece() {
+  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+  // Aggiorna l'indice di rotazione
+  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
 
+    // Aggiorna la matrice shape del pezzo corrente
+	  int r ;
+	  int c ;
+    for ( r = 0; r < 4; r++) {
+        for( c = 0; c < 4; c++) {
+            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
+        }
+    }
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+}
 
+void movePieceLeft() {
+  if(checkCollisionLeft()){
+    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+    currentPiece.x--;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+}
+
+void movePieceRight() {
+  if(checkCollisionRight()) {
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.x++;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+}
+void movePieceDown() {
+  if(futurePosition()){
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.y++;
+    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+  return;
+}
 
 
 void handlePieceLock(void) {

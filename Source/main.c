@@ -31,6 +31,9 @@ extern volatile int paused;
 /* Led external variables from funct_led */
 extern unsigned char led_value;					/* defined in lib_led								*/
 
+/* extern variable from IRQ_timer.c*/
+extern volatile uint8_t timer_tick;
+
 #ifdef SIMULATOR
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
 #endif
@@ -58,12 +61,22 @@ int main (void) {
    
 	while(1){
 		if (first){
+			while(paused){
+							__ASM("wfi");
+			}
+				SpawnNewPiece();
 				first = 0;
 				game_started = 1;
 				enable_timer();
 			}
-		if(game_started && !paused && !game_over){
 		
+		if(game_started && !paused && !game_over){
+			if(timer_tick==1)
+			{
+			timer_tick=0;
+				movePieceDown();
+			}
+
 			// main game loop
 			// inserisco refresh del display qui se presante
 			// oppure semplicemente dormo
@@ -77,6 +90,9 @@ int main (void) {
 			while(game_over){
 				__ASM("wfi");
 			}
+			first = 1;
+			GUI_DrawInterface();
+			GUI_pauseScreen();
 		}
 		else{
 			LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
