@@ -35,7 +35,7 @@
 // PROTOTIPI DELLE FUNZIONI 
 void GUI_DrawInterface(void);
 void GUI_RefreshInterface(void);
-void GUI_UpdateScore(void);
+void GUI_UpdateScore(int previous_score);
 void GUI_UpdateHighScore(void);
 void GUI_pauseScreen(void);
 void GUI_resumeScreen(void);
