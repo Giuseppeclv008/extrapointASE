@@ -1,12 +1,13 @@
 #include "GUI/GUI.h"
 #include "mechanics/mechanics.h"
-
+#include "stdio.h"
 /*********************************************************************************************************
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
 extern volatile int HighScore;
 extern volatile int score;
+extern const uint16_t TETROMINO_COLORS[7];
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -67,8 +68,8 @@ void GUI_UpdateScore(int previous_score){
     uint8_t score_str_erase[7]; // 6 cifre + terminatore nulle
     uint32_t score_to_display = score;
     uint8_t score_str[7]; // 6 cifre + terminatore nulle
-    snprintf((char*)score_str, sizeof(score_str), "%06lu", score_to_display);
-    snprintf((char*)score_str_erase, sizeof(score_str_erase), "%06lu", sccore_to_erase);
+    snprintf((char*)score_str, sizeof(score_str), "%06u", score_to_display);
+    snprintf((char*)score_str_erase, sizeof(score_str_erase), "%06u", sccore_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20, score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, score_str, NUMBER_COLOR, BACKGROUND_COLOR);
