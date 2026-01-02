@@ -235,7 +235,8 @@ void SpawnNewPiece(){
     // la posizione limite che previene uno sforamento dell'playing_field è (0, 6)
     int initialX = rand() % 7;
     SpawnPiece(pieceIndex, initialX, 0);
- 
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
+
     if(isOverlapping()){ //eseguo il controllo per il gamover subito
       game_over = 1;
       game_started = 0;
@@ -245,30 +246,31 @@ void SpawnNewPiece(){
 }
 
 void SpawnPiece(int pieceIndex, int initialX, int initialY) {
-    // 1. Imposta coordinate iniziali 
-    currentPiece.x = initialX; 
-    currentPiece.y = initialY; 
-    
-    // 2. Salviamo il tipo e resettiamo la rotazione
-    int rotationIndex = 0;
-    currentPiece.type = pieceIndex;
-    currentPiece.rotation = rotationIndex; 
+  // Imposta coordinate iniziali 
+  currentPiece.x = initialX; 
+  currentPiece.y = initialY; 
+  
+  //Salviamo il tipo e resettiamo la rotazione
+  int rotationIndex = 0;
+  currentPiece.type = pieceIndex;
+  currentPiece.rotation = rotationIndex; 
 
-    // 3. Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
-    int r,c;
-    for (r = 0; r < 4; r++) {
-        for (c = 0; c < 4; c++) {
-            
-            // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
-            currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
-            
-        }
-    }
+  // Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
+  int r,c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          
+          // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
+          currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
+          
+      }
+  }
 }
 
 void rotatePiece() {
-    // Aggiorna l'indice di rotazione
-    currentPiece.rotation = (currentPiece.rotation + 1) % 4;
+  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+  // Aggiorna l'indice di rotazione
+  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
 
     // Aggiorna la matrice shape del pezzo corrente
 	  int r ;
@@ -278,14 +280,23 @@ void rotatePiece() {
             currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
         }
     }
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
 }
 
 void movePieceLeft() {
-  if(checkCollisionLeft()) currentPiece.x--;
+  if(checkCollisionLeft()){
+    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+    currentPiece.x--;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
 }
 
 void movePieceRight() {
-  if(checkCollisionRight()) currentPiece.x++;
+  if(checkCollisionRight()) {
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.x++;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
 }
 void movePieceDown() {
   if(futurePosition()){
@@ -422,7 +433,9 @@ void handlePieceLock(void) {
 
     // 3. LOGICA DELL'AZIONE SPECIALE
     if (linesRemoved > 0) {
-        
+      
+        //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
+
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
         if (linesRemoved == 4 && currentPiece.type == PIECE_I_INDEX) {
             
