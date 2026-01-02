@@ -281,13 +281,11 @@ void rotatePiece() {
 }
 
 void movePieceLeft() {
-  if (currentPiece.x > 0) currentPiece.x--;
+  if(checkCollisionLeft()) currentPiece.x--;
 }
 
 void movePieceRight() {
-  if (currentPiece.x < WIDTH - 4) {
-    currentPiece.x++;
-  }
+  if(checkCollisionRight()) currentPiece.x++;
 }
 void movePieceDown() {
   if(futurePosition()){
@@ -297,6 +295,41 @@ void movePieceDown() {
     DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
   }
   return;
+}
+int checkCollisionLeft(){
+    int r, c;
+    for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) { 
+            if (currentPiece.shape[r][c] != 0) {
+                int fieldX = currentPiece.x + c - 1;
+                int fieldY = currentPiece.y + r;
+
+                if (fieldX < 0 || playing_field[fieldY][fieldX] != 0) {
+                    return 0; // Collisione a sinistra
+                }
+            }
+        }
+    }
+    return 1; // Nessuna collisione a sinistra
+}
+int checkCollisionRight(){ 
+    int r, c;
+    if (currentPiece.x < WIDTH - 4){
+      for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) {
+            if (currentPiece.shape[r][c] != 0) {
+                int fieldX = currentPiece.x + c + 1;
+                int fieldY = currentPiece.y + r;
+
+                if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
+                    return 0; // Collisione a destra
+                }
+            }
+        }
+     }
+    }
+
+    return 1; // Nessuna collisione a destra
 }
 
 int futurePosition(){

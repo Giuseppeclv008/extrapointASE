@@ -5,7 +5,7 @@
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
 extern volatile int HighScore;
-extern volatile int score;
+
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -35,9 +35,7 @@ void GUI_DrawInterface(void){
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
-    uint8_t highScoreStr[7];
-    sprintf((char*)highScoreStr, "%06d", HighScore); // formatta l'high score come stringa a 6 cifre con zeri iniziali
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highScoreStr NUMBER_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR);
     
      // fare in modo di aggiornare l'high score durante il gioco
     
@@ -59,16 +57,13 @@ void GUI_RefreshScreen(){
 }
 void GUI_UpdateScore(){
     // Aggiorna il punteggio visualizzato
-    uint8_t scoreStr[7];
-    sprintf((char*)scoreStr, "%06d", score); // formatta il punteggio come stringa a 6 cifre con zeri iniziali
-    GUI_Text(SCORE_X, SCORE_Y + 20, score, NUMBER_COLOR, BACKGROUND_COLOR);
+    //TODO
+
 }
 
 void GUI_UpdateHighScore(){
     // Aggiorna l'high score visualizzato
-    uint8_t highScoreStr[7];
-    sprintf((char*)highScoreStr, "%06d", HighScore); // formatta l'high score come stringa a 6 cifre con zeri iniziali
-    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, highScoreStr, NUMBER_COLOR, BACKGROUND_COLOR);
+    //TODO
 }
 
 void GUI_pauseScreen(void){
@@ -77,7 +72,7 @@ void GUI_pauseScreen(void){
 
 }
 void GUI_resumeScreen(void){
-    GUI_RefreshInterface()
+	GUI_RefreshInterface();
 }
 
 void GUI_gameOverScreen(void){
@@ -87,7 +82,7 @@ void GUI_gameOverScreen(void){
 
 void GUI_clearGameOverScreen(void){
     // Cancella la schermata di game over
-    GUI_RefreshInterface();
+    //TODO
 }
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
