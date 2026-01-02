@@ -87,14 +87,20 @@ void GUI_clearGameOverScreen(void){
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
     // Disegna un blocco del pezzo alla posizione (x,y) con il colore specificato
-    // TODO
     int i, j;
     int x_start = FIELD_X + (x * BLOCK_SIZE);
     int y_start = FIELD_Y + (y * BLOCK_SIZE);
 
     for(i = 0; i < BLOCK_SIZE; i++){
         for(j = 0; j < BLOCK_SIZE; j++){
-            LCD_SetPoint(x + i, y + j, color);
+            if(i == 0 || i == BLOCK_SIZE - 1 || j == 0 || j == BLOCK_SIZE - 1){
+                // Disegna il bordo del blocco
+                LCD_SetPoint(x_start + i, y_start + j, BLOCK_BORDER_COLOR);
+            } else {
+                // Disegna l'interno del blocco
+                LCD_SetPoint(x_start + i, y_start + j, color);
+            }
         }
     }
 }
+
