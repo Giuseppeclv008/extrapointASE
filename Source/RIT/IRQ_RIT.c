@@ -89,11 +89,11 @@ void RIT_IRQHandler (void)
 				paused = !paused;				// attiva o/disattivo la pausa, imposto il contrario del valore attuale ogni volta che premo il tasto Key1
 				if (paused){
 					GUI_pauseScreen();
-					disable_timer(0);
+					disable_timer();
 					LED_On(1);      // accendo il led 1 per indicare che il gioco è in pausa 
 				}else{
 					GUI_resumeScreen();
-					enable_timer(0);
+					enable_timer();
 					LED_Off(1); 
 				}					// spengo il led 1 per indicare che il gioco è ripreso 
 			}
