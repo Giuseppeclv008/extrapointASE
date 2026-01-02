@@ -189,7 +189,23 @@ const uint8_t TETROMINOS[7][4][4][4] = {
           {0,0,0,0} }
     }
 };
-
+void DrawCurrentPiece(uint16_t color){
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          // Prendo in considerazione le cordinate del pezzo dove nella matrice corrisponde un blocco (1)
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c;
+              int fieldY = currentPiece.y + r;
+              
+              // mi assicuro di non uscire dai limiti del playing_field
+              if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                  GUI_DrawBlock(fieldX, fieldY, color);
+              }
+          }
+      }   
+  }
+}
 void initializeGame() {
     initializePlayingField();
 		srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
@@ -198,7 +214,6 @@ void initializeGame() {
     game_over = 0;
     paused = 1;
     init_piece();
-    SpawnNewPiece();
 }
 
 void initializePlayingField() {
@@ -405,25 +420,47 @@ int isOverlapping() {
     }
     return 0; // Non si sovrappone a nessun pezzo 
 }
+void rotatePiece() {
+  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+  // Aggiorna l'indice di rotazione
+  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
 
+    // Aggiorna la matrice shape del pezzo corrente
+	  int r ;
+	  int c ;
+    for ( r = 0; r < 4; r++) {
+        for( c = 0; c < 4; c++) {
+            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
+        }
+    }
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+}
 
-void DrawCurrentPiece(uint16_t color){
-  int r, c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          // Prendo in considerazione le cordinate del pezzo dove nella matrice corrisponde un blocco (1)
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c;
-              int fieldY = currentPiece.y + r;
-              
-              // mi assicuro di non uscire dai limiti del playing_field
-              if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
-                  GUI_DrawBlock(fieldX, fieldY, color);
-              }
-          }
-      }   
+void movePieceLeft() {
+  if(checkCollisionLeft()){
+    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+    currentPiece.x--;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
   }
 }
+
+void movePieceRight() {
+  if(checkCollisionRight()) {
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.x++;
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+}
+void movePieceDown() {
+  if(futurePosition()){
+    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.y++;
+    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+  return;
+}
+
 
 void handlePieceLock(void) {
     // 1. Solidifica il pezzo nella matrice del playing_field

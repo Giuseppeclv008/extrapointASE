@@ -17,7 +17,6 @@ extern void disable_timer();
 extern void reset_timer();
 /* IRQ_timer.c */
 extern void TIMER0_IRQHandler (void);
-
 #endif /* end __TIMER_H */
 /*****************************************************************************
 **                            End Of File
