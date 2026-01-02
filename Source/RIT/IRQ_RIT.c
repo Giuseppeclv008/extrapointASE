@@ -51,7 +51,6 @@ void RIT_IRQHandler (void)
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
 			LPC_TIM0->MR0 = 25000000;  // velocità normale 1 square al secondo
-			//LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 			}
 		}
 		old_joy = current_joy;
