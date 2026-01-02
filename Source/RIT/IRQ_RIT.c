@@ -78,8 +78,10 @@ void RIT_IRQHandler (void)
 			if(game_over) {
 				// se il gioco è finito o non è iniziato, resetto il gioco
 				initializeGame();
-				enable_timer(0);
+				disable_timer();
+				reset_timer();
 				LED_Off(1); // spengo il led di pausa se era acceso
+
 				down = 0;   // resetto down per evitare di rieseguire questa parte
 				break;
 			}
@@ -94,10 +96,6 @@ void RIT_IRQHandler (void)
 					enable_timer(0);
 					LED_Off(1); 
 				}					// spengo il led 1 per indicare che il gioco è ripreso 
-				if(game_over){
-					game_over = 0;
-	
-				}
 			}
 				break;
 			default:

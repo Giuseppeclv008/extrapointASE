@@ -3,7 +3,6 @@
 #include "LPC17xx.h"                    /* LPC17xx definitions                */
 #include "led/led.h"
 #include "button_EXINT/button.h"
-#include "timer/timer.h"
 #include "GUI/GUI.h"
 
 
@@ -433,7 +432,7 @@ void handlePieceLock(void) {
 
     // 3. LOGICA DELL'AZIONE SPECIALE
     if (linesRemoved > 0) {
-      
+
         //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
@@ -461,7 +460,7 @@ void handlePieceLock(void) {
         // Ridisegna l'interfaccia col nuovo punteggio
         // TODO: UpdateScoreDisplay(score);
         
-        // Ridisegna l'playing_field pulita
+        // Ridisegna il playing_field pulito
         // TODO : Redrawplaying_field();
     }
 }

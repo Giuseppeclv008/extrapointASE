@@ -46,7 +46,7 @@ int main (void) {
 	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
 	enable_RIT();
 	
-	init_timer(0 , 1 );										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	init_timer();										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();
@@ -60,11 +60,10 @@ int main (void) {
 		if (first){
 				first = 0;
 				game_started = 1;
-				enable_timer(0);
+				enable_timer();
 			}
 		if(game_started && !paused && !game_over){
 		
-				
 			// main game loop
 			// inserisco refresh del display qui se presante
 			// oppure semplicemente dormo
@@ -73,7 +72,6 @@ int main (void) {
 		else if(game_over){
 			HighScore =(score > HighScore) ? score : HighScore;
 		//	GUI_Text(..., "GAME OVER - PRESS KEY1 TO PLAY AGAIN");
-			disable_timer(0);
 			first = 1;
 			// blocco il gioco finché non si resetta
 			while(game_over){
