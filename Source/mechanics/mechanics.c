@@ -265,6 +265,77 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
       }
   }
 }
+int checkCollisionLeft(){
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) { 
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c - 1;
+              int fieldY = currentPiece.y + r;
+
+              if (fieldX < 0 || playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Collisione a sinistra
+              }
+          }
+      }
+  }
+  return 1; // Nessuna collisione a sinistra
+}
+int checkCollisionRight(){ 
+  int r, c;
+  if (currentPiece.x < WIDTH - 4){
+    for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c + 1;
+              int fieldY = currentPiece.y + r;
+
+              if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Collisione a destra
+              }
+          }
+      }
+   }
+  }
+
+  return 1; // Nessuna collisione a destra
+}
+
+int futurePosition(){
+  // funzione che calcola la posizione futura del pezzo in caduta
+  // e gestisce il blocco del pezzo e la cancellazione delle linee
+  // quando il pezzo raggiunge il fondo o un altro pezzo
+  if (canMoveDown()) {
+      return 1; // può muoversi giù
+  } else {
+      handlePieceLock();
+      SpawnNewPiece();
+      return 0; // non può muoversi giù
+  }
+}
+
+int canMoveDown() {
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c;
+              int fieldY = currentPiece.y + r + 1; // Controlliamo la riga sotto
+
+              // Controlla i limiti del playing_field
+              if (fieldY >= HEIGHT) {
+                  return 0; // Non può muoversi giù, ha raggiunto il fondo
+              }
+
+              // Controlla se c'è un pezzo già presente
+              if (playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Non può muoversi giù, c'è un pezzo sotto
+              }
+          }
+      }
+  }
+  return 1; // Può muoversi giù
+}
 
 void rotatePiece() {
   DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
@@ -305,77 +376,6 @@ void movePieceDown() {
     DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
   }
   return;
-}
-int checkCollisionLeft(){
-    int r, c;
-    for (r = 0; r < 4; r++) {
-        for (c = 0; c < 4; c++) { 
-            if (currentPiece.shape[r][c] != 0) {
-                int fieldX = currentPiece.x + c - 1;
-                int fieldY = currentPiece.y + r;
-
-                if (fieldX < 0 || playing_field[fieldY][fieldX] != 0) {
-                    return 0; // Collisione a sinistra
-                }
-            }
-        }
-    }
-    return 1; // Nessuna collisione a sinistra
-}
-int checkCollisionRight(){ 
-    int r, c;
-    if (currentPiece.x < WIDTH - 4){
-      for (r = 0; r < 4; r++) {
-        for (c = 0; c < 4; c++) {
-            if (currentPiece.shape[r][c] != 0) {
-                int fieldX = currentPiece.x + c + 1;
-                int fieldY = currentPiece.y + r;
-
-                if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
-                    return 0; // Collisione a destra
-                }
-            }
-        }
-     }
-    }
-
-    return 1; // Nessuna collisione a destra
-}
-
-int futurePosition(){
-    // funzione che calcola la posizione futura del pezzo in caduta
-    // e gestisce il blocco del pezzo e la cancellazione delle linee
-    // quando il pezzo raggiunge il fondo o un altro pezzo
-    if (canMoveDown()) {
-        return 1; // può muoversi giù
-    } else {
-        handlePieceLock();
-        SpawnNewPiece();
-        return 0; // non può muoversi giù
-    }
-}
-
-int canMoveDown() {
-    int r, c;
-    for (r = 0; r < 4; r++) {
-        for (c = 0; c < 4; c++) {
-            if (currentPiece.shape[r][c] != 0) {
-                int fieldX = currentPiece.x + c;
-                int fieldY = currentPiece.y + r + 1; // Controlliamo la riga sotto
-
-                // Controlla i limiti del playing_field
-                if (fieldY >= HEIGHT) {
-                    return 0; // Non può muoversi giù, ha raggiunto il fondo
-                }
-
-                // Controlla se c'è un pezzo già presente
-                if (playing_field[fieldY][fieldX] != 0) {
-                    return 0; // Non può muoversi giù, c'è un pezzo sotto
-                }
-            }
-        }
-    }
-    return 1; // Può muoversi giù
 }
 
 int isOverlapping() {
