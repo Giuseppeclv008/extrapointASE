@@ -30,6 +30,7 @@
 #define TEXT_COLOR White
 #define SCORE_COLOR Yellow
 #define NUMBER_COLOR White
+#define BLOCK_BORDER_COLOR White
 
 // PROTOTIPI DELLE FUNZIONI 
 void GUI_DrawInterface(void);
