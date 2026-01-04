@@ -532,6 +532,8 @@ int deleteFullLines(void) {
       }
   }
   GUI_RefreshScreen();
-  lines_cleared += linesCleared; // Aggiorna la variabile globale
+  int previous_lines_cleared = lines_cleared;
+  lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
+  GUI_UpdateClearedLines(previous_lines_cleared);
   return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
