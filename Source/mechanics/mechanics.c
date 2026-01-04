@@ -373,7 +373,7 @@ int canMoveDown() {
   }
   return 1; // Può muoversi giù
 }
-void isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
+int isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
   int r, c;
   for (r = 0; r < 4; r++) {
       for (c = 0; c < 4; c++) {
