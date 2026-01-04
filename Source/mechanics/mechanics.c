@@ -402,7 +402,7 @@ void copyRotation(int tempShape[4][4], int rotationIndex) {
   currentPiece.rotation = rotationIndex;
   int r, c;
   for(r = 0; r < 4; r++) {
-    for(c = 0; c < 4; c) {
+    for(c = 0; c < 4; c++) {
       currentPiece.shape[r][c] = tempShape[r][c];
     }
   }
