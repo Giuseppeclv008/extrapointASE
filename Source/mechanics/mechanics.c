@@ -24,6 +24,7 @@ volatile int HighScore = 0;
 volatile int game_started ;
 volatile int game_over ;
 volatile int paused;
+volatile int lines_cleared = 0;
 
 volatile ActiveTetromino currentPiece;
 
@@ -475,7 +476,7 @@ void handlePieceLock(void) {
         //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
-        if (linesRemoved == 4 && currentPiece.type == PIECE_I_INDEX) {
+        if (linesRemoved == 4) {
             
             // A. Assegna un punteggio bonus enorme
             score += 600; // Bonus extra per il TETRIS
@@ -500,7 +501,7 @@ void handlePieceLock(void) {
         // TODO: UpdateScoreDisplay(score);
         
         // Ridisegna il playing_field pulito
-        // TODO : Redrawplaying_field();
+        GUI_RefreshScreen();
     }
 }
 void lockPiece() {
@@ -524,9 +525,8 @@ void lockPiece() {
 }
 
 int deleteFullLines(void) {
-  int linesCleared = 0;
   int y, x;
-
+  int linesCleared = 0;
   // Scansioniamo dal basso (riga 19) verso l'alto
   for (y = HEIGHT - 1; y >= 0; y--) {
       int isFull = 1;
@@ -561,6 +561,6 @@ int deleteFullLines(void) {
           y++; 
       }
   }
-  
+  lines_cleared += linesCleared; // Aggiorna la variabile globale
   return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
