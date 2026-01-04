@@ -76,7 +76,6 @@ int main (void) {
 			timer_tick=0;
 			int previous_score = score;
 				movePieceDown();
-				GUI_UpdateScore(previous_score);
 			}
 
 			// main game loop

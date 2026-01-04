@@ -416,7 +416,9 @@ void movePieceDown() {
   if(futurePosition()){
     DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
     currentPiece.y++;
+    int previous_score = score;
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+    GUI_UpdateScore(previous_score);
     DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
   }
   return;
@@ -436,13 +438,13 @@ void handlePieceLock(void) {
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
         if (linesRemoved == 4) {
+            int previous_score = score;
             
             // A. Assegna un punteggio bonus enorme
             score += 600; // Bonus extra per il TETRIS
-            
+            GUI_UpdateScore(previous_score);
             // B. Feedback Visivo sulla LandTiger 
             //Todo: Implementa la funzione UpdateScoreDisplay(score);
-            
             // C. Feedback Sonoro  
             // PlaySound(SOUND_TETRIS_EFFECT);
             
@@ -450,16 +452,24 @@ void handlePieceLock(void) {
             // Punteggio normale per 1, 2 o 3 linee
             // Esempio classico Nintendo: 40, 100, 300 punti
             switch(linesRemoved) {
-                case 1: score += 100; break;
-                case 2: score += 200; break;
-                case 3: score += 300; break;
+                int previous_score = score;
+                case 1: 
+                        score += 100; 
+                        GUI_UpdateScore(previous_score);
+                        break;
+                case 2: 
+                        score += 200; 
+                        GUI_UpdateScore(previous_score);
+                        break;
+                case 3: 
+                        score += 300; 
+                        GUI_UpdateScore(previous_score);
+                        break;
+
             }
+
         }
-        
-        // Ridisegna l'interfaccia col nuovo punteggio
-        // TODO: UpdateScoreDisplay(score);
-        
-        // Ridisegna il playing_field pulito
+        // Ridisena il playing_field pulito
         GUI_RefreshScreen();
     }
 }
@@ -479,7 +489,10 @@ void lockPiece() {
             }
         }
     }
+    int previous_score = score;
     score += 10; // aumenta il punteggio quando un pezzo viene bloccato
+    GUI_UpdateScore(previous_score);
+
 
 }
 
