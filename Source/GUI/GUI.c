@@ -84,12 +84,26 @@ void GUI_UpdateScore(int previous_score){
 
 }
 
-void GUI_UpdateHighScore(){
+void GUI_UpdateHighScore(int previous_highscore){
     // Aggiorna l'high score visualizzato
     uint32_t highscore_to_display = HighScore;
+    uint8_t highscore_str_erase[7]; // 6 cifre + terminatore nulle
+    sprintf((char*)highscore_str_erase,"%06u", HighScore; // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
     uint8_t highscore_str[7]; // 6 cifre + terminatore nulle
     sprintf((char*)highscore_str,"%06u", highscore_to_display);
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
+}
+
+void GUI_UpdateClearedLines(int previous_lines_cleared){
+    // Aggiorna il numero di linee cancellate visualizzato
+    uint32_t lines_to_display = lines_cleared;
+    uint8_t lines_str_erase[4]; // 3 cifre + terminatore nulle
+    uint8_t lines_str[4]; // 3 cifre + terminatore nulle
+    sprintf((char*)lines_str_erase,"%03u", previous_lines_cleared);
+    GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t) lines_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il numero precedente
+    sprintf((char*)lines_str,"%03u", lines_to_display);
+    GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
 
 void GUI_pauseScreen(void){

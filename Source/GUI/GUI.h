@@ -37,7 +37,8 @@
 void GUI_DrawInterface(void);
 void GUI_RefreshInterface(void);
 void GUI_UpdateScore(int previous_score);
-void GUI_UpdateHighScore(void);
+void GUI_UpdateClearedLines(int previous_lines_cleared);
+void GUI_UpdateHighScore(int previous_highscore);
 void GUI_pauseScreen(void);
 void GUI_resumeScreen(void);
 void GUI_gameOverScreen(void);
