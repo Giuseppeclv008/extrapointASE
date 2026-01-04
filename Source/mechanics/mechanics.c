@@ -429,11 +429,13 @@ void handlePieceLock(void) {
     lockPiece();
 
     // 2. Controlla le linee e ottieni il numero
+    int previous_lines_cleared = lines_cleared;
     int linesRemoved = deleteFullLines();
-
+    GUI_UpdateClearedLines(previous_lines_cleared);
+    GUI_RefreshScreen();
     // 3. LOGICA DELL'AZIONE SPECIALE
     if (linesRemoved > 0) {
-
+        
         //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
@@ -531,9 +533,6 @@ int deleteFullLines(void) {
           y++; 
       }
   }
-  GUI_RefreshScreen();
-  int previous_lines_cleared = lines_cleared;
   lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
-  GUI_UpdateClearedLines(previous_lines_cleared);
   return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
