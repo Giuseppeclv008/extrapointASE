@@ -39,6 +39,10 @@ void GUI_DrawInterface(void){
     
      // fare in modo di aggiornare l'high score durante il gioco
     
+    // Etichetta Linee Cancellate
+    GUI_Text(SCORE_X, CLEARED_LINES_Y, (uint8_t*)"LINES", SCORE_COLOR, BACKGROUND_COLOR);
+    // Valore Linee Cancellate
+    GUI_Text(SCORE_X, CLEARED_LINES_Y + 20, (uint8_t*)"000", NUMBER_COLOR, BACKGROUND_COLOR);
 
     //opzionalmente aggiungere la sezione per il next piece
 }
