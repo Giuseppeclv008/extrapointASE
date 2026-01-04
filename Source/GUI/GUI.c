@@ -31,9 +31,10 @@ void GUI_DrawInterface(void){
     // Valore Punteggio
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
     
-    
+    char highScoreStr[7];
+    sprintf(highScoreStr, "%06d", HighScore);
     // Etichetta High Score
-    GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
+    GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)highScoreStr, SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR);
     
