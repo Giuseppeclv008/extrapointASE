@@ -406,6 +406,7 @@ void copyRotation(int tempShape[4][4], int rotationIndex) {
       currentPiece.shape[r][c] = tempShape[r][c];
     }
   }
+  return;
 }
 void rotatePiece() {
   /* La rotazione del pezzo utilizza una nuova matrice per la posizione del pezzo che potrebbe comportare uno sforamento 
@@ -413,6 +414,7 @@ void rotatePiece() {
      del pezzo rotato, per questo motivo è necessario provare se la rotazione è valida o no */
   int tempRotation = (currentPiece.rotation + 1) % 4;
   int r, c;
+  // Copia la forma rotata nella matrice temporanea
   int tempShape[4][4];
   for (r = 0; r < 4; r++) {
     for (c = 0; c < 4; c++) {
@@ -420,8 +422,9 @@ void rotatePiece() {
     }
   }
 
-  // Copia la forma rotata nella matrice temporanea
+  
   DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+
   if(isPositionValidAfterRotation(currentPiece.x, currentPiece.y, tempShape)) {
     // Aggiorno il current piece
     copyRotation(tempShape, tempRotation);
@@ -495,18 +498,18 @@ void movePieceDown() {
 }
 
 void handlePieceLock(void) {
+    int previous_score = score;
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
-
+    
     // 2. Controlla le linee e ottieni il numero
     int previous_lines_cleared = lines_cleared;
     int linesRemoved = deleteFullLines();
 
-    // 3. LOGICA DELL'AZIONE SPECIALE
+    // 3. LOGICA PUNTEGGIO SPECIALE
     if (linesRemoved > 0) {
       GUI_UpdateClearedLines(previous_lines_cleared);
       GUI_RefreshScreen();
-        //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
         if (linesRemoved == 4) {
@@ -514,34 +517,21 @@ void handlePieceLock(void) {
             
             // A. Assegna un punteggio bonus enorme
             score += 600; // Bonus extra per il TETRIS
-            GUI_UpdateScore(previous_score);
-            // B. Feedback Visivo sulla LandTiger 
-            //Todo: Implementa la funzione UpdateScoreDisplay(score);
-            // C. Feedback Sonoro  
-            // PlaySound(SOUND_TETRIS_EFFECT);
             
         } else {
             // Punteggio normale per 1, 2 o 3 linee
             // Esempio classico Nintendo: 40, 100, 300 punti
             switch(linesRemoved) {
-                int previous_score = score;
-                case 1: 
-                        score += 100; 
-                        GUI_UpdateScore(previous_score);
-                        break;
-                case 2: 
-                        score += 200; 
-                        GUI_UpdateScore(previous_score);
-                        break;
-                case 3: 
-                        score += 300; 
-                        GUI_UpdateScore(previous_score);
-                        break;
+                
+                case 1: score += 100; break;
+                case 2: score += 200; break;
+                case 3: score += 300; break;
 
             }
 
         }
     }
+    GUI_UpdateScore(previous_score);
 }
 void lockPiece() {
     // Blocca il pezzo corrente nell'playing_field
@@ -561,9 +551,6 @@ void lockPiece() {
     }
     int previous_score = score;
     score += 10; // aumenta il punteggio quando un pezzo viene bloccato
-    GUI_UpdateScore(previous_score);
-
-
 }
 
 int deleteFullLines(void) {
