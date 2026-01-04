@@ -17,7 +17,7 @@
 
 
 // variabili globali
-volatile int playing_field[HEIGHT][WIDTH] ;
+volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile int score;
 volatile int HighScore = 0;
 volatile int game_started ;
@@ -543,6 +543,9 @@ void lockPiece() {
                 int fieldX = currentPiece.x + c;
                 int fieldY = currentPiece.y + r;
                 if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                    if(currentPiece.shape[r][c] == 1){
+                      playing_field[fieldY][fieldX] = TETROMINO_COLORS[currentPiece.type];
+                    }
 
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
                 }
