@@ -63,6 +63,9 @@ void GUI_RefreshScreen(){
             if (playing_field[r][c] != 0) {
                 GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]]);
             }
+            else{
+                GUI_DrawBlock(c, r, BACKGROUND_COLOR);
+            }
         }
     }   
 

@@ -469,8 +469,6 @@ void handlePieceLock(void) {
             }
 
         }
-        // Ridisena il playing_field pulito
-        GUI_RefreshScreen();
     }
 }
 void lockPiece() {
@@ -533,6 +531,7 @@ int deleteFullLines(void) {
           y++; 
       }
   }
+  GUI_RefreshScreen();
   lines_cleared += linesCleared; // Aggiorna la variabile globale
   return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
