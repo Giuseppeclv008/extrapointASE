@@ -45,6 +45,7 @@ void GUI_gameOverScreen(void);
 void GUI_RefreshScreen(void);
 void GUI_clearGameOverScreen(void);
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color);
+void GUI_DrawCurrentPiece(uint16_t color);
 
 
 #endif

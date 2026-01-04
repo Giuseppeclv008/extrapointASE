@@ -56,7 +56,8 @@ void movePieceDown(void);
 void handlePieceLock(void);
 void lockPiece(void);
 int deleteFullLines(void);
-int futurePosition(void);
+int tryMoveDown(void);
+void hardDrop(void);
 void initializeGame(void);
 void initializePlayingField(void);
 #endif /* MECHANICS_H */

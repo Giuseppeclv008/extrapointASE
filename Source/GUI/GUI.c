@@ -154,4 +154,20 @@ void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
         }
     }
 }
-
+void GUI_DrawCurrentPiece(uint16_t color){
+    int r, c;
+    for (r = 0; r < 4; r++) {
+        for (c = 0; c < 4; c++) {
+            // Prendo in considerazione le cordinate del pezzo dove nella matrice corrisponde un blocco (1)
+            if (currentPiece.shape[r][c] != 0) {
+                int fieldX = currentPiece.x + c;
+                int fieldY = currentPiece.y + r;
+                
+                // mi assicuro di non uscire dai limiti del playing_field
+                if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                    GUI_DrawBlock(fieldX, fieldY, color);
+                }
+            }
+        }   
+    }
+  }
