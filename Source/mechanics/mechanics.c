@@ -4,7 +4,6 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
-#include <string.h>
 
 #define HEIGHT 20
 #define WIDTH 10
@@ -296,9 +295,13 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
   currentPiece.type = pieceIndex;
   currentPiece.rotation = rotationIndex; 
 
-  // Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
-  memcpy(currentPiece.shape, TETROMINOS[pieceIndex][rotationIndex], sizeof(currentPiece.shape));
-
+  // Copiamo la forma iniziale (Rotazione 0) dalla memoria 
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
+      }
+  }
 }
 int checkCollisionLeft(){
   int r, c;
@@ -395,7 +398,15 @@ int isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
   }
   return 1; // Posizione valida
 }
-
+void copyRotation(int tempShape[4][4], int rotationIndex) {
+  currentPiece.rotation = rotationIndex;
+  int r, c;
+  for(r = 0; r < 4; r++) {
+    for(c = 0; c < 4; c) {
+      currentPiece.shape[r][c] = tempShape[r][c];
+    }
+  }
+}
 void rotatePiece() {
   /* La rotazione del pezzo utilizza una nuova matrice per la posizione del pezzo che potrebbe comportare uno sforamento 
      del playing field, per questo motivo è necessaria l'aggiunta di una "spinta"  verso sinistra o verso destra
@@ -403,56 +414,51 @@ void rotatePiece() {
   int tempRotation = (currentPiece.rotation + 1) % 4;
   int r, c;
   int tempShape[4][4];
+  for (r = 0; r < 4; r++) {
+    for (c = 0; c < 4; c++) {
+      tempShape[r][c] = TETROMINOS[currentPiece.type][tempRotation][r][c];
+    }
+  }
+
   // Copia la forma rotata nella matrice temporanea
   DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-  memcpy(tempShape, TETROMINOS[currentPiece.type][tempRotation], sizeof(tempShape));
-
   if(isPositionValidAfterRotation(currentPiece.x, currentPiece.y, tempShape)) {
-    // Aggiorna l'indice di rotazione
-    currentPiece.rotation = tempRotation;
-  
-    // Aggiorna la matrice shape del pezzo corrente
-    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
   }
   else if (isPositionValidAfterRotation(currentPiece.x + 1, currentPiece.y, tempShape))
   { 
     currentPiece.x += 1; // sposto il pezzo a destra
-    // Aggiorna l'indice di rotazione
-    currentPiece.rotation = tempRotation;
-    
-    // Aggiorna la matrice shape del pezzo corrente
-    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
   }
   else if (isPositionValidAfterRotation(currentPiece.x - 1, currentPiece.y, tempShape))
   {
     currentPiece.x -= 1; // sposto il pezzo a sinistra
-    // Aggiorna l'indice di rotazione
-    currentPiece.rotation = tempRotation;
-    
-    // Aggiorna la matrice shape del pezzo corrente
-    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
   }
   else if (isPositionValidAfterRotation(currentPiece.x, currentPiece.y - 1, tempShape))
   {
     currentPiece.y -= 1; // sposto il pezzo in alto 
-    currentPiece.rotation = tempRotation;
-      // Aggiorna la matrice shape del pezzo corrente
-      memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
   }
   // nel caso in cui ho la rotazione del pezzo I potrei incorrere in uno sforamento di due quadrati 
   else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x + 2, currentPiece.y, tempShape)){
     currentPiece.x += 2;
-    currentPiece.rotation = tempRotation;
-    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
   }
   else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x - 2, currentPiece.y, tempShape)){
     currentPiece.x -= 2;
-    currentPiece.rotation = tempRotation;
-    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
   }
 
