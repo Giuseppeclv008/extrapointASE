@@ -5,7 +5,6 @@
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
 
-
 #define HEIGHT 20
 #define WIDTH 10
 #define PIECE_I_INDEX 0 // Indice del pezzo I nell'array TETROMINOS
@@ -18,7 +17,7 @@
 
 
 // variabili globali
-volatile int playing_field[HEIGHT][WIDTH] ;
+volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile int score;
 volatile int HighScore = 0;
 volatile int game_started ;
@@ -190,24 +189,8 @@ const uint8_t TETROMINOS[7][4][4][4] = {
           {0,0,0,0} }
     }
 };
-void DrawCurrentPiece(uint16_t color){
-  int r, c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          // Prendo in considerazione le cordinate del pezzo dove nella matrice corrisponde un blocco (1)
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c;
-              int fieldY = currentPiece.y + r;
-              
-              // mi assicuro di non uscire dai limiti del playing_field
-              if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
-                  GUI_DrawBlock(fieldX, fieldY, color);
-              }
-          }
-      }   
-  }
-}
-void initializeGame() {
+
+void initializeGame(void) {
     initializePlayingField();
 		srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
     score = 0;
@@ -217,7 +200,7 @@ void initializeGame() {
     init_piece();
 }
 
-void initializePlayingField() {
+void initializePlayingField(void) {
     int r, c;
     for (r = 0; r < HEIGHT; r++) {
         for (c = 0; c < WIDTH; c++) {
@@ -226,7 +209,7 @@ void initializePlayingField() {
     }
 }
 
-void init_piece() {
+void init_piece(void) {
     currentPiece.x = 0;
     currentPiece.y = 0;
 
@@ -238,165 +221,7 @@ void init_piece() {
         }
     }
 }
-
-//wrapper per SpawnPiece
-void SpawnNewPiece(){
-    // wrapper per la generazione di un nuovo pezzo che si occupa 
-    // di generare un numero casuale fra 0 e 6 per la scelta del pezzo 
-    // ed un numero casuale fra 0 e 4 per la scelta casuale della rotazione 
-    int pieceIndex = rand() % 7;
-    // la posizione iniziale è di sicuro in alto X = 0 ma puntando le nostre coordinate 
-    // all'angolo sinistro in alto della matrice rappresentate un pezzo 
-    // la posizione limite che previene uno sforamento dell'playing_field è (0, 6)
-    int initialX = rand() % 7;
-    SpawnPiece(pieceIndex, initialX, 0);
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
-
-    if(isOverlapping()){ //eseguo il controllo per il gamover subito
-      game_over = 1;
-      game_started = 0;
-      paused = 1;
-      return;
-    }
-}
-
-void SpawnPiece(int pieceIndex, int initialX, int initialY) {
-  // Imposta coordinate iniziali 
-  currentPiece.x = initialX; 
-  currentPiece.y = initialY; 
-  
-  //Salviamo il tipo e resettiamo la rotazione
-  int rotationIndex = 0;
-  currentPiece.type = pieceIndex;
-  currentPiece.rotation = rotationIndex; 
-
-  // Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
-  int r,c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          
-          // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
-          currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
-          
-      }
-  }
-}
-int checkCollisionLeft(){
-  int r, c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) { 
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c - 1;
-              int fieldY = currentPiece.y + r;
-
-              if (fieldX < 0 || playing_field[fieldY][fieldX] != 0) {
-                  return 0; // Collisione a sinistra
-              }
-          }
-      }
-  }
-  return 1; // Nessuna collisione a sinistra
-}
-int checkCollisionRight(){ 
-  int r, c;
-  if (currentPiece.x < WIDTH-4) {
-    for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c + 1;
-              int fieldY = currentPiece.y + r;
-
-              if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
-                  return 0; // Collisione a destra
-              }
-          }
-      }
-   }
-  } else if (currentPiece.x >= WIDTH-4){
-    return 0; // supero il limite destro
-  }
-
-  return 1; // Nessuna collisione a destra
-}
-
-int futurePosition(){
-  // funzione che calcola la posizione futura del pezzo in caduta
-  // e gestisce il blocco del pezzo e la cancellazione delle linee
-  // quando il pezzo raggiunge il fondo o un altro pezzo
-  if (canMoveDown()) {
-      return 1; // può muoversi giù
-  } else {
-      handlePieceLock();
-      SpawnNewPiece();
-      return 0; // non può muoversi giù
-  }
-}
-
-int canMoveDown() {
-  int r, c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c;
-              int fieldY = currentPiece.y + r + 1; // Controlliamo la riga sotto
-
-              // Controlla i limiti del playing_field
-              if (fieldY >= HEIGHT) {
-                  return 0; // Non può muoversi giù, ha raggiunto il fondo
-              }
-
-              // Controlla se c'è un pezzo già presente
-              if (playing_field[fieldY][fieldX] != 0) {
-                  return 0; // Non può muoversi giù, c'è un pezzo sotto
-              }
-          }
-      }
-  }
-  return 1; // Può muoversi giù
-}
-
-void rotatePiece() {
-  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-  // Aggiorna l'indice di rotazione
-  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
-
-    // Aggiorna la matrice shape del pezzo corrente
-	  int r ;
-	  int c ;
-    for ( r = 0; r < 4; r++) {
-        for( c = 0; c < 4; c++) {
-            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
-        }
-    }
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
-}
-
-void movePieceLeft() {
-  if(checkCollisionLeft()){
-    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-    currentPiece.x--;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-}
-
-void movePieceRight() {
-  if(checkCollisionRight()) {
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.x++;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-}
-void movePieceDown() {
-  if(futurePosition()){
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.y++;
-    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
-  }
-  return;
-}
-
-int isOverlapping() {
+int isOverlapping(void) {
   int r, c;
     for (r = 0; r < 4; r++) {
         for (c = 0; c < 4; c++) {
@@ -421,146 +246,338 @@ int isOverlapping() {
     }
     return 0; // Non si sovrappone a nessun pezzo 
 }
-void rotatePiece() {
-  DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-  // Aggiorna l'indice di rotazione
-  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
 
-    // Aggiorna la matrice shape del pezzo corrente
-	  int r ;
-	  int c ;
-    for ( r = 0; r < 4; r++) {
-        for( c = 0; c < 4; c++) {
-            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
+
+//wrapper per SpawnPiece
+void SpawnNewPiece(void){
+    // wrapper per la generazione di un nuovo pezzo che si occupa 
+    // di generare un numero casuale fra 0 e 6 per la scelta del pezzo 
+    // ed un numero casuale fra 0 e 4 per la scelta casuale della rotazione 
+    int pieceIndex = rand() % 7;
+    // la posizione iniziale è di sicuro in alto X = 0 ma puntando le nostre coordinate 
+    // all'angolo sinistro in alto della matrice rappresentate un pezzo 
+    // la posizione limite che previene uno sforamento dell'playing_field è (0, 6)
+    int initialX = rand() % 7;
+    SpawnPiece(pieceIndex, initialX, 0);
+    GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
+
+    if(isOverlapping()){ //eseguo il controllo per il gamover subito
+      game_over = 1;
+      game_started = 0;
+      paused = 1;
+      return;
+    }
+}
+
+void SpawnPiece(int pieceIndex, int initialX, int initialY) {
+  // Imposta coordinate iniziali 
+  currentPiece.x = initialX; 
+  currentPiece.y = initialY; 
+  
+  //Salviamo il tipo e resettiamo la rotazione
+  int rotationIndex = 0;
+  currentPiece.type = pieceIndex;
+  currentPiece.rotation = rotationIndex; 
+
+  // Copiamo la forma iniziale (Rotazione 0) dalla memoria 
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
+      }
+  }
+}
+int checkCollisionLeft(void){
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) { 
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c - 1;
+              int fieldY = currentPiece.y + r;
+
+              if (fieldX < 0 || playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Collisione a sinistra
+              }
+          }
+      }
+  }
+  return 1; // Nessuna collisione a sinistra
+}
+int checkCollisionRight(void){ 
+  int r, c;
+  for (r = 0; r < 4; r++) {
+    for (c = 0; c < 4; c++) {
+        if (currentPiece.shape[r][c] != 0) {
+            int fieldX = currentPiece.x + c + 1;
+            int fieldY = currentPiece.y + r;
+
+            if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
+                return 0; // Collisione a destra
+            }
         }
     }
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+  }
+  return 1; // Nessuna collisione a destra
 }
 
-void movePieceLeft() {
-  if(checkCollisionLeft()){
-    DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-    currentPiece.x--;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+int tryMoveDown(void){
+  // funzione che calcola la posizione futura del pezzo in caduta
+  // e gestisce il blocco del pezzo e la cancellazione delle linee
+  // quando il pezzo raggiunge il fondo o un altro pezzo
+  if (canMoveDown()) {
+      return 1; // può muoversi giù
+  } else {
+      handlePieceLock();
+      SpawnNewPiece();
+      return 0; // non può muoversi giù
   }
 }
 
-void movePieceRight() {
-  if(checkCollisionRight()) {
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.x++;
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+int canMoveDown(void) {
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c;
+              int fieldY = currentPiece.y + r + 1; // Controlliamo la riga sotto
+
+              // Controlla i limiti del playing_field
+              if (fieldY >= HEIGHT) {
+                  return 0; // Non può muoversi giù, ha raggiunto il fondo
+              }
+
+              // Controlla se c'è un pezzo già presente
+              if (fieldY >= 0 && playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Non può muoversi giù, c'è un pezzo sotto
+              }
+          }
+      }
   }
+  return 1; // Può muoversi giù
 }
-void movePieceDown() {
-  if(futurePosition()){
-    DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
-    currentPiece.y++;
-    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+int isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          if (shape[r][c] != 0) {
+              int fieldX = x + c;
+              int fieldY = y + r;
+
+              // Controlla i limiti del playing_field
+              if (fieldX < 0 || fieldX >= WIDTH || fieldY < 0 || fieldY >= HEIGHT) {
+                  return 0; // Posizione non valida, esce dai limiti
+              }
+
+              // Controlla se c'è un pezzo già presente
+              if (playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Posizione non valida, c'è un pezzo
+              }
+          }
+      }
+  }
+  return 1; // Posizione valida
+}
+void copyRotation(int tempShape[4][4], int rotationIndex) {
+  currentPiece.rotation = rotationIndex;
+  int r, c;
+  for(r = 0; r < 4; r++) {
+    for(c = 0; c < 4; c++) {
+      currentPiece.shape[r][c] = tempShape[r][c];
+    }
   }
   return;
 }
+void rotatePiece(void) {
+  /* La rotazione del pezzo utilizza una nuova matrice per la posizione del pezzo che potrebbe comportare uno sforamento 
+     del playing field, per questo motivo è necessaria l'aggiunta di una "spinta"  verso sinistra o verso destra
+     del pezzo rotato, per questo motivo è necessario provare se la rotazione è valida o no */
+  int tempRotation = (currentPiece.rotation + 1) % 4;
+  int r, c;
+  // Copia la forma rotata nella matrice temporanea
+  int tempShape[4][4];
+  for (r = 0; r < 4; r++) {
+    for (c = 0; c < 4; c++) {
+      tempShape[r][c] = TETROMINOS[currentPiece.type][tempRotation][r][c];
+    }
+  }
+  GUI_DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+  if(isPositionValidAfterRotation(currentPiece.x, currentPiece.y, tempShape)) {
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
 
+  }
+  else if (isPositionValidAfterRotation(currentPiece.x + 1, currentPiece.y, tempShape))
+  { 
+    currentPiece.x += 1; // sposto il pezzo a destra
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
+  }
+  else if (isPositionValidAfterRotation(currentPiece.x - 1, currentPiece.y, tempShape))
+  {
+    currentPiece.x -= 1; // sposto il pezzo a sinistra
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
+  }
+  else if (isPositionValidAfterRotation(currentPiece.x, currentPiece.y - 1, tempShape))
+  {
+    currentPiece.y -= 1; // sposto il pezzo in alto 
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
+  }
+  // nel caso in cui ho la rotazione del pezzo I potrei incorrere in uno sforamento di due quadrati 
+  else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x + 2, currentPiece.y, tempShape)){
+    currentPiece.x += 2;
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
+  }
+  else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x - 2, currentPiece.y, tempShape)){
+    currentPiece.x -= 2;
+    // Aggiorno il current piece
+    copyRotation(tempShape, tempRotation);
+
+  }
+
+  GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+  return;
+
+}
+
+void movePieceLeft(void) {
+  if(checkCollisionLeft()){
+    GUI_DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
+    currentPiece.x--;
+    GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+}
+
+void movePieceRight(void) {
+  if(checkCollisionRight()) {
+    GUI_DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.x++;
+    GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+}
+void movePieceDown(void) {
+  if(tryMoveDown()){
+    GUI_DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
+    currentPiece.y++;
+    int previous_score = score;
+    score += 1; // aumenta il punteggio ad ogni discesa del pezzo
+    GUI_UpdateScore(previous_score);
+    GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
+  }
+  return;
+}
+void hardDrop(void){
+  GUI_DrawCurrentPiece(BACKGROUND_COLOR);
+  while(tryMoveDown()){
+    currentPiece.y++;
+  }
+  GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
+  return;
+
+}
+
+void lockPiece(void) {
+  // Blocca il pezzo corrente nell'playing_field
+  int r,c;
+
+  for (r = 0; r < 4; r++) {
+      for ( c = 0; c < 4; c++) {
+          if (currentPiece.shape[r][c] != 0) {
+              int fieldX = currentPiece.x + c;
+              int fieldY = currentPiece.y + r;
+              if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
+                  if(currentPiece.shape[r][c] == 1){
+                    playing_field[fieldY][fieldX] = currentPiece.type;
+                  }
+                  else{
+                    playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
+                  }
+                  
+              }
+          }
+      }
+  }
+  score += 10; // aumenta il punteggio quando un pezzo viene bloccato
+}
+
+int deleteFullLines(void) {
+int y, x;
+int linesCleared = 0;
+// Scansioniamo dal basso (riga 19) verso l'alto
+for (y = HEIGHT - 1; y >= 0; y--) {
+    int isFull = 1;
+    
+    for (x = 0; x < WIDTH; x++) {
+        if (playing_field[y][x] == 0) {
+            isFull = 0;
+            break;
+        }
+    }
+
+    if (isFull) {
+        linesCleared++; 
+        
+        // Fai scendere tutto ciò che c'è sopra
+        // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
+        int c, r;
+        for (r = y; r > 0; r--) {
+            for (c = 0; c < WIDTH; c++) {
+                playing_field[r][c] = playing_field[r-1][c];
+            }
+        }
+        // Pulisci la riga 0 (quella nuova che entra dall'alto)
+        
+        for (c = 0; c < WIDTH; c++) {
+            playing_field[0][c] = 0;
+        }
+        
+        // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 
+        // la riga attuale 'y' al prossimo giro, quindi incrementiamo y
+        // (che verrà decrementato dal for loop subito dopo)
+        y++; 
+    }
+}
+lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
+return linesCleared; // Restituisce 0, 1, 2, 3 o 4
+}
 
 void handlePieceLock(void) {
+    int previous_score = score;
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
-
     // 2. Controlla le linee e ottieni il numero
+    int previous_lines_cleared = lines_cleared;
     int linesRemoved = deleteFullLines();
 
-    // 3. LOGICA DELL'AZIONE SPECIALE
+    // 3. LOGICA PUNTEGGIO SPECIALE
     if (linesRemoved > 0) {
-
-        //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
+      GUI_UpdateClearedLines(previous_lines_cleared);
+      GUI_RefreshScreen();
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
         if (linesRemoved == 4) {
-            
+
             // A. Assegna un punteggio bonus enorme
             score += 600; // Bonus extra per il TETRIS
-            
-            // B. Feedback Visivo sulla LandTiger 
-            //Todo: Implementa la funzione UpdateScoreDisplay(score);
-            
-            // C. Feedback Sonoro  
-            // PlaySound(SOUND_TETRIS_EFFECT);
             
         } else {
             // Punteggio normale per 1, 2 o 3 linee
             // Esempio classico Nintendo: 40, 100, 300 punti
             switch(linesRemoved) {
+                
                 case 1: score += 100; break;
                 case 2: score += 200; break;
                 case 3: score += 300; break;
-            }
-        }
-        
-        // Ridisegna l'interfaccia col nuovo punteggio
-        // TODO: UpdateScoreDisplay(score);
-        
-        // Ridisegna il playing_field pulito
-        GUI_RefreshScreen();
-    }
-}
-void lockPiece() {
-    // Blocca il pezzo corrente nell'playing_field
-    int r,c;
 
-    for (r = 0; r < 4; r++) {
-        for ( c = 0; c < 4; c++) {
-            if (currentPiece.shape[r][c] != 0) {
-                int fieldX = currentPiece.x + c;
-                int fieldY = currentPiece.y + r;
-                if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
-
-                    playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
-                }
             }
+
         }
     }
-    score += 10; // aumenta il punteggio quando un pezzo viene bloccato
-
-}
-
-int deleteFullLines(void) {
-  int y, x;
-  int linesCleared = 0;
-  // Scansioniamo dal basso (riga 19) verso l'alto
-  for (y = HEIGHT - 1; y >= 0; y--) {
-      int isFull = 1;
-      
-      for (x = 0; x < WIDTH; x++) {
-          if (playing_field[y][x] == 0) {
-              isFull = 0;
-              break;
-          }
-      }
-
-      if (isFull) {
-          linesCleared++; 
-          
-          // Fai scendere tutto ciò che c'è sopra
-          // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
-          int c, r;
-          for (r = y; r > 0; r--) {
-              for (c = 0; c < WIDTH; c++) {
-                  playing_field[r][c] = playing_field[r-1][c];
-              }
-          }
-          // Pulisci la riga 0 (quella nuova che entra dall'alto)
-          
-          for (c = 0; c < WIDTH; c++) {
-              playing_field[0][c] = 0;
-          }
-          
-          // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 
-          // la riga attuale 'y' al prossimo giro, quindi incrementiamo y
-          // (che verrà decrementato dal for loop subito dopo)
-          y++; 
-      }
-  }
-  lines_cleared += linesCleared; // Aggiorna la variabile globale
-  return linesCleared; // Restituisce 0, 1, 2, 3 o 4
+    GUI_UpdateScore(previous_score);
 }
