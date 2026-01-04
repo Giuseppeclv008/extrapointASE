@@ -434,6 +434,28 @@ void rotatePiece() {
     memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
 
   }
+  else if (isPositionValidAfterRotation(currentPiece.x, currentPiece.y - 1, tempShape))
+  {
+    currentPiece.y -= 1; // sposto il pezzo in alto 
+    currentPiece.rotation = tempRotation;
+      // Aggiorna la matrice shape del pezzo corrente
+      memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+
+  }
+  // nel caso in cui ho la rotazione del pezzo I potrei incorrere in uno sforamento di due quadrati 
+  else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x + 2, currentPiece.y, tempShape)){
+    currentPiece.x += 2;
+    currentPiece.rotation = tempRotation;
+    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+
+  }
+  else if(currentPiece.type == 0 && isPositionValidAfterRotation(currentPiece.x - 2, currentPiece.y, tempShape)){
+    currentPiece.x -= 2;
+    currentPiece.rotation = tempRotation;
+    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+
+  }
+
   DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
   return;
 
