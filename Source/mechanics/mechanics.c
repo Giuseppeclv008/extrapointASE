@@ -4,7 +4,7 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
-
+#include <string.h>
 
 #define HEIGHT 20
 #define WIDTH 10
@@ -297,15 +297,8 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
   currentPiece.rotation = rotationIndex; 
 
   // Copiamo la forma iniziale (Rotazione 0) dalla memoria costante
-  int r,c;
-  for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          
-          // Accesso: [Tipo][Rotazione 0][Riga][Colonna]
-          currentPiece.shape[r][c] = TETROMINOS[pieceIndex][rotationIndex][r][c];
-          
-      }
-  }
+  memcpy(currentPiece.shape, TETROMINOS[pieceIndex][rotationIndex], sizeof(currentPiece.shape));
+
 }
 int checkCollisionLeft(){
   int r, c;
@@ -380,21 +373,70 @@ int canMoveDown() {
   }
   return 1; // Può muoversi giù
 }
+void isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
+  int r, c;
+  for (r = 0; r < 4; r++) {
+      for (c = 0; c < 4; c++) {
+          if (shape[r][c] != 0) {
+              int fieldX = x + c;
+              int fieldY = y + r;
+
+              // Controlla i limiti del playing_field
+              if (fieldX < 0 || fieldX >= WIDTH || fieldY < 0 || fieldY >= HEIGHT) {
+                  return 0; // Posizione non valida, esce dai limiti
+              }
+
+              // Controlla se c'è un pezzo già presente
+              if (playing_field[fieldY][fieldX] != 0) {
+                  return 0; // Posizione non valida, c'è un pezzo
+              }
+          }
+      }
+  }
+  return 1; // Posizione valida
+}
 
 void rotatePiece() {
+  /* La rotazione del pezzo utilizza una nuova matrice per la posizione del pezzo che potrebbe comportare uno sforamento 
+     del playing field, per questo motivo è necessaria l'aggiunta di una "spinta"  verso sinistra o verso destra
+     del pezzo rotato, per questo motivo è necessario provare se la rotazione è valida o no */
+  int tempRotation = (currentPiece.rotation + 1) % 4;
+  int r, c;
+  int tempShape[4][4];
+  // Copia la forma rotata nella matrice temporanea
   DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-  // Aggiorna l'indice di rotazione
-  currentPiece.rotation = (currentPiece.rotation + 1) % 4;
+  memcpy(tempShape, TETROMINOS[currentPiece.type][tempRotation], sizeof(tempShape));
 
+  if(isPositionValidAfterRotation(currentPiece.x, currentPiece.y, tempShape)) {
+    // Aggiorna l'indice di rotazione
+    currentPiece.rotation = tempRotation;
+  
     // Aggiorna la matrice shape del pezzo corrente
-	  int r ;
-	  int c ;
-    for ( r = 0; r < 4; r++) {
-        for( c = 0; c < 4; c++) {
-            currentPiece.shape[r][c] = TETROMINOS[currentPiece.type][currentPiece.rotation][r][c];
-        }
-    }
-    DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+  }
+  else if (isPositionValidAfterRotation(currentPiece.x + 1, currentPiece.y, tempShape))
+  { 
+    currentPiece.x += 1; // sposto il pezzo a destra
+    // Aggiorna l'indice di rotazione
+    currentPiece.rotation = tempRotation;
+    
+    // Aggiorna la matrice shape del pezzo corrente
+    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+
+  }
+  else if (isPositionValidAfterRotation(currentPiece.x - 1, currentPiece.y, tempShape))
+  {
+    currentPiece.x -= 1; // sposto il pezzo a sinistra
+    // Aggiorna l'indice di rotazione
+    currentPiece.rotation = tempRotation;
+    
+    // Aggiorna la matrice shape del pezzo corrente
+    memcpy(currentPiece.shape, tempShape, sizeof(tempShape));
+
+  }
+  DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);// disegno il pezzo nella nuova posizione
+  return;
+
 }
 
 void movePieceLeft() {
@@ -431,11 +473,11 @@ void handlePieceLock(void) {
     // 2. Controlla le linee e ottieni il numero
     int previous_lines_cleared = lines_cleared;
     int linesRemoved = deleteFullLines();
-    GUI_UpdateClearedLines(previous_lines_cleared);
-    GUI_RefreshScreen();
+
     // 3. LOGICA DELL'AZIONE SPECIALE
     if (linesRemoved > 0) {
-        
+      GUI_UpdateClearedLines(previous_lines_cleared);
+      GUI_RefreshScreen();
         //TODO: Fare Refresh dell'interfaccia per modificare il playng_field
 
         // Caso "TETRIS": 4 Linee cancellate con il pezzo I
