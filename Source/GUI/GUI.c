@@ -7,6 +7,7 @@
 *********************************************************************************************************/
 extern volatile int HighScore;
 extern volatile int score;
+extern volatile int lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
@@ -49,28 +50,6 @@ void GUI_DrawInterface(void){
 
     //opzionalmente aggiungere la sezione per il next piece
 }
-
-void GUI_RefreshInterface(){
-    LCD_Clear(BACKGROUND_COLOR);
-    GUI_DrawInterface();
-    // Aggiorna il high score
-    GUI_UpdateHighScore();
-}
-void GUI_RefreshScreen(){
-    int r, c;
-    for (r = 0; r < HEIGHT; r++) {
-        for (c = 0; c < WIDTH; c++) {
-            if (playing_field[r][c] != 0) {
-                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]]);
-            }
-            else{
-                GUI_DrawBlock(c, r, BACKGROUND_COLOR);
-            }
-        }
-    }   
-
-}
-
 void GUI_UpdateScore(int previous_score){
     uint32_t sccore_to_erase = previous_score;
     uint8_t score_str_erase[7]; // 6 cifre + terminatore nulle
@@ -88,7 +67,7 @@ void GUI_UpdateHighScore(int previous_highscore){
     // Aggiorna l'high score visualizzato
     uint32_t highscore_to_display = HighScore;
     uint8_t highscore_str_erase[7]; // 6 cifre + terminatore nulle
-    sprintf((char*)highscore_str_erase,"%06u", HighScore; // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    sprintf((char*)highscore_str_erase,"%06u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
     uint8_t highscore_str[7]; // 6 cifre + terminatore nulle
     sprintf((char*)highscore_str,"%06u", highscore_to_display);
@@ -104,6 +83,32 @@ void GUI_UpdateClearedLines(int previous_lines_cleared){
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t) lines_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il numero precedente
     sprintf((char*)lines_str,"%03u", lines_to_display);
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str, NUMBER_COLOR, BACKGROUND_COLOR);
+}
+
+void GUI_RefreshInterface(){
+    LCD_Clear(BACKGROUND_COLOR);
+    GUI_DrawInterface();
+    // Aggiorna il high score
+    GUI_UpdateHighScore(HighScore);
+    // Aggiorna il punteggio
+    GUI_UpdateScore(score);
+    // Aggiorna il numero di linee cancellate
+    GUI_UpdateClearedLines(lines_cleared);
+
+}
+void GUI_RefreshScreen(){
+    int r, c;
+    for (r = 0; r < HEIGHT; r++) {
+        for (c = 0; c < WIDTH; c++) {
+            if (playing_field[r][c] != 0) {
+                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]]);
+            }
+            else{
+                GUI_DrawBlock(c, r, BACKGROUND_COLOR);
+            }
+        }
+    }   
+
 }
 
 void GUI_pauseScreen(void){
