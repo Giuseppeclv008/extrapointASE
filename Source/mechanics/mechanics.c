@@ -536,10 +536,12 @@ void lockPiece() {
                 int fieldY = currentPiece.y + r;
                 if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                     if(currentPiece.shape[r][c] == 1){
-                      playing_field[fieldY][fieldX] = TETROMINO_COLORS[currentPiece.type];
+                      playing_field[fieldY][fieldX] = currentPiece.type;
                     }
-
-                    playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
+                    else{
+                      playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
+                    }
+                    
                 }
             }
         }
