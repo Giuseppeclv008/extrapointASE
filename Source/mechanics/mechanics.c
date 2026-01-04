@@ -321,23 +321,18 @@ int checkCollisionLeft(){
 }
 int checkCollisionRight(){ 
   int r, c;
-  if (currentPiece.x < WIDTH-3) {
-    for (r = 0; r < 4; r++) {
-      for (c = 0; c < 4; c++) {
-          if (currentPiece.shape[r][c] != 0) {
-              int fieldX = currentPiece.x + c + 1;
-              int fieldY = currentPiece.y + r;
+  for (r = 0; r < 4; r++) {
+    for (c = 0; c < 4; c++) {
+        if (currentPiece.shape[r][c] != 0) {
+            int fieldX = currentPiece.x + c + 1;
+            int fieldY = currentPiece.y + r;
 
-              if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
-                  return 0; // Collisione a destra
-              }
-          }
-      }
-   }
-  } else if (currentPiece.x >= WIDTH-4){
-    return 0; // supero il limite destro
+            if (fieldX >= WIDTH || playing_field[fieldY][fieldX] != 0) {
+                return 0; // Collisione a destra
+            }
+        }
+    }
   }
-
   return 1; // Nessuna collisione a destra
 }
 
@@ -421,10 +416,7 @@ void rotatePiece() {
       tempShape[r][c] = TETROMINOS[currentPiece.type][tempRotation][r][c];
     }
   }
-
-  
   DrawCurrentPiece(BACKGROUND_COLOR);// cancello il pezzo dalla posizione attuale
-
   if(isPositionValidAfterRotation(currentPiece.x, currentPiece.y, tempShape)) {
     // Aggiorno il current piece
     copyRotation(tempShape, tempRotation);
