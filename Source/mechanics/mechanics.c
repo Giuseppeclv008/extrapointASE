@@ -320,7 +320,7 @@ int checkCollisionRight(void){
   return 1; // Nessuna collisione a destra
 }
 
-int tryMoveDown(void){
+int tryMoveDown(uint16_t hardDrop_flag){
   // funzione che calcola la posizione futura del pezzo in caduta
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
@@ -328,6 +328,7 @@ int tryMoveDown(void){
       return 1; // può muoversi giù
   } else {
       handlePieceLock();
+      if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
       SpawnNewPiece();
       return 0; // non può muoversi giù
   }
@@ -474,10 +475,9 @@ void movePieceDown(void) {
 }
 void hardDrop(void){
   GUI_DrawCurrentPiece(BACKGROUND_COLOR);
-  while(tryMoveDown()){
+  while(tryMoveDown(1)){
     currentPiece.y++;
   }
-  GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
   return;
 
 }
