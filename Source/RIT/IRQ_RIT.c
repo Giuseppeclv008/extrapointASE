@@ -32,6 +32,9 @@ void RIT_IRQHandler (void)
 					break;
 				case JOY_DOWN:						
 					LPC_TIM0->MR0 = FAST_PERIOD; // velocità aumentata di 2 volte, 2 square al secondo 
+					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+										// necessario perchè se modifico ed MR0 ha superato il conteggio 
+										// il timer non verrà mai resettato e il pezzo resta sospeso
 					break;
 				case JOY_LEFT:
 					movePieceLeft();
