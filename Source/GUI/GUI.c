@@ -119,11 +119,12 @@ void GUI_pauseScreen(void){
 }
 void GUI_resumeScreen(void){
 	GUI_RefreshInterface();
+    if(game_started) GUI_RefreshScreen(); /* se il gioco è in corso devo occuparmi di fare refresh dei pezzi presenti sul campo */
 }
 
 void GUI_gameOverScreen(void){
     // Disegna la schermata di game over
-    GUI_Text(5, 150, (uint8_t*)"GAME OVER-PRESS KEY1 TO PLAY AGAIN", TEXT_COLOR, BACKGROUND_COLOR);
+    GUI_Text(5, 150, (uint8_t*)"GAME OVER-PRESS KEY1", TEXT_COLOR, BACKGROUND_COLOR);
 }
 
 void GUI_clearGameOverScreen(void){
