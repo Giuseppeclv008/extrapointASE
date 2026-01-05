@@ -320,7 +320,8 @@ int checkCollisionRight(void){
   return 1; // Nessuna collisione a destra
 }
 
-int tryMoveDown(void) //calcola la posizione futura del pezzo in caduta
+//verifica se il pezzo può muoversi verso il basso o no 
+int tryMoveDown(void){
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
   if (canMoveDown()) {
