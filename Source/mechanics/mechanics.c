@@ -463,7 +463,7 @@ void movePieceRight(void) {
   }
 }
 void movePieceDown(void) {
-  if(tryMoveDown()){
+  if(tryMoveDown(0)){
     GUI_DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
     currentPiece.y++;
     int previous_score = score;
