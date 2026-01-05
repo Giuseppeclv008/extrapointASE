@@ -99,16 +99,33 @@ void GUI_RefreshInterface(){
 }
 void GUI_RefreshScreen(){
     int r, c;
-    for (r = 0; r < HEIGHT; r++) {
+    int empty_rows_consecutive = 0; // contatore per le righe vuote, se ne trovo più di 4 consecutive ritorno dalla funzione
+    // 4 è il massimo numero di linee che possono essere cleared nel gioco, nel caso speciale di "Tetris"
+    // utilizzando quest euristica posso ottimizzare 
+
+    for (r = HEIGHT-1; r >= 0; r--){
+        int isRowEmpty = 1;
+
         for (c = 0; c < WIDTH; c++) {
-            if (playing_field[r][c] != 0) {
+            if (playing_field[r][c] > 0) { // utilizzo la condizione > 0 perchè tutti i blocchi nel playing field sono rappresentati da valori >0
+                                            // prevengo anche di provocare memory fault accedendo in un indice negativo
                 GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
                                                                               // logica implementata per il corretto funzionamento di deleteLines
+                isRowEmpty = 0;
             }
             else{
                 GUI_DrawBlock(c, r, BACKGROUND_COLOR);
             }
         }
+        if(isRowEmpty){
+            empty_rows_consecutive++;
+            if(empty_rows_consecutive >= 4) return; // se disegnamo 4 righe vuote consecutive siamo certi che tutto ciò che è sopra è già nero.
+        }
+        else{
+            empty_rows_consecutive = 0; // se trovo almeno una linea piena resetto il contatore - previene di uscire erroneamente nel caso in cui dovessi 
+                                        // ridisegnare linee che sono state cancellate, partendo dal basso per il render
+        }
+        
     }   
 
 }
