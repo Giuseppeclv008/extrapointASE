@@ -14,7 +14,8 @@
 #include "../mechanics/mechanics.h"
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
-volatile int down = 0;
+volatile int down1 = 0;
+volatile int down2 = 0;
 extern volatile int paused;
 void RIT_IRQHandler (void)
 {			
@@ -68,10 +69,10 @@ void RIT_IRQHandler (void)
 	// se sono in modalità EINT1, sono in "01" e sono collegato al controller degli interrupt esterni 
 	// verifico quindi nell'if che il pin sia in modalità GPIO (00)
 	
-	if(down>=1){
+	if(down1>=1){
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	// KEY1 ancora premuto , attivo basso 
 			// sul FIOPIN leggo lo stato del pin P2.11 (KEY1)
-		switch(down){
+		switch(down1){
 			case 2: 
 			if(game_over) {
 				// se il gioco è finito o non è iniziato, resetto il gioco
@@ -97,16 +98,38 @@ void RIT_IRQHandler (void)
 			default:
 				break;
 		}
-		down++;
+		down1++;
 	}else{	/* KEY1 rilasciato */
-			down = 0;
+			down1 = 0;
 			NVIC_EnableIRQ(EINT1_IRQn);             // riabilita EINT1
 			// rinconfiguro il pin P2.11 come EINT1
 			LPC_PINCON->PINSEL4 |= (1 << 22);       /* riconfigura pin come EINT */
 		
 		}
 	}
-	
+	/* *********************************************** */
+	/* gestione di KEY 2, debouncing con RIT		   */ 
+	/* *********************************************** */
+	if(down2>=1){
+		if((LPC_GPIO2->FIOPIN & (1<<12)) == 0){	// KEY2 ancora premuto , attivo basso 
+			switch(down2){
+			case 2: 
+				if(!paused && game_started){
+					hardDrop();
+				}
+				break;
+			default:
+				break;
+		}
+		down2++;
+	}else{	/* KEY2 rilasciato */
+			down2 = 0;
+			NVIC_EnableIRQ(EINT2_IRQn);             // riabilita EINT
+			// rinconfiguro il pin P2.12 come EINT
+			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
+		}
+	}
+
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
