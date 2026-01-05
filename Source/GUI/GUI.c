@@ -102,7 +102,8 @@ void GUI_RefreshScreen(){
     for (r = 0; r < HEIGHT; r++) {
         for (c = 0; c < WIDTH; c++) {
             if (playing_field[r][c] != 0) {
-                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]]);
+                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
+                                                                              // logica implementata per il corretto funzionamento di deleteLines
             }
             else{
                 GUI_DrawBlock(c, r, BACKGROUND_COLOR);

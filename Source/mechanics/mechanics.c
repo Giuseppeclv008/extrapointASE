@@ -494,7 +494,9 @@ void lockPiece(void) {
               int fieldY = currentPiece.y + r;
               if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                   if(currentPiece.shape[r][c] == 1){
-                    playing_field[fieldY][fieldX] = currentPiece.type;
+                    playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
+                    // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
+                    // fondamentali per il check delle linee piene 
                   }
                   else{
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
