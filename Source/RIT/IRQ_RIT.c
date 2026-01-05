@@ -30,9 +30,8 @@ void RIT_IRQHandler (void)
 					rotatePiece();
 					break;
 				case JOY_DOWN:						
-					LPC_TIM0->MR0 = 12500000; // velocità aumentata di 2 volte, 2 square al secondo 
+					LPC_TIM0->MR0 = FAST_PERIOD; // velocità aumentata di 2 volte, 2 square al secondo 
 					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-					LED_On(3);      
 					break;
 				case JOY_LEFT:
 					movePieceLeft();
@@ -50,7 +49,7 @@ void RIT_IRQHandler (void)
 		else {
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = 25000000;  // velocità normale 1 square al secondo
+			LPC_TIM0->MR0 = NORMAL_PERIOD;  // velocità normale 1 square al secondo
 			}
 		}
 		old_joy = current_joy;
@@ -80,8 +79,6 @@ void RIT_IRQHandler (void)
 				disable_timer();
 				reset_timer();
 				LED_Off(1); // spengo il led di pausa se era acceso
-
-				down = 0;   // resetto down per evitare di rieseguire questa parte
 				break;
 			}
 			else{

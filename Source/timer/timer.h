@@ -10,6 +10,9 @@
 #ifndef __TIMER_H
 #define __TIMER_H
 
+
+#define NORMAL_PERIOD 25000000
+#define FAST_PERIOD 12500000
 /* init_timer.c */
 extern uint32_t init_timer();
 extern void enable_timer();

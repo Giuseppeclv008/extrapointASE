@@ -64,7 +64,7 @@ void reset_timer()
 uint32_t init_timer ()
 {
   	LPC_SC->PCONP |= (1 << 1);// accendo il timer0
-  	LPC_TIM0->MR0 = 25000000; // 1 secondo;
+  	LPC_TIM0->MR0 = NORMAL_PERIOD; // 1 secondo;
 	LPC_TIM0->MR1 = 50000000; // 2 secondi
 
 // <<< Use Configuration Wizard in Context Menu >>>
