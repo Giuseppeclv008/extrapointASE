@@ -19,6 +19,9 @@ void EINT1_IRQHandler (void)	  	/* KEY1														 */
 {	
 	NVIC_DisableIRQ(EINT1_IRQn);		/* disable Button interrupts			 */
 	LPC_PINCON->PINSEL4    &= ~(1 << 22);     /* GPIO pin selection */
+	
+	LPC_GPIO2->FIODIR &= ~(1 << 11); /* forzo la direzione di lettura come INPUT */
+
 	down=1;
 	LPC_SC->EXTINT &= (1 << 0);     /* clear pending interrupt         */
 }
