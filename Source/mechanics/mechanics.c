@@ -24,7 +24,7 @@ volatile int game_started ;
 volatile int game_over ;
 volatile int paused;
 volatile int lines_cleared = 0;
-
+volatile uint16_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
 
 const uint16_t TETROMINO_COLORS[7] = { 
@@ -320,15 +320,13 @@ int checkCollisionRight(void){
   return 1; // Nessuna collisione a destra
 }
 
-int tryMoveDown(uint16_t hardDrop_flag){
-  // funzione che calcola la posizione futura del pezzo in caduta
+int tryMoveDown(void) //calcola la posizione futura del pezzo in caduta
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
   if (canMoveDown()) {
       return 1; // può muoversi giù
   } else {
       handlePieceLock();
-      if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
       SpawnNewPiece();
       return 0; // non può muoversi giù
   }
@@ -474,10 +472,12 @@ void movePieceDown(void) {
   return;
 }
 void hardDrop(void){
+  hardDrop_flag = 1;
   GUI_DrawCurrentPiece(BACKGROUND_COLOR);
-  while(tryMoveDown(1)){
+  while(tryMoveDown()){
     currentPiece.y++;
   }
+  hardDrop_flag = 0;
   return;
 
 }
@@ -549,6 +549,7 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 
 void handlePieceLock(void) {
     int previous_score = score;
+    if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
     // 2. Controlla le linee e ottieni il numero
