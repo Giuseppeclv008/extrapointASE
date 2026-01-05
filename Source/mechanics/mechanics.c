@@ -24,7 +24,7 @@ volatile int game_started ;
 volatile int game_over ;
 volatile int paused;
 volatile int lines_cleared = 0;
-
+volatile uint16_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
 
 const uint16_t TETROMINO_COLORS[7] = { 
@@ -320,8 +320,8 @@ int checkCollisionRight(void){
   return 1; // Nessuna collisione a destra
 }
 
+//verifica se il pezzo può muoversi verso il basso o no 
 int tryMoveDown(void){
-  // funzione che calcola la posizione futura del pezzo in caduta
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
   if (canMoveDown()) {
@@ -473,11 +473,12 @@ void movePieceDown(void) {
   return;
 }
 void hardDrop(void){
+  hardDrop_flag = 1;
   GUI_DrawCurrentPiece(BACKGROUND_COLOR);
   while(tryMoveDown()){
     currentPiece.y++;
   }
-  GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
+  hardDrop_flag = 0;
   return;
 
 }
@@ -493,7 +494,9 @@ void lockPiece(void) {
               int fieldY = currentPiece.y + r;
               if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                   if(currentPiece.shape[r][c] == 1){
-                    playing_field[fieldY][fieldX] = currentPiece.type;
+                    playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
+                    // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
+                    // fondamentali per il check delle linee piene 
                   }
                   else{
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
@@ -549,6 +552,7 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 
 void handlePieceLock(void) {
     int previous_score = score;
+    if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
     // 2. Controlla le linee e ottieni il numero

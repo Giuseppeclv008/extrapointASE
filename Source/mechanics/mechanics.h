@@ -35,6 +35,7 @@ typedef struct {
 
 /* --- VARIABILI GLOBALI (EXTERN) --- */
 extern volatile uint8_t timer_tick;
+extern volatile uint16_t hardDrop_flag;
 extern volatile uint16_t playing_field[HEIGHT][WIDTH];
 extern volatile int score;
 extern volatile int HighScore;
