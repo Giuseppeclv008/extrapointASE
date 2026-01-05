@@ -87,7 +87,6 @@ void GUI_UpdateClearedLines(int previous_lines_cleared){
 }
 
 void GUI_RefreshInterface(){
-    LCD_Clear(BACKGROUND_COLOR);
     GUI_DrawInterface();
     // Aggiorna il high score
     GUI_UpdateHighScore(HighScore);
@@ -136,7 +135,13 @@ void GUI_pauseScreen(void){
 
 }
 void GUI_resumeScreen(void){
-	GUI_RefreshInterface();
+	uint16_t text_y_start = 150;
+    uint16_t text_height = 15;
+    uint16_t text_y_end = text_y_start + text_height;
+
+    // Cancella la schermata di pausa
+    GUI_Text(text_x_start, text_y_start, (uint8_t*)"PAUSED-PRESS KEY1 TO CONTINUE", BACKGROUND_COLOR, BACKGROUND_COLOR);
+
     if(game_started) GUI_RefreshScreen(); /* se il gioco è in corso devo occuparmi di fare refresh dei pezzi presenti sul campo */
 }
 
