@@ -56,7 +56,7 @@ void movePieceDown(void);
 void handlePieceLock(void);
 void lockPiece(void);
 int deleteFullLines(void);
-int tryMoveDown(void);
+int tryMoveDown(uint16_t hardDrop_flag);
 void hardDrop(void);
 void initializeGame(void);
 void initializePlayingField(void);
