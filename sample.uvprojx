@@ -396,11 +396,6 @@
           <GroupName>main</GroupName>
           <Files>
             <File>
-              <FileName>tetris.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tetris.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\main.c</FilePath>
@@ -1006,11 +1001,6 @@
         <Group>
           <GroupName>main</GroupName>
           <Files>
-            <File>
-              <FileName>tetris.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tetris.c</FilePath>
-            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>

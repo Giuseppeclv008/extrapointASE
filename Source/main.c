@@ -60,8 +60,10 @@ int main (void) {
    
 	while(1){
 		if (first){
+			
+			// main game loop
 			while(paused){
-							__ASM("wfi");
+				__ASM("wfi");
 			}
 				SpawnNewPiece();
 				first = 0;
@@ -77,9 +79,6 @@ int main (void) {
 				movePieceDown();
 			}
 
-			// main game loop
-			// inserisco refresh del display qui se presante
-			// oppure semplicemente dormo
 			__ASM("wfi");
 		}
 		else if(game_over){
