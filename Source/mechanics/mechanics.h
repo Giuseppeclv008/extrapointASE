@@ -37,11 +37,11 @@ typedef struct {
 extern volatile uint8_t timer_tick;
 extern volatile uint16_t hardDrop_flag;
 extern volatile uint16_t playing_field[HEIGHT][WIDTH];
-extern volatile int score;
-extern volatile int HighScore;
-extern volatile int game_started;
-extern volatile int game_over;
-extern volatile int paused;
+extern volatile uint32_t score;
+extern volatile uint32_t HighScore;
+extern volatile uint8_t game_started;
+extern volatile uint8_t game_over;
+extern volatile uint8_t paused;
 
 extern volatile ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];

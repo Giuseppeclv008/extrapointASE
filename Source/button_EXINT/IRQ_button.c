@@ -7,8 +7,8 @@
 #include "mechanics/mechanics.h"
 
 
-extern volatile int down1;
-extern volatile int down2;
+extern volatile uint8_t down1;
+extern volatile uint8_t down2;
 void EINT0_IRQHandler (void)	  	/* INT0														 */
 {
 	

@@ -5,9 +5,9 @@
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
-extern volatile int HighScore;
-extern volatile int score;
-extern volatile int lines_cleared;
+extern volatile uint32_t HighScore;
+extern volatile uint32_t score;
+extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
@@ -103,7 +103,7 @@ void GUI_RefreshScreen(){
     // utilizzando quest euristica posso ottimizzare 
 
     for (r = HEIGHT-1; r >= 0; r--){
-        int isRowEmpty = 1;
+        uint8_t isRowEmpty = 1;
 
         for (c = 0; c < WIDTH; c++) {
             if (playing_field[r][c] > 0) { // utilizzo la condizione > 0 perchè tutti i blocchi nel playing field sono rappresentati da valori >0

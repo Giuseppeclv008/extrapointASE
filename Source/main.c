@@ -23,11 +23,11 @@
 #include "GUI/GUI.h"
 
 // external variables from mechanics.c
-extern volatile int score;
-extern volatile int HighScore;
-extern volatile int game_started;
-extern volatile int game_over;
-extern volatile int paused;
+extern volatile uint32_t score;
+extern volatile uint32_t HighScore;
+extern volatile uint8_t game_started;
+extern volatile uint8_t game_over;
+extern volatile uint8_t paused;
 /* Led external variables from funct_led */
 extern unsigned char led_value;					/* defined in lib_led								*/
 

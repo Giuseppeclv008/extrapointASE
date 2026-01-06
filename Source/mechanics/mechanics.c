@@ -18,13 +18,13 @@
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
-volatile int score;
-volatile int HighScore = 0;
-volatile int game_started ;
-volatile int game_over ;
-volatile int paused;
-volatile int lines_cleared = 0;
-volatile uint16_t hardDrop_flag;
+volatile uint32_t score;
+volatile uint32_t HighScore = 0;
+volatile uint8_t game_started ;
+volatile uint8_t game_over ;
+volatile uint8_t paused; // the playing state is represented by !paused 
+volatile uint16_t lines_cleared = 0;
+volatile uint8_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
 
 const uint16_t TETROMINO_COLORS[7] = { 
@@ -222,7 +222,7 @@ void init_piece(void) {
         }
     }
 }
-int isOverlapping(void) {
+uint8_t isOverlapping(void) {
   int r, c;
     for (r = 0; r < 4; r++) {
         for (c = 0; c < 4; c++) {
@@ -288,7 +288,7 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
       }
   }
 }
-int checkCollisionLeft(void){
+uint8_t checkCollisionLeft(void){
   int r, c;
   for (r = 0; r < 4; r++) {
       for (c = 0; c < 4; c++) { 
@@ -304,7 +304,7 @@ int checkCollisionLeft(void){
   }
   return 1; // Nessuna collisione a sinistra
 }
-int checkCollisionRight(void){ 
+uint8_t checkCollisionRight(void){ 
   int r, c;
   for (r = 0; r < 4; r++) {
     for (c = 0; c < 4; c++) {
@@ -322,7 +322,7 @@ int checkCollisionRight(void){
 }
 
 //verifica se il pezzo può muoversi verso il basso o no 
-int tryMoveDown(void){
+uint8_t tryMoveDown(void){
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
   if (canMoveDown()) {
@@ -334,7 +334,7 @@ int tryMoveDown(void){
   }
 }
 
-int canMoveDown(void) {
+uint8_t canMoveDown(void) {
   int r, c;
   for (r = 0; r < 4; r++) {
       for (c = 0; c < 4; c++) {
@@ -356,7 +356,7 @@ int canMoveDown(void) {
   }
   return 1; // Può muoversi giù
 }
-int isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
+uint8_t isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
   int r, c;
   for (r = 0; r < 4; r++) {
       for (c = 0; c < 4; c++) {
@@ -510,9 +510,9 @@ void lockPiece(void) {
   score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 }
 
-int deleteFullLines(void) {
+uint16_t deleteFullLines(void) {
 int y, x;
-int linesCleared = 0;
+uint8_t linesCleared = 0;
 // Scansioniamo dal basso (riga 19) verso l'alto
 for (y = HEIGHT - 1; y >= 0; y--) {
     int isFull = 1;
@@ -552,13 +552,13 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
 void handlePieceLock(void) {
-    int previous_score = score;
+    uint32_t previous_score = score;
     if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
     // 2. Controlla le linee e ottieni il numero
-    int previous_lines_cleared = lines_cleared;
-    int linesRemoved = deleteFullLines();
+    uint16_t previous_lines_cleared = lines_cleared;
+    uint16_t linesRemoved = deleteFullLines();
 
     // 3. LOGICA PUNTEGGIO SPECIALE
     if (linesRemoved > 0) {

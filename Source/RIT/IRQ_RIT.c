@@ -14,9 +14,11 @@
 #include "../mechanics/mechanics.h"
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
-volatile int down1 = 0;
-volatile int down2 = 0;
-extern volatile int paused;
+volatile uint8_t down1 = 0;
+volatile uint8_t down2 = 0;
+extern volatile uint8_t paused;
+extern volatile uint8_t game_started;
+extern volatile uint8_t game_over;
 void RIT_IRQHandler (void)
 {			
 	// il joystick non interrompere mai il RIT
