@@ -21,9 +21,9 @@
 **
 ******************************************************************************/
 extern unsigned char led_value;					/* defined in funct_led								*/
-extern volatile int paused;
-extern volatile int game_over;
-extern volatile int game_started;
+extern volatile uint8_t paused;
+extern volatile uint8_t game_over;
+extern volatile uint8_t game_started;
 volatile uint8_t timer_tick = 0;
 void TIMER0_IRQHandler (void)
 {

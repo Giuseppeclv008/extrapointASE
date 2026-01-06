@@ -14,9 +14,11 @@
 #include "../mechanics/mechanics.h"
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
-volatile int down1 = 0;
-volatile int down2 = 0;
-extern volatile int paused;
+volatile uint8_t down1 = 0;
+volatile uint8_t down2 = 0;
+extern volatile uint8_t paused;
+extern volatile uint8_t game_started;
+extern volatile uint8_t game_over;
 void RIT_IRQHandler (void)
 {			
 	// il joystick non interrompere mai il RIT
@@ -33,6 +35,8 @@ void RIT_IRQHandler (void)
 				case JOY_DOWN:						
 					LPC_TIM0->MR0 = FAST_PERIOD; // velocità aumentata di 2 volte, 2 square al secondo 
 					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+										// necessario perchè se modifico ed MR0 ha superato il conteggio 
+										// il timer non verrà mai resettato e il pezzo resta sospeso
 					break;
 				case JOY_LEFT:
 					movePieceLeft();
