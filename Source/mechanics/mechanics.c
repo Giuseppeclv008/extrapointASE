@@ -196,6 +196,7 @@ void initializeGame(void) {
     score = 0;
     game_started = 0;
     game_over = 0;
+    lines_cleared = 0;
     paused = 1;
     init_piece();
 }
