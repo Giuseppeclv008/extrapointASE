@@ -321,18 +321,7 @@ uint8_t checkCollisionRight(void){
   return 1; // Nessuna collisione a destra
 }
 
-//verifica se il pezzo può muoversi verso il basso o no 
-uint8_t tryMoveDown(void){
-  // e gestisce il blocco del pezzo e la cancellazione delle linee
-  // quando il pezzo raggiunge il fondo o un altro pezzo
-  if (canMoveDown()) {
-      return 1; // può muoversi giù
-  } else {
-      handlePieceLock();
-      SpawnNewPiece();
-      return 0; // non può muoversi giù
-  }
-}
+
 
 uint8_t canMoveDown(void) {
   int r, c;
@@ -355,6 +344,18 @@ uint8_t canMoveDown(void) {
       }
   }
   return 1; // Può muoversi giù
+}
+//verifica se il pezzo può muoversi verso il basso o no 
+uint8_t tryMoveDown(void){
+  // e gestisce il blocco del pezzo e la cancellazione delle linee
+  // quando il pezzo raggiunge il fondo o un altro pezzo
+  if (canMoveDown()) {
+      return 1; // può muoversi giù
+  } else {
+      handlePieceLock();
+      SpawnNewPiece();
+      return 0; // non può muoversi giù
+  }
 }
 uint8_t isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
   int r, c;
