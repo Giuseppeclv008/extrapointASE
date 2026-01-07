@@ -232,7 +232,7 @@ void RIT_IRQHandler (void)
 	if(!isNotePlaying())
 	{
 		ticks = 0;
-		plyNote(song[currentNote++]);
+		playNote(song[currentNote++]);
 	}
 	if(currentNote == sizeof(song)/sizeof(NOTE))
 	{
