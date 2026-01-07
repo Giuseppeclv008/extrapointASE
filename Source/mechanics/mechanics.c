@@ -547,7 +547,7 @@ void spawnPowerUp(void){
     for( attempts; attempts > 0; attempts--){
 
       if (playing_field[randomY][randomX] != 0) {
-        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup 
+        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
         break;
       }
       randomY = rand() % (occupied_lines + 1) + highest_row;
@@ -596,6 +596,9 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         int c, r;
         for (r = y; r > 0; r--) {
             for (c = 0; c < WIDTH; c++) {
+                if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene 
+                  activePowerUp(playing_field[r-1][c]);
+                }
                 playing_field[r][c] = playing_field[r-1][c];
             }
         }
