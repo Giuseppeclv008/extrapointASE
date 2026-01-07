@@ -239,7 +239,7 @@ void RIT_IRQHandler (void)
 		playNote(song[currentNote++]);
 		}
 	}
-	if(currentNote == sizeof(song)/sizeof(NOTE))
+	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
 	{
 		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
 	}
