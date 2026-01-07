@@ -232,8 +232,12 @@ void RIT_IRQHandler (void)
 	static int ticks = 0;
 	if(!isNotePlaying())
 	{
+		++ticks;
+		if(ticks == UPTICKS)
+		{
 		ticks = 0;
 		playNote(song[currentNote++]);
+		}
 	}
 	if(currentNote == sizeof(song)/sizeof(NOTE))
 	{
