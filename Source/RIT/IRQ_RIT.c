@@ -113,7 +113,7 @@ void RIT_IRQHandler (void)
 	// il joystick non interrompere mai il RIT
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
-	static uint64_t current_period = LPC_TIM0->MR0;
+	uint64_t current_period = LPC_TIM0->MR0;
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 	if(game_started && !paused && !game_over) {
 		if (current_joy != old_joy) {

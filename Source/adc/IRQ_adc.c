@@ -54,7 +54,7 @@ void ADC_IRQHandler(void) {
 		if(AD_current  == 0){
 			disable_timer(0);
 			reset_timer(0);
-			init_timer(0,freqs[]);
+			init_timer(0,freqs[AD_current]);
 			enable_timer(0);
 		}
 		AD_last = AD_current;
