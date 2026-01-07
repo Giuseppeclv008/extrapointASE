@@ -62,6 +62,8 @@ int main (void) {
 
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
    initializeGame();
+   LPC_PINCON->PINSEL1 |= (1<<21); 
+   LPC_PINCON->PINSEL1 &= ~(1<<20);
    
 	while(1){
 		if (first){
