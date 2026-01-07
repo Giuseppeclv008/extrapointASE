@@ -49,7 +49,10 @@ int main (void) {
 	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
 	enable_RIT();
 	
-	init_timer();										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	enable_timer(0);
+	enable_timer(1);
+	init_timer(0);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	init_timer(1);
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();

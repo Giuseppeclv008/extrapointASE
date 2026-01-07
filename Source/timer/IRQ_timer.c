@@ -34,6 +34,11 @@ void TIMER0_IRQHandler (void)
 	return;
 }
 
+void TIMER1_IRQHandler (void)
+{
+  LPC_TIM1->IR |= 1;			/* clear interrupt flag */
+  return;
+}
 /******************************************************************************
 **                            End Of File
 ******************************************************************************/

@@ -14,13 +14,16 @@
 #define NORMAL_PERIOD 25000000
 #define FAST_PERIOD 12500000
 /* init_timer.c */
-extern uint32_t init_timer();
-extern void enable_timer();
-extern void disable_timer();
-extern void reset_timer();
+extern uint32_t init_timer( uint8_t timer_num );
+extern void enable_timer( uint8_t timer_num );
+extern void disable_timer( uint8_t timer_num );
+extern void reset_timer( uint8_t timer_num );
 /* IRQ_timer.c */
 extern void TIMER0_IRQHandler (void);
+extern void TIMER1_IRQHandler (void);
 #endif /* end __TIMER_H */
 /*****************************************************************************
 **                            End Of File
 ******************************************************************************/
+
+
