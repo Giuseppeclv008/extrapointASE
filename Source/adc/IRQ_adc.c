@@ -55,7 +55,7 @@ void ADC_IRQHandler(void) {
 		uint32_t fast_base = 5000000;
 		uint32_t multiplier = 1500;
 
-		u_int32_t new_period = fast_base + (AD_current * multiplier) 
+		uint32_t new_period = fast_base + (AD_current * multiplier);
 
 		disable_timer(0);
 		reset_timer(0);
