@@ -52,9 +52,13 @@ int main (void) {
 	enable_RIT();
 	ADC_init();
 
-	enable_timer(0);
-	enable_timer(1);
+
+	
 	init_timer(0, NORMAL_PERIOD);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	init_timer(1, 0);
+	init_timer(2, 0);
+	enable_timer(0);
+	
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();
@@ -62,9 +66,11 @@ int main (void) {
 
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
    initializeGame();
+
    LPC_PINCON->PINSEL1 |= (1<<21); 
    LPC_PINCON->PINSEL1 &= ~(1<<20);
-   
+   LPC_GPIO0->FIODIR |= (1<<26);
+
 	while(1){
 		if (first){
 			

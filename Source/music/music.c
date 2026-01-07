@@ -6,13 +6,13 @@
 void playNote(NOTE note)
 {
 	if(note.freq != pause)
-	{
-		reset_timer(1);
+	{	
 		init_timer(1, note.freq);
+		reset_timer(1);
 		enable_timer(1);
 	}
-	reset_timer(2);
 	init_timer(2, note.duration);
+	reset_timer(2);
 	enable_timer(2);
 }
 
