@@ -48,15 +48,22 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 void ADC_IRQHandler(void) {
   	
   AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
-  int diff = AD_current - AD_last;
+  uint32_t diff = AD_current - AD_last;
+  uint32_t new_period
   if(diff < 0) diff = -diff ;
 
-	if(diff > 50){
-		uint32_t fast_base = 5000000;
-		uint32_t multiplier = 1500;
+	if(diff > 40){
+		uint32_t max_period = NORMAL_PERIOD;
+		uint32_t decrement = 4884;
+		uint32_t reduction = AD_current * decrement; 
 
-		uint32_t new_period = fast_base + (AD_current * multiplier);
-
+		if(reduction >= (max_period - 5000000))
+		{
+			new_period = 5000000;
+		}{
+			new_period = max_period - reduction;
+		}
+		
 		disable_timer(0);
 		reset_timer(0);
 		init_timer(0, new_period);
