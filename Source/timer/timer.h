@@ -10,7 +10,8 @@
 #ifndef __TIMER_H
 #define __TIMER_H
 
-
+#include "LPC17xx.h"
+#include <stdint.h>
 #define NORMAL_PERIOD 25000000
 #define FAST_PERIOD 12500000
 /* init_timer.c */
