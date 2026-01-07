@@ -18,7 +18,9 @@
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
-volatile uint32_t score;
+volatile uint16_t highest_row = 20
+volatile uint16_t powerUp_type;
+volatile uint16_t powerUpFlag = 0;
 volatile uint32_t HighScore = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
@@ -496,6 +498,9 @@ void lockPiece(void) {
               int fieldY = currentPiece.y + r;
               if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                   if(currentPiece.shape[r][c] == 1){
+                    if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
+                                                                   // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
+                                                                   // uso il segno < perchè più sono in alto più fiedlY è piccola
                     playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
                     // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
                     // fondamentali per il check delle linee piene 
@@ -525,15 +530,37 @@ void slowDown(void){
 }
 
 
-void clearHalfTheLines(void){
+void clearHalfLines(void){
+  int i, r, c;
+  uint16_t lines_occupied = (HEIGHT-1) - highest_row;
+  
+  uint16_t lines_to_clear = (highest_row == 0) ? 1 : lines_occupied / 2;
 
+  for(i = lines_to_clear; i > 0; i--){
+      // Shift down logic adapted from deleteFullLines
+      // We target the bottom row (HEIGHT - 1) to shift everything down
+      for (r = HEIGHT - 1; r > 0; r--) {
+          for (c = 0; c < WIDTH; c++) {
+              playing_field[r][c] = playing_field[r-1][c];
+          }
+      }
+      // Clear the new top row
+      for (c = 0; c < WIDTH; c++) {
+          playing_field[0][c] = 0;
+      }
+  }
+  highest_row += lines_to_clear;
+  if(highest_row > HEIGHT) highest_row = HEIGHT;
+  GUI_RefreshScreen();
 }
 
 void spawnPowerUp(void){
   uint8_t powerUpType = rand() % NUM_POWERUP_TYPES;
+
+
   switch(powerUpType) {
     case 0:
-        clearHalfTheLines();
+        clearHalfLines();
         break;
     case 1: 
         slowDown();
@@ -588,7 +615,6 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
 void handlePieceLock(void) {
-    uint32_t previous_score = score;
     if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
@@ -599,30 +625,35 @@ void handlePieceLock(void) {
     // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
     // faccio comparire un PowerUp 
     if(lines_cleared % 5 == 0 && lines_cleared != 0) spawnPowerUp();
+    assignScore(linesRemoved, previous_lines_cleared);
 
-    // 3. LOGICA PUNTEGGIO SPECIALE
-    if (linesRemoved > 0) {
-      GUI_UpdateClearedLines(previous_lines_cleared);
-      GUI_RefreshScreen();
+}
 
-        // Caso "TETRIS": 4 Linee cancellate con il pezzo I
-        if (linesRemoved == 4) {
 
-            // A. Assegna un punteggio bonus enorme
-            score += 600; // Bonus extra per il TETRIS
-            
-        } else {
-            // Punteggio normale per 1, 2 o 3 linee
-            // Esempio classico Nintendo: 40, 100, 300 punti
-            switch(linesRemoved) {
-                
-                case 1: score += 100; break;
-                case 2: score += 200; break;
-                case 3: score += 300; break;
+void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
+  uint32_t previous_score = score;
+  if (linesRemoved > 0) {
+    GUI_UpdateClearedLines(previous_lines_cleared);
+    GUI_RefreshScreen();
 
-            }
+      // Caso "TETRIS": 4 Linee cancellate con il pezzo I
+      if (linesRemoved == 4) {
 
-        }
-    }
-    GUI_UpdateScore(previous_score);
+          // A. Assegna un punteggio bonus enorme
+          score += 600; // Bonus extra per il TETRIS
+          
+      } else {
+          // Punteggio normale per 1, 2 o 3 linee
+          // Esempio classico Nintendo: 40, 100, 300 punti
+          switch(linesRemoved) {
+              
+              case 1: score += 100; break;
+              case 2: score += 200; break;
+              case 3: score += 300; break;
+
+          }
+
+      }
+  }
+  GUI_UpdateScore(previous_score);
 }
