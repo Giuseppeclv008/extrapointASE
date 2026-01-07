@@ -46,6 +46,14 @@ extern volatile uint8_t paused;
 extern volatile ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];
 
+
+
+typedef enum powerups{
+    CLEAR_H_LINES = 12,
+    SLOW_DOWN = 13
+} POWERUP;
+
+
 /* --- PROTOTIPI DI FUNZIONE --- */
 void init_piece(void);
 void SpawnNewPiece(void);

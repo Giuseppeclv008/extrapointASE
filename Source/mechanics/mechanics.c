@@ -501,6 +501,9 @@ void lockPiece(void) {
                     if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
                                                                    // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
                                                                    // uso il segno < perchè più sono in alto più fiedlY è piccola
+                    if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
+                                                                   // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
+                                                                   // uso il segno < perchè più sono in alto più fiedlY è piccola
                     playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
                     // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
                     // fondamentali per il check delle linee piene 
@@ -554,20 +557,40 @@ void clearHalfLines(void){
   GUI_RefreshScreen();
 }
 
+
 void spawnPowerUp(void){
-  uint8_t powerUpType = rand() % NUM_POWERUP_TYPES;
+    uint16_t powerUpType = (rand() % NUM_POWERUP_TYPES)+ 12 ;
+    uint16_t occupied_lines = (HEIGHT-1) - highest_row;
 
+    uint16_t randomY = rand() % (occupied_lines + 1) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
+                                                                    // più il valore è alto più sono in basso
+    uint16_t randomX = rand() % WIDTH;
+    uint32_t attempts =  100; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
+    for( attempts; attempts > 0; attempts--){
 
-  switch(powerUpType) {
-    case 0:
-        clearHalfLines();
+      if (playing_field[randomY][randomX] != 0) {
+        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
         break;
-    case 1: 
-        slowDown();
-        break;
-  }
+      }
+      randomY = rand() % (occupied_lines + 1) + highest_row;
+      randomX = rand() % WIDTH;
+    }
 }
 
+
+
+void activePowerUp(POWERUP type){
+  if(powerUpFlag == 1){
+    if(type == CLEAR_H_LINES){
+      clearHalfTheLines();
+    }
+    else if(type == SLOW_DOWN){
+      slowDown();
+
+    }
+  }
+}
+  
 
 
 
@@ -595,6 +618,10 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         int c, r;
         for (r = y; r > 0; r--) {
             for (c = 0; c < WIDTH; c++) {
+
+                if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene 
+                  activePowerUp(playing_field[r-1][c]);
+                }
                 playing_field[r][c] = playing_field[r-1][c];
             }
         }
