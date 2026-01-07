@@ -20,6 +20,7 @@
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint32_t score;
 volatile uint16_t powerUpFlag = 0;
+volatile uint16_t highest_row = 0;
 volatile uint32_t HighScore = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
@@ -497,6 +498,9 @@ void lockPiece(void) {
               int fieldY = currentPiece.y + r;
               if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                   if(currentPiece.shape[r][c] == 1){
+                    if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
+                                                                   // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
+                                                                   // uso il segno < perchè più sono in alto più fiedlY è piccola
                     playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
                     // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
                     // fondamentali per il check delle linee piene 
@@ -534,10 +538,23 @@ void clearHalfTheLines(void){
 
 void spawnPowerUp(void){
     uint16_t powerUpType = (rand() % NUM_POWERUP_TYPES)+ 12 ;
+    uint16_t occupied_lines = (HEIGHT-1) - highest_row;
 
-    
-    
+    uint16_t randomY = rand() % (occupied_lines + 1) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
+                                                                    // più il valore è alto più sono in basso
+    uint16_t randomX = rand() % WIDTH;
+    uint32_t attempts =  100; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
+    for( attempts; attempts > 0; attempts--){
+
+    if (playing_field[randomY][randomX] != 0) {
+      playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup 
+      break;
+    }
+    randomY = rand() % (occupied_lines + 1) + highest_row;
+    randomX = rand() % WIDTH;
+    }
 }
+
 
 
 void activePowerUp(POWERUP type){
