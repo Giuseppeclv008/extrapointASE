@@ -1,6 +1,7 @@
 #include "music.h"
 
 #include "../timer/timer.h"
+#include "LPC17xx.h"
 
 void playNote(NOTE note)
 {

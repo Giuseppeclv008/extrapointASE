@@ -210,7 +210,7 @@ uint32_t init_timer (uint8_t timer_num, uint32_t TimerInterval)
   {
 		
 	LPC_TIM2->MR0 = TimerInterval;
-	LPC_TIM2->MR1 = timerInterval2;
+	LPC_TIM2->MR1 = 50000000;
 
 		// <h> timer2 MCR
 //   <e.0> MR0I
