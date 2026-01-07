@@ -48,20 +48,34 @@ int main (void) {
 	BUTTON_init();											/* BUTTON Initialization              */
 	LED_init();                         /* LED Initialization                 */
 	joystick_init();										/* joystick Initialization                 */
-	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
-	enable_RIT();
 	ADC_init();
+	
+	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
+	//configurazione DAC
+	LPC_PINCON->PINSEL1 |= (1<<21); 
+    LPC_PINCON->PINSEL1 &= ~(1<<20);
+    LPC_GPIO0->FIODIR |= (1<<26);
 
-	enable_timer(0);
-	enable_timer(1);
 	init_timer(0, NORMAL_PERIOD);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
-	LCD_Initialization();
-	// Disegna l'interfaccia statica una volta sola
+	init_timer(1, 0);
+	init_timer(2, 0);
+
+
+   LCD_Initialization();
    GUI_DrawInterface();
    GUI_pauseScreen();
-
+	
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
    initializeGame();
+
+	// abilito gli interupt dopo aver eseguito le operazioni più "costose"
+  	 enable_RIT();
+	enable_timer(0);
+
+   
+
+  
+
    
 	while(1){
 		if (first){

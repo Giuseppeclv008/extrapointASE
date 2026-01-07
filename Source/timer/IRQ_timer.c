@@ -58,7 +58,7 @@ void TIMER1_IRQHandler (void)
 	if(sineticks==45) sineticks=0;
 
 	
-  LPC_TIM0->IR = 1;			/* clear interrupt flag */
+  LPC_TIM1->IR = 1;			/* clear interrupt flag */
   return;
 }
 
