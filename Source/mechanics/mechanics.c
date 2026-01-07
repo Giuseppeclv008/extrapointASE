@@ -14,7 +14,7 @@
 #define PIECE_L_INDEX 4 // Indice del pezzo L nell'array TETROMINOS
 #define PIECE_S_INDEX 5 // Indice del pezzo S nell'array TETROMINOS
 #define PIECE_Z_INDEX 6 // Indice del pezzo Z nell'array TETROMINOS
-
+#define NUM_POWERUP_TYPES 2
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
@@ -511,6 +511,41 @@ void lockPiece(void) {
   score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 }
 
+
+
+
+/* *************** */
+/*    POWERUPS    */
+/* *************** */
+
+
+void slowDown(void){
+
+
+}
+
+
+void clearHalfTheLines(void){
+
+}
+
+void spawnPowerUp(void){
+  uint8_t powerUpType = rand() % NUM_POWERUP_TYPES;
+  switch(powerUpType) {
+    case 0:
+        clearHalfTheLines();
+        break;
+    case 1: 
+        slowDown();
+        break;
+  }
+}
+
+
+
+
+
+
 uint16_t deleteFullLines(void) {
 int y, x;
 uint8_t linesCleared = 0;
@@ -560,6 +595,10 @@ void handlePieceLock(void) {
     // 2. Controlla le linee e ottieni il numero
     uint16_t previous_lines_cleared = lines_cleared;
     uint16_t linesRemoved = deleteFullLines();
+
+    // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
+    // faccio comparire un PowerUp 
+    if(lines_cleared % 5 == 0 && lines_cleared != 0) spawnPowerUp();
 
     // 3. LOGICA PUNTEGGIO SPECIALE
     if (linesRemoved > 0) {
