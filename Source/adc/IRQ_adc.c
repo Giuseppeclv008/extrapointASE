@@ -34,7 +34,7 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 262Hz		k=2120 C4
 */
 
-const int freqs[8]={2120,1890,1684,1592,1417,1263,1125,1062};
+const int freqs[8]={2120,1890,1684,1592,1417,1263,1125,1062}; // per la velocità qui imposto i periodi del match register
 /*
 262Hz	k=2120		c4
 294Hz	k=1890		
@@ -51,14 +51,16 @@ void ADC_IRQHandler(void) {
   	
   AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
   if(AD_current != AD_last){
-		LED_Off(AD_last*7/0xFFF);	  // ad_last : AD_max = x : 7 		LED_Off((AD_last*7/0xFFF));	
-		LED_On(AD_current*7/0xFFF);	// ad_current : AD_max = x : 7 		LED_On((AD_current*7/0xFFF));	
-		disable_timer(0);
-		reset_timer(0);
-		init_timer(0,freqs[AD_current*7/0xFFF]);
-		enable_timer(0);
+	
+		disable_timer(1);
+		reset_timer(1);
+		init_timer(1,freqs[AD_current*7/0xFFF]);
+		enable_timer(1);
 		
 		AD_last = AD_current;
   }
 	
 }
+
+
+

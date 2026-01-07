@@ -21,6 +21,8 @@
 #include "mechanics/mechanics.h"
 #include "GLCD/GLCD.h"
 #include "GUI/GUI.h"
+#include "adc/adc.h"
+
 
 // external variables from mechanics.c
 extern volatile uint32_t score;
@@ -48,11 +50,11 @@ int main (void) {
 	joystick_init();										/* joystick Initialization                 */
 	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
 	enable_RIT();
+	ADC_init();
 	
 	enable_timer(0);
 	enable_timer(1);
-	init_timer(0);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
-	init_timer(1);
+	init_timer(0, NORMAL_PERIOD);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();

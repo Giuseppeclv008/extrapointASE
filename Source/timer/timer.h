@@ -14,7 +14,7 @@
 #define NORMAL_PERIOD 25000000
 #define FAST_PERIOD 12500000
 /* init_timer.c */
-extern uint32_t init_timer( uint8_t timer_num );
+extern uint32_t init_timer( uint8_t timer_num, uint32_t TimerInterval );
 extern void enable_timer( uint8_t timer_num );
 extern void disable_timer( uint8_t timer_num );
 extern void reset_timer( uint8_t timer_num );

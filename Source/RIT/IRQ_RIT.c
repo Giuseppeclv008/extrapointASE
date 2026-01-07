@@ -14,11 +14,100 @@
 #include "../mechanics/mechanics.h"
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
+#include "../music/music.h"
+
+
+#define RIT_SEMIMINIMA 8
+#define RIT_MINIMA 16
+#define RIT_INTERA 32
+
+#define UPTICKS 1
+
+
 volatile uint8_t down1 = 0;
 volatile uint8_t down2 = 0;
 extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
+
+NOTE song[] = {
+    // --- PARTE A (Melodia Principale) ---
+    
+    // Battuta 1: E (lunga), B, C
+    {e5, time_croma * 2},
+    {b4, time_croma},
+    {c5, time_croma},
+    
+    // Battuta 2: D (lunga), C, B
+    {d5, time_croma * 2},
+    {c5, time_croma},
+    {b4, time_croma},
+    
+    // Battuta 3: A (lunga), A, C
+    {a4, time_croma * 2},
+    {a4, time_croma},
+    {c5, time_croma},
+    
+    // Battuta 4: E (lunga), D, C
+    {e5, time_croma * 2},
+    {d5, time_croma},
+    {c5, time_croma},
+    
+    // Battuta 5: B (molto lunga), C
+    {b4, time_croma * 3},
+    {c5, time_croma},
+    
+    // Battuta 6: D (lunga), E (lunga)
+    {d5, time_croma * 2},
+    {e5, time_croma * 2},
+    
+    // Battuta 7: C (lunga), A (lunga)
+    {c5, time_croma * 2},
+    {a4, time_croma * 2},
+    
+    // Battuta 8: A (lunga), Pausa
+    {a4, time_croma * 2},
+    {pause, time_croma * 2},
+
+    // --- PARTE B (Ponte Alto) ---
+
+    // Battuta 9: D (molto lunga), F
+    {d5, time_croma * 3},
+    {f5, time_croma},
+    
+    // Battuta 10: A (lunga), G, F
+    {a5, time_croma * 2},
+    {g5, time_croma},
+    {f5, time_croma},
+    
+    // Battuta 11: E (molto lunga), C
+    {e5, time_croma * 3},
+    {c5, time_croma},
+    
+    // Battuta 12: E (lunga), D, C
+    {e5, time_croma * 2},
+    {d5, time_croma},
+    {c5, time_croma},
+    
+    // Battuta 13: B (lunga), B, C
+    {b4, time_croma * 2},
+    {b4, time_croma},
+    {c5, time_croma},
+    
+    // Battuta 14: D (lunga), E (lunga)
+    {d5, time_croma * 2},
+    {e5, time_croma * 2},
+    
+    // Battuta 15: C (lunga), A (lunga)
+    {c5, time_croma * 2},
+    {a4, time_croma * 2},
+    
+    // Battuta 16: A (lunga), Pausa finale
+    {a4, time_croma * 2},
+    {pause, time_croma * 4}
+};
+
+
 void RIT_IRQHandler (void)
 {			
 	// il joystick non interrompere mai il RIT
@@ -134,6 +223,20 @@ void RIT_IRQHandler (void)
 		}
 	}
 
+	/*  ***********************************************  */
+	/* 					 SONG PART						 */
+	/*  ***********************************************  */
+	static int currentNote = 0;
+	static int ticks = 0;
+	if(!isNotePlaying())
+	{
+		ticks = 0;
+		plyNote(song[currentNote++]);
+	}
+	if(currentNote == sizeof(song)/sizeof(NOTE))
+	{
+		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
+	}
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
