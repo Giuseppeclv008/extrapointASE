@@ -546,12 +546,12 @@ void spawnPowerUp(void){
     uint32_t attempts =  100; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
     for( attempts; attempts > 0; attempts--){
 
-    if (playing_field[randomY][randomX] != 0) {
-      playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup 
-      break;
-    }
-    randomY = rand() % (occupied_lines + 1) + highest_row;
-    randomX = rand() % WIDTH;
+      if (playing_field[randomY][randomX] != 0) {
+        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup 
+        break;
+      }
+      randomY = rand() % (occupied_lines + 1) + highest_row;
+      randomX = rand() % WIDTH;
     }
 }
 
