@@ -19,6 +19,7 @@
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint32_t score;
+volatile uint16_t powerUpFlag = 0;
 volatile uint32_t HighScore = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
@@ -527,20 +528,30 @@ void slowDown(void){
 
 void clearHalfTheLines(void){
 
+
 }
+
 
 void spawnPowerUp(void){
-  uint8_t powerUpType = rand() % NUM_POWERUP_TYPES;
-  switch(powerUpType) {
-    case 0:
-        clearHalfTheLines();
-        break;
-    case 1: 
-        slowDown();
-        break;
-  }
+    uint16_t powerUpType = (rand() % NUM_POWERUP_TYPES)+ 12 ;
+
+    
+    
 }
 
+
+void activePowerUp(POWERUP type){
+  if(powerUpFlag == 1){
+    if(type == CLEAR_H_LINES){
+      clearHalfTheLines();
+    }
+    else if(type == SLOW_DOWN){
+      slowDown();
+
+    }
+  }
+}
+  
 
 
 
