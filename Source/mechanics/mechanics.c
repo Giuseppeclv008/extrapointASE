@@ -596,6 +596,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         int c, r;
         for (r = y; r > 0; r--) {
             for (c = 0; c < WIDTH; c++) {
+
                 if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene 
                   activePowerUp(playing_field[r-1][c]);
                 }
@@ -614,6 +615,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         y++; 
     }
 }
+
 lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
