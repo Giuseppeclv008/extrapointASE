@@ -51,7 +51,7 @@ int main (void) {
 	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
 	enable_RIT();
 	ADC_init();
-	
+
 	enable_timer(0);
 	enable_timer(1);
 	init_timer(0, NORMAL_PERIOD);										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
@@ -73,7 +73,7 @@ int main (void) {
 				SpawnNewPiece();
 				first = 0;
 				game_started = 1;
-				enable_timer();
+				enable_timer(0);
 			}
 		
 		if(game_started && !paused && !game_over){
