@@ -116,7 +116,7 @@ void RIT_IRQHandler (void)
 	uint64_t current_period = LPC_TIM0->MR0;
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
-	ADC_start_conversion();
+	// ADC_start_conversion();
 
 	if(game_started && !paused && !game_over) {
 		if (current_joy != old_joy) {
@@ -231,7 +231,7 @@ void RIT_IRQHandler (void)
 	/*  ***********************************************  */
 	/* 					 SONG PART						 */
 	/*  ***********************************************  */
-	static int currentNote = 0;
+	/* static int currentNote = 0;
 	static int ticks = 0;
 	if(!isNotePlaying())
 	{
@@ -245,7 +245,7 @@ void RIT_IRQHandler (void)
 	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
 	{
 		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
-	}
+	}*/
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
