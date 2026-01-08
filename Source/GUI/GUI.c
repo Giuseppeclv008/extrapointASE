@@ -108,8 +108,16 @@ void GUI_RefreshScreen(){
         for (c = 0; c < WIDTH; c++) {
             if (playing_field[r][c] > 0) { // utilizzo la condizione > 0 perchè tutti i blocchi nel playing field sono rappresentati da valori >0
                                             // prevengo anche di provocare memory fault accedendo in un indice negativo
-                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
-                                                                              // logica implementata per il corretto funzionamento di deleteLines
+
+
+                if(playing_field[r][c] == SLOW_DOWN || playing_field[r][c] == CLEAR_H_LINES){
+                    GUI_DrawBlock(c, r, POWERUP_COLORS[playing_field[r][c]-12]); // coloro in maniera corretta i blocchi dei powerup quando faccio refresh
+                }  
+                else{
+                    GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
+                    // logica implementata per il corretto funzionamento di deleteLines
+                }
+
                 isRowEmpty = 0;
             }
             else{
