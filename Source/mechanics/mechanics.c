@@ -16,6 +16,7 @@ volatile uint16_t powerUp_type;
 volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
+volatile uint16_t slowDownActive = 0; // da rimuovere 
 
 volatile uint32_t HighScore = 0;
 volatile uint32_t score = 0;
@@ -532,6 +533,7 @@ void lockPiece(void) {
 
 void slowDown(void){
 
+  slowDownActive++; //verifico quante volte viene attivato slowdown
 
 }
 
