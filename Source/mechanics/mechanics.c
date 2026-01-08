@@ -17,6 +17,7 @@ volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
 volatile uint16_t slowDownActive = 0; // da rimuovere 
+volatile uint16_t clear_half_lines_active = 0; // da rimuovere
 
 volatile uint32_t HighScore = 0;
 volatile uint32_t score = 0;
@@ -565,7 +566,7 @@ void clearHalfLines(void){
 
 
 void spawnPowerUp(void){
-    uint16_t powerUpType = (rand() % NUM_POWERUP_TYPES)+ 12 ;
+    uint16_t powerUpType = CLEAR_H_LINES; // DA MODIFICARE 
     uint16_t occupied_lines = (HEIGHT-1) - highest_row;
 
     uint16_t randomY = rand() % (occupied_lines + 1) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
@@ -590,6 +591,7 @@ void activePowerUp(POWERUP type){
   if(powerUpFlag == 1){
     if(type == CLEAR_H_LINES){
       clearHalfLines();
+      clear_half_lines_active ++; 
     }
     else if(type == SLOW_DOWN){
       slowDown();
@@ -677,21 +679,27 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
   }
 
 }
-
+static uint16_t lines_to_next_powerup = 0;
 void handlePieceLock(void) {
+ 
+  
     if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
+    
     // 2. Controlla le linee e ottieni il numero
     uint16_t previous_lines_cleared = lines_cleared;
     uint16_t linesRemoved = deleteFullLines();
     // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
     // faccio comparire un PowerUp 
-   
-    if(lines_cleared % 5 == 0 && linesRemoved != 0){ // se le lines_cleared sono multipli di 5 e ho rimosso delle linee allora spawno 
-      spawnPowerUp();
-      powerupsInTheField ++;
-    } 
+    if(linesRemoved > 0){
+      lines_to_next_powerup += linesRemoved;
+
+      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+        spawnPowerUp();
+        powerupsInTheField ++;
+        lines_to_next_powerup = lines_to_next_powerup - 5;
+    }
     assignScore(linesRemoved, previous_lines_cleared);
 
 }
