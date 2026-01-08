@@ -124,7 +124,7 @@ void GUI_RefreshScreen(){
                 GUI_DrawBlock(c, r, BACKGROUND_COLOR);
             }
         }
-        if(isRowEmpty){
+        if(isRowEmpty){   // GESTIRE CASO IN CUI LE LINEE ELIMINATE SIANO MAGGIORI DI 4 AGGIUNGERE UN PASSAGGIO DI VARIABILE 
             empty_rows_consecutive++;
             if(empty_rows_consecutive >= 4) return; // se disegnamo 4 righe vuote consecutive siamo certi che tutto ciò che è sopra è già nero.
         }

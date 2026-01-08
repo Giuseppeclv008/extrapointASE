@@ -652,30 +652,30 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
 void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
-  uint32_t previous_score = score;
+
   if (linesRemoved > 0) {
+    uint32_t previous_score = score;
+    uint16_t linesToAssignPoints = linesRemoved;
+
     GUI_UpdateClearedLines(previous_lines_cleared);
     GUI_RefreshScreen();
+    while(linesToAssignPoints >= 4){
+      // A. Assegna un punteggio bonus
+      score += 600; // Bonus extra 
+      linesToAssignPoints = linesToAssignPoints - 4;
+    }
+ 
+    // Punteggio normale per 1, 2 o 3 linee
+    switch(linesToAssignPoints) {
+        
+        case 1: score += 100; break;
+        case 2: score += 200; break;
+        case 3: score += 300; break;
 
-      // Caso "TETRIS": 4 Linee cancellate 
-      if (linesRemoved == 4) {
-
-          // A. Assegna un punteggio bonus enorme
-          score += 600; // Bonus extra per il TETRIS
-          
-      } else {
-          // Punteggio normale per 1, 2 o 3 linee
-          switch(linesRemoved) {
-              
-              case 1: score += 100; break;
-              case 2: score += 200; break;
-              case 3: score += 300; break;
-
-          }
-
-      }
+    }
+      GUI_UpdateScore(previous_score);
   }
-  GUI_UpdateScore(previous_score);
+
 }
 
 void handlePieceLock(void) {
@@ -685,10 +685,10 @@ void handlePieceLock(void) {
     // 2. Controlla le linee e ottieni il numero
     uint16_t previous_lines_cleared = lines_cleared;
     uint16_t linesRemoved = deleteFullLines();
-
     // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
     // faccio comparire un PowerUp 
-    if(lines_cleared % 5 == 0 && lines_cleared != 0){
+   
+    if(lines_cleared % 5 == 0 && linesRemoved != 0){ // se le lines_cleared sono multipli di 5 e ho rimosso delle linee allora spawno 
       spawnPowerUp();
       powerupsInTheField ++;
     } 
