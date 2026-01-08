@@ -555,6 +555,7 @@ void clearHalfLines(void){
           playing_field[0][c] = 0;
       }
   }
+  lines_cleared += lines_to_clear;
   highest_row += lines_to_clear;
   if(highest_row > HEIGHT) highest_row = HEIGHT;
   GUI_RefreshScreen();
