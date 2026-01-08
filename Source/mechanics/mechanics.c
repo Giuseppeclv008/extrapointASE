@@ -38,7 +38,7 @@ const uint16_t TETROMINO_COLORS[7] = {
 };
 
 const uint16_t POWERUP_COLORS[2] = { 
-  Grey, // ClearHalfLines
+  White, // ClearHalfLines
   Grey // SlowDown
 };
 
