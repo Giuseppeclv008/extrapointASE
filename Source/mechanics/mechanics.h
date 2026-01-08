@@ -45,6 +45,7 @@ extern volatile uint8_t paused;
 
 extern volatile ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];
+extern uint16_t POWERUP_COLORS[2];
 
 typedef enum powerups{
     CLEAR_H_LINES = 12,
