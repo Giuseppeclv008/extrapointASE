@@ -702,6 +702,7 @@ void handlePieceLock(void) {
     }
     assignScore(linesRemoved, previous_lines_cleared);
 
-}
+    }
 
+}
 
