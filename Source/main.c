@@ -66,10 +66,10 @@ int main (void) {
    GUI_pauseScreen();
 	
    LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
+   enable_RIT(); // accendo il RIT qui perchè il RITCOUNT è necessario per la modifica del seed x
    initializeGame();
 
 	// abilito gli interupt dopo aver eseguito le operazioni più "costose"
-  	 enable_RIT();
 	enable_timer(0);
 
    
