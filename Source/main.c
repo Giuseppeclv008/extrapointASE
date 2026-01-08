@@ -64,9 +64,10 @@ int main (void) {
    LCD_Initialization();
    GUI_DrawInterface();
    GUI_pauseScreen();
-	
-   LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
-   enable_RIT(); // accendo il RIT qui perchè il RITCOUNT è necessario per la modifica del seed x
+	 
+	enable_RIT(); // accendo il RIT qui perchè il RITCOUNT è necessario per la modifica del seed x
+	LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
+
    initializeGame();
 
 	// abilito gli interupt dopo aver eseguito le operazioni più "costose"
@@ -79,11 +80,12 @@ int main (void) {
    
 	while(1){
 		if (first){
-			
+	
 			// main game loop
 			while(paused){
 				__ASM("wfi");
 			}
+			srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
 				SpawnNewPiece();
 				first = 0;
 				game_started = 1;
