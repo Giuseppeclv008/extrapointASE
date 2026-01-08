@@ -22,7 +22,7 @@ volatile uint32_t score;
 volatile uint32_t HighScore = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
-volatile uint8_t paused; // the playing state is represented by !paused 
+volatile uint8_t paused; // il playing state è rappresentato come !paused 
 volatile uint16_t lines_cleared = 0;
 volatile uint8_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
@@ -36,7 +36,7 @@ const uint16_t TETROMINO_COLORS[7] = {
     Green,   // S
     Red      // Z
 };
-// Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
+
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
 // per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
 // ogni pezzo è rappresenatato da una matrice 4x4
@@ -252,7 +252,7 @@ uint8_t isOverlapping(void) {
 void SpawnNewPiece(void){
     // wrapper per la generazione di un nuovo pezzo che si occupa 
     // di generare un numero casuale fra 0 e 6 per la scelta del pezzo 
-    // ed un numero casuale fra 0 e 4 per la scelta casuale della rotazione 
+ 
     int pieceIndex = rand() % 7;
     // la posizione iniziale è di sicuro in alto X = 0 ma puntando le nostre coordinate 
     // all'angolo sinistro in alto della matrice rappresentate un pezzo 
@@ -275,7 +275,7 @@ void SpawnPiece(int pieceIndex, int initialX, int initialY) {
   currentPiece.y = initialY; 
   
   //Salviamo il tipo e resettiamo la rotazione
-  int rotationIndex = 0;
+  uint8_t rotationIndex = 0;
   currentPiece.type = pieceIndex;
   currentPiece.rotation = rotationIndex; 
 
@@ -344,10 +344,11 @@ uint8_t canMoveDown(void) {
   }
   return 1; // Può muoversi giù
 }
-//verifica se il pezzo può muoversi verso il basso o no 
-uint8_t tryMoveDown(void){
+  //verifica se il pezzo può muoversi verso il basso o no 
   // e gestisce il blocco del pezzo e la cancellazione delle linee
   // quando il pezzo raggiunge il fondo o un altro pezzo
+uint8_t tryMoveDown(void){
+
   if (canMoveDown()) {
       return 1; // può muoversi giù
   } else {
@@ -356,6 +357,7 @@ uint8_t tryMoveDown(void){
       return 0; // non può muoversi giù
   }
 }
+
 uint8_t isPositionValidAfterRotation(int x, int y, int shape[4][4]) {
   int r, c;
   for (r = 0; r < 4; r++) {
@@ -500,6 +502,7 @@ void lockPiece(void) {
                     // fondamentali per il check delle linee piene 
                   }
                   else{
+                    // in questo caso currentPiece.shape[r][c] è 0
                     playing_field[fieldY][fieldX] = currentPiece.shape[r][c];
                   }
                   

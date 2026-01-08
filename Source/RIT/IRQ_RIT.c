@@ -21,7 +21,6 @@ extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 void RIT_IRQHandler (void)
 {			
-	// il joystick non interrompere mai il RIT
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
 	
@@ -35,8 +34,8 @@ void RIT_IRQHandler (void)
 				case JOY_DOWN:						
 					LPC_TIM0->MR0 = FAST_PERIOD; // velocità aumentata di 2 volte, 2 square al secondo 
 					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-										// necessario perchè se modifico ed MR0 ha superato il conteggio 
-										// il timer non verrà mai resettato e il pezzo resta sospeso
+										// necessario perchè se modifico MR0 ed ho superato il conteggio 
+										// il timer non verrà mai resettato e il pezzo resterà sospeso
 					break;
 				case JOY_LEFT:
 					movePieceLeft();

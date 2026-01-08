@@ -7,15 +7,6 @@
 #define HEIGHT 20
 #define WIDTH 10
 
-// Indici dei pezzi
-#define PIECE_I_INDEX 0
-#define PIECE_O_INDEX 1
-#define PIECE_T_INDEX 2
-#define PIECE_J_INDEX 3
-#define PIECE_L_INDEX 4
-#define PIECE_S_INDEX 5
-#define PIECE_Z_INDEX 6
-
 /* --- STRUTTURE DATI --- */
 // x ed y sono le coordinate di ancoraggio del pezzo rispetto all'playing_field, si riferiscono all'angolo 
 // sinisto della matrice shape 

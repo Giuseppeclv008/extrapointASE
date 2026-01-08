@@ -9,8 +9,10 @@ extern volatile uint32_t HighScore;
 extern volatile uint32_t score;
 extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
+
+//Disegna il bordo del playing field e la sezione con il punteggio 
 void GUI_DrawInterface(void){
-    //Disegna il bordo del playing field e la sezione con il punteggio 
+
     LCD_Clear(BACKGROUND_COLOR);
 
     // Disegna il bordo del playing field
@@ -41,20 +43,17 @@ void GUI_DrawInterface(void){
     // Valore High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20, (uint8_t*)highScoreStr, NUMBER_COLOR, BACKGROUND_COLOR);
     
-     // fare in modo di aggiornare l'high score durante il gioco
-    
     // Etichetta Linee Cancellate
     GUI_Text(SCORE_X, CLEARED_LINES_Y, (uint8_t*)"LINES", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore Linee Cancellate
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20, (uint8_t*)"000", NUMBER_COLOR, BACKGROUND_COLOR);
 
-    //opzionalmente aggiungere la sezione per il next piece
 }
 void GUI_UpdateScore(int previous_score){
     uint32_t sccore_to_erase = previous_score;
-    uint8_t score_str_erase[7]; // 6 cifre + terminatore null
+    uint8_t score_str_erase[7]; 
     uint32_t score_to_display = score;
-    uint8_t score_str[7]; // 6 cifre + terminatore null
+    uint8_t score_str[7]; 
     sprintf((char*)score_str, "%06u", score_to_display);
     sprintf((char*)score_str_erase,"%06u", sccore_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
@@ -66,10 +65,10 @@ void GUI_UpdateScore(int previous_score){
 void GUI_UpdateHighScore(int previous_highscore){
     // Aggiorna l'high score visualizzato
     uint32_t highscore_to_display = HighScore;
-    uint8_t highscore_str_erase[7]; // 6 cifre + terminatore null
-    uint8_t highscore_str[7]; // 6 cifre + terminatore null
+    uint8_t highscore_str_erase[7]; 
+    uint8_t highscore_str[7];
     sprintf((char*)highscore_str,"%06u", highscore_to_display);
-    sprintf((char*)highscore_str_erase,"%06u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    sprintf((char*)highscore_str_erase,"%06u", HighScore); 
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
    
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
@@ -78,8 +77,8 @@ void GUI_UpdateHighScore(int previous_highscore){
 void GUI_UpdateClearedLines(int previous_lines_cleared){
     // Aggiorna il numero di linee cancellate visualizzato
     uint32_t lines_to_display = lines_cleared;
-    uint8_t lines_str_erase[4]; // 3 cifre + terminatore nulle
-    uint8_t lines_str[4]; // 3 cifre + terminatore nulle
+    uint8_t lines_str_erase[4]; 
+    uint8_t lines_str[4]; 
     sprintf((char*)lines_str_erase,"%03u", previous_lines_cleared);
     sprintf((char*)lines_str,"%03u", lines_to_display);
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il numero precedente
@@ -88,11 +87,11 @@ void GUI_UpdateClearedLines(int previous_lines_cleared){
 
 void GUI_RefreshInterface(){
     GUI_DrawInterface();
-    // Aggiorna il high score
+    // Aggiorna  high score
     GUI_UpdateHighScore(HighScore);
-    // Aggiorna il punteggio
+    // Aggiorna  punteggio
     GUI_UpdateScore(score);
-    // Aggiorna il numero di linee cancellate
+    // Aggiorna  numero di linee cancellate
     GUI_UpdateClearedLines(lines_cleared);
 
 }
@@ -100,14 +99,14 @@ void GUI_RefreshScreen(){
     int r, c;
     int empty_rows_consecutive = 0; // contatore per le righe vuote, se ne trovo più di 4 consecutive ritorno dalla funzione
     // 4 è il massimo numero di linee che possono essere cleared nel gioco, nel caso speciale di "Tetris"
-    // utilizzando quest euristica posso ottimizzare 
+    // utilizzando quest euristica posso ottimizzare contando quante righe consecutive vuote ho trovato 
 
     for (r = HEIGHT-1; r >= 0; r--){
         uint8_t isRowEmpty = 1;
 
         for (c = 0; c < WIDTH; c++) {
             if (playing_field[r][c] > 0) { // utilizzo la condizione > 0 perchè tutti i blocchi nel playing field sono rappresentati da valori >0
-                                            // prevengo anche di provocare memory fault accedendo in un indice negativo
+                                            // prevengo anche di provocare memory fault accedendo in un indice negativo in TETROMINO_COLORS
                 GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
                                                                               // logica implementata per il corretto funzionamento di deleteLines
                 isRowEmpty = 0;
@@ -152,7 +151,7 @@ void GUI_clearGameOverScreen(void){
 }
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
-    // Disegna un blocco del pezzo alla posizione (x,y) con il colore specificato
+    // Disegna un blocco del pezzo alla posizione (x,y) adatata alla blocksize con il colore specificato
     int i, j;
     int x_start = FIELD_X + (x * BLOCK_SIZE);
     int y_start = FIELD_Y + (y * BLOCK_SIZE);
@@ -164,9 +163,10 @@ void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
                 if(color == BACKGROUND_COLOR){
                     // Se il colore è lo sfondo, disegna solo l'interno
                     LCD_SetPoint(x_start + j, y_start + i, color);
-                } else {
-                LCD_SetPoint(x_start + j, y_start + i, BLOCK_BORDER_COLOR);
-                }
+                
+                } else { // altrimenti diegno il blocco 
+                        LCD_SetPoint(x_start + j, y_start + i, BLOCK_BORDER_COLOR);
+                        }
             } else {
                 // Disegna l'interno del blocco
                 LCD_SetPoint(x_start + j, y_start + i, color);

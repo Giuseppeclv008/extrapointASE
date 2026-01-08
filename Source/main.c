@@ -1,16 +1,3 @@
-/*----------------------------------------------------------------------------
- * Name:    sample.c
- * Purpose: 
- *		to control led11 and led 10 through EINT buttons (similarly to project 03_)
- *		to control leds9 to led4 by the timer handler (1 second - circular cycling)
- * Note(s): this version supports the LANDTIGER Emulator
- * Author: 	Paolo BERNARDI - PoliTO - last modified 15/12/2020
- *----------------------------------------------------------------------------
- *
- * This software is supplied "AS IS" without warranties of any kind.
- *
- * Copyright (c) 2017 Politecnico di Torino. All rights reserved.
- *----------------------------------------------------------------------------*/
 
                   
 #include <stdio.h>
@@ -49,7 +36,7 @@ int main (void) {
 	init_RIT(0x004C4B40);								/* RIT Initialization 50 msec       */
 	enable_RIT();
 	
-	init_timer();										/* TIMER0 Initialization MR0 MR1 ad 1 e 2 secondi     */ 
+	init_timer();										/* TIMER0 Initialization   */ 
 	LCD_Initialization();
 	// Disegna l'interfaccia statica una volta sola
    GUI_DrawInterface();
@@ -76,7 +63,6 @@ int main (void) {
 			if(timer_tick==1)
 			{
 			timer_tick=0;
-			int previous_score = score;
 				movePieceDown();
 			}
 
@@ -97,7 +83,6 @@ int main (void) {
 		else{
 			LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
 			LPC_SC->PCON &= ~(0x2);						
-			// gioco in pausa o non iniziato
 			__ASM("wfi");
 		}
 	}
