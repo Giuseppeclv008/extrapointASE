@@ -33,6 +33,7 @@
 #define NUMBER_COLOR White
 #define BLOCK_BORDER_COLOR White
 
+
 // PROTOTIPI DELLE FUNZIONI 
 void GUI_DrawInterface(void);
 void GUI_RefreshInterface(void);

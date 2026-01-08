@@ -7,14 +7,7 @@
 
 #define HEIGHT 20
 #define WIDTH 10
-#define PIECE_I_INDEX 0 // Indice del pezzo I nell'array TETROMINOS
-#define PIECE_O_INDEX 1 // Indice del pezzo O nell'array TETROMINOS
-#define PIECE_T_INDEX 2 // Indice del pezzo T nell'array TETROMINOS
-#define PIECE_J_INDEX 3 // Indice del pezzo J nell'array TETROMINOS
-#define PIECE_L_INDEX 4 // Indice del pezzo L nell'array TETROMINOS
-#define PIECE_S_INDEX 5 // Indice del pezzo S nell'array TETROMINOS
-#define PIECE_Z_INDEX 6 // Indice del pezzo Z nell'array TETROMINOS
-#define NUM_POWERUP_TYPES 2
+
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
@@ -38,6 +31,12 @@ const uint16_t TETROMINO_COLORS[7] = {
     Green,   // S
     Red      // Z
 };
+
+const uint16_t POWERUP_COLORS[2] = { 
+  Blue2, // ClearHalfLines
+  Purple // SlowDown
+};
+
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
 // per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
@@ -570,6 +569,8 @@ void spawnPowerUp(void){
 
       if (playing_field[randomY][randomX] != 0) {
         playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
+        GUI_DrawBlock(randomX, randomY, BACKGROUND_COLOR);
+        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[powerUpType - 12]);
         break;
       }
       randomY = rand() % (occupied_lines + 1) + highest_row;
@@ -588,6 +589,7 @@ void activePowerUp(POWERUP type){
       slowDown();
 
     }
+    powerUpFlag = 0;
   }
 }
   
@@ -619,7 +621,8 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         for (r = y; r > 0; r--) {
             for (c = 0; c < WIDTH; c++) {
 
-                if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene 
+                if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+                  powerUpFlag = 1 
                   activePowerUp(playing_field[r-1][c]);
                 }
                 playing_field[r][c] = playing_field[r-1][c];
@@ -634,6 +637,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 
         // la riga attuale 'y' al prossimo giro, quindi incrementiamo y
         // (che verrà decrementato dal for loop subito dopo)
+        // ricordiamo che più è grande y più in basso ci troviamo nel playing field 
         y++; 
     }
 }
@@ -664,7 +668,7 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
     GUI_UpdateClearedLines(previous_lines_cleared);
     GUI_RefreshScreen();
 
-      // Caso "TETRIS": 4 Linee cancellate con il pezzo I
+      // Caso "TETRIS": 4 Linee cancellate 
       if (linesRemoved == 4) {
 
           // A. Assegna un punteggio bonus enorme
@@ -672,7 +676,6 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
           
       } else {
           // Punteggio normale per 1, 2 o 3 linee
-          // Esempio classico Nintendo: 40, 100, 300 punti
           switch(linesRemoved) {
               
               case 1: score += 100; break;

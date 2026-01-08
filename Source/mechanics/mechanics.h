@@ -8,20 +8,20 @@
 #define WIDTH 10
 
 // Indici dei pezzi
-#define PIECE_I_INDEX 0
-#define PIECE_O_INDEX 1
-#define PIECE_T_INDEX 2
-#define PIECE_J_INDEX 3
-#define PIECE_L_INDEX 4
-#define PIECE_S_INDEX 5
-#define PIECE_Z_INDEX 6
+#define PIECE_I_INDEX 0 // Indice del pezzo I nell'array TETROMINOS
+#define PIECE_O_INDEX 1 // Indice del pezzo O nell'array TETROMINOS
+#define PIECE_T_INDEX 2 // Indice del pezzo T nell'array TETROMINOS
+#define PIECE_J_INDEX 3 // Indice del pezzo J nell'array TETROMINOS
+#define PIECE_L_INDEX 4 // Indice del pezzo L nell'array TETROMINOS
+#define PIECE_S_INDEX 5 // Indice del pezzo S nell'array TETROMINOS
+#define PIECE_Z_INDEX 6 // Indice del pezzo Z nell'array TETROMINOS
+
+// Numero di Powerups
+#define NUM_POWERUP_TYPES 2
 
 /* --- STRUTTURE DATI --- */
 // x ed y sono le coordinate di ancoraggio del pezzo rispetto all'playing_field, si riferiscono all'angolo 
 // sinisto della matrice shape 
-
-// considerando un'playing_field 20x10 la coordinata massima per il current piece può essere (16,0)
-// posizionando al limite la matrice 4x4 e non uscire fuori dai bordi 
 
 typedef struct {
     int x;              // coordinata x nell'arena
@@ -45,8 +45,6 @@ extern volatile uint8_t paused;
 
 extern volatile ActiveTetromino currentPiece;
 extern const uint8_t TETROMINOS[7][4][4][4];
-
-
 
 typedef enum powerups{
     CLEAR_H_LINES = 12,
