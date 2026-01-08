@@ -65,10 +65,11 @@ int main (void) {
 			while(paused){
 				__ASM("wfi");
 			}
-				SpawnNewPiece();
-				first = 0;
-				game_started = 1;
-				enable_timer();
+			srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
+			SpawnNewPiece();
+			first = 0;
+			game_started = 1;
+			enable_timer();
 			}
 		
 		if(game_started && !paused && !game_over){
