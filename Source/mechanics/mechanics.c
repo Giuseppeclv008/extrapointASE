@@ -12,7 +12,7 @@
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint16_t highest_row = HEIGHT;
-volatile uint16_t powerUp_type;
+volatile uint16_t pending_powerup = 0;
 volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
@@ -596,7 +596,7 @@ void activePowerUp(POWERUP type){
     else if(type == SLOW_DOWN){
       slowDown();
     }
-    powerUpFlag = 0;
+  
   }
 }
   
@@ -607,6 +607,7 @@ void activePowerUp(POWERUP type){
 uint16_t deleteFullLines(void) {
 int y, x;
 uint8_t linesCleared = 0;
+pending_powerup = 0;
 // Scansioniamo dal basso (riga 19) verso l'alto
 for (y = HEIGHT - 1; y >= 0; y--) {
     int isFull = 1;
@@ -628,8 +629,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
             for (c = 0; c < WIDTH; c++) {
 
                 if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
-                  powerUpFlag = 1;
-                  activePowerUp(playing_field[r-1][c]);
+                  pending_powerup = playing_field[r-1][c];
                   powerupsInTheField--;
                 }
                 playing_field[r][c] = playing_field[r-1][c];
@@ -703,6 +703,16 @@ void handlePieceLock(void) {
     assignScore(linesRemoved, previous_lines_cleared);
 
     }
+
+    // se rilevo un powerup quando elimino le righe lo attivo qui 
+    // inserito qui perchè matrice del playing field stabile 
+    if(pending_powerup != 0){
+      powerUpFlag = 1;
+      activePowerUp(pending_powerup);
+      powerUpFlag = 0;
+      pending_powerup = 0; // reset del powerup 
+    }
+    
 
 }
 
