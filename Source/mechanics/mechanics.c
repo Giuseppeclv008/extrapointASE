@@ -543,8 +543,8 @@ void spawnPowerUp(void){
     uint16_t randomY = rand() % (occupied_lines + 1) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
                                                                     // più il valore è alto più sono in basso
     uint16_t randomX = rand() % WIDTH;
-    uint32_t attempts =  100; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
-    for( attempts; attempts > 0; attempts--){
+    uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
+    for( attempts =  100; attempts > 0; attempts--){
 
       if (playing_field[randomY][randomX] != 0) {
         playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  

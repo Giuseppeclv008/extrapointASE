@@ -50,7 +50,7 @@ void ADC_IRQHandler(void) {
   	
 	AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
 	uint32_t diff = AD_current - AD_last;
-	uint32_t new_period
+	uint32_t new_period;
 	if(diff < 0) diff = -diff ;
   
 	  if(diff > 40){
