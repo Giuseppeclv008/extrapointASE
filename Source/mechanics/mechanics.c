@@ -11,10 +11,14 @@
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
-volatile uint16_t highest_row = 20
+volatile uint16_t highest_row = HEIGHT;
 volatile uint16_t powerUp_type;
 volatile uint16_t powerUpFlag = 0;
+
+volatile uint16_t powerupsInTheField = 0; // da rimuovere 
+
 volatile uint32_t HighScore = 0;
+volatile uint32_t score = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
 volatile uint8_t paused; // the playing state is represented by !paused 
@@ -582,18 +586,16 @@ void spawnPowerUp(void){
 void activePowerUp(POWERUP type){
   if(powerUpFlag == 1){
     if(type == CLEAR_H_LINES){
-      clearHalfTheLines();
+      clearHalfLines();
     }
     else if(type == SLOW_DOWN){
       slowDown();
-
     }
     powerUpFlag = 0;
   }
 }
   
-
-
+/* END POWERUP SECTION */
 
 
 
@@ -621,8 +623,9 @@ for (y = HEIGHT - 1; y >= 0; y--) {
             for (c = 0; c < WIDTH; c++) {
 
                 if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
-                  powerUpFlag = 1 
+                  powerUpFlag = 1;
                   activePowerUp(playing_field[r-1][c]);
+                  powerupsInTheField--;
                 }
                 playing_field[r][c] = playing_field[r-1][c];
             }
@@ -644,22 +647,6 @@ highest_row += linesCleared; // Aggiorna la variabile globale
 lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
-
-void handlePieceLock(void) {
-    if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
-    // 1. Solidifica il pezzo nella matrice del playing_field
-    lockPiece();
-    // 2. Controlla le linee e ottieni il numero
-    uint16_t previous_lines_cleared = lines_cleared;
-    uint16_t linesRemoved = deleteFullLines();
-
-    // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
-    // faccio comparire un PowerUp 
-    if(lines_cleared % 5 == 0 && lines_cleared != 0) spawnPowerUp();
-    assignScore(linesRemoved, previous_lines_cleared);
-
-}
-
 
 void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
   uint32_t previous_score = score;
@@ -687,3 +674,23 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
   }
   GUI_UpdateScore(previous_score);
 }
+
+void handlePieceLock(void) {
+    if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
+    // 1. Solidifica il pezzo nella matrice del playing_field
+    lockPiece();
+    // 2. Controlla le linee e ottieni il numero
+    uint16_t previous_lines_cleared = lines_cleared;
+    uint16_t linesRemoved = deleteFullLines();
+
+    // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
+    // faccio comparire un PowerUp 
+    if(lines_cleared % 5 == 0 && lines_cleared != 0){
+      spawnPowerUp();
+      powerupsInTheField ++;
+    } 
+    assignScore(linesRemoved, previous_lines_cleared);
+
+}
+
+
