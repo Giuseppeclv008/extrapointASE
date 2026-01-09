@@ -525,7 +525,32 @@ void lockPiece(void) {
   score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 }
 
+void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
 
+  if (linesRemoved > 0) {
+    uint32_t previous_score = score;
+    uint16_t linesToAssignPoints = linesRemoved;
+
+    GUI_UpdateClearedLines(previous_lines_cleared);
+    GUI_RefreshScreen();
+    while(linesToAssignPoints >= 4){
+      // A. Assegna un punteggio bonus
+      score += 600; // Bonus extra 
+      linesToAssignPoints = linesToAssignPoints - 4;
+    }
+ 
+    // Punteggio normale per 1, 2 o 3 linee
+    switch(linesToAssignPoints) {
+        
+        case 1: score += 100; break;
+        case 2: score += 200; break;
+        case 3: score += 300; break;
+
+    }
+      GUI_UpdateScore(previous_score);
+  }
+
+}
 
 
 /* *************** */
@@ -668,32 +693,7 @@ lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
-void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
 
-  if (linesRemoved > 0) {
-    uint32_t previous_score = score;
-    uint16_t linesToAssignPoints = linesRemoved;
-
-    GUI_UpdateClearedLines(previous_lines_cleared);
-    GUI_RefreshScreen();
-    while(linesToAssignPoints >= 4){
-      // A. Assegna un punteggio bonus
-      score += 600; // Bonus extra 
-      linesToAssignPoints = linesToAssignPoints - 4;
-    }
- 
-    // Punteggio normale per 1, 2 o 3 linee
-    switch(linesToAssignPoints) {
-        
-        case 1: score += 100; break;
-        case 2: score += 200; break;
-        case 3: score += 300; break;
-
-    }
-      GUI_UpdateScore(previous_score);
-  }
-
-}
 static uint16_t lines_to_next_powerup = 0;
 void handlePieceLock(void) {
  
