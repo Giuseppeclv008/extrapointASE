@@ -694,8 +694,12 @@ void handlePieceLock(void) {
     // faccio comparire un PowerUp 
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
-
-      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+      
+      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+      /*  TO DO MODIFICARE LA CONDIZIONE DELL'IF QUI SOTTO CORRETTAMENTE COME lines_to_next_powerup >= 5 */
+      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+      
+      if(lines_to_next_powerup >= 1){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
         lines_to_next_powerup = lines_to_next_powerup - 5;

@@ -116,7 +116,7 @@ void RIT_IRQHandler (void)
 	uint64_t current_period = LPC_TIM0->MR0;
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
-	// ADC_start_conversion();
+	ADC_start_conversion();
 
 	if(game_started && !paused && !game_over) {
 		if (current_joy != old_joy) {
