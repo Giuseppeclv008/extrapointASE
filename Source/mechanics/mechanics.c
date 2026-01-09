@@ -591,11 +591,17 @@ void spawnPowerUp(void){
 void activePowerUp(POWERUP type){
   if(powerUpFlag == 1){
     if(type == CLEAR_H_LINES){
+
       clearHalfLines();
-      clear_half_lines_active ++; 
+      if(pending_powerup1 == CLEAR_H_LINES) pending_powerup1 = 0;
+      if(pending_powerup2 == CLEAR_H_LINES) pending_powerup2 = 0;
+      clear_half_lines_active ++;
     }
     else if(type == SLOW_DOWN){
       slowDown();
+      if(pending_powerup1 == SLOW_DOWN) pending_powerup1 = 0;
+      if(pending_powerup2 == SLOW_DOWN) pending_powerup2 = 0;
+
     }
   
   }
@@ -608,7 +614,6 @@ void activePowerUp(POWERUP type){
 uint16_t deleteFullLines(void) {
 int y, x;
 uint8_t linesCleared = 0;
-pending_powerup = 0;
 // Scansioniamo dal basso (riga 19) verso l'alto
 for (y = HEIGHT - 1; y >= 0; y--) {
     int isFull = 1;
