@@ -567,10 +567,15 @@ void slowDown(void){
 
 void clearHalfLines(void){
   int i, r, c;
-  uint16_t lines_occupied = (HEIGHT-1) - highest_row;
+  uint16_t lines_occupied = HEIGHT - highest_row;
   uint16_t linesRemoved = 0;
-  uint16_t lines_to_clear = (highest_row == 0) ? 1 : lines_occupied / 2;
+  uint16_t lines_to_clear; 
+  
+  if(lines_occupied == 0) return;
 
+  lines_to_clear = lines_occupied / 2;
+  if(lines_to_clear == 0 && lines_occupied > 0) lines_to_clear = 1;
+  
   for(i = lines_to_clear; i > 0; i--){
       // Shift down logic adapted from deleteFullLines
       // We target the bottom row (HEIGHT - 1) to shift everything down
@@ -586,10 +591,11 @@ void clearHalfLines(void){
       linesRemoved++;
   }
   uint16_t previous_lines_cleared = lines_cleared;
-  assignScore(linesRemoved, previous_lines_cleared);
   lines_cleared += linesRemoved;
   highest_row += lines_to_clear;
   if(highest_row > HEIGHT) highest_row = HEIGHT;
+
+  assignScore(linesRemoved, previous_lines_cleared);
   GUI_RefreshScreen();
 }
 
