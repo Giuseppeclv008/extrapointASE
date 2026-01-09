@@ -49,19 +49,21 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 void ADC_IRQHandler(void) {
   	
 	AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
-	uint32_t diff = AD_current - AD_last;
+	int diff = (int)AD_current - (int)AD_last;
 	uint32_t new_period;
 	if(diff < 0) diff = -diff ;
   
 	  if(diff > 40){
 		  uint32_t max_period = NORMAL_PERIOD;
+		  uint32_t min_period = 5000000;
+		  // fattore di scala: (25M - 5M) / 4095 = 4885
 		  uint32_t decrement = 4884;
 		  uint32_t reduction = AD_current * decrement; 
   
-		  if(reduction >= (max_period - 5000000))
+		  if(reduction >= (max_period - min_period))
 		  {
-			  new_period = 5000000;
-		  }{
+			  new_period = min_period;
+		  }else{
 			  new_period = max_period - reduction;
 		  }
 		  
