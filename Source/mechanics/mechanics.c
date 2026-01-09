@@ -543,7 +543,7 @@ void slowDown(void){
 void clearHalfLines(void){
   int i, r, c;
   uint16_t lines_occupied = (HEIGHT-1) - highest_row;
-  
+  uint16_t linesRemoved = 0;
   uint16_t lines_to_clear = (highest_row == 0) ? 1 : lines_occupied / 2;
 
   for(i = lines_to_clear; i > 0; i--){
@@ -558,8 +558,11 @@ void clearHalfLines(void){
       for (c = 0; c < WIDTH; c++) {
           playing_field[0][c] = 0;
       }
+      linesRemoved++;
   }
-  lines_cleared += lines_to_clear;
+  uint16_t previous_lines_cleared = lines_cleared;
+  assignScore(linesRemoved, previous_lines_cleared);
+  lines_cleared += linesRemoved;
   highest_row += lines_to_clear;
   if(highest_row > HEIGHT) highest_row = HEIGHT;
   GUI_RefreshScreen();
@@ -734,7 +737,6 @@ void handlePieceLock(void) {
       powerUpFlag = 0;
       pending_powerup2 = 0; // reset del powerup 
     }
-    
 
 }
 
