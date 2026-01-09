@@ -12,7 +12,8 @@
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint16_t highest_row = HEIGHT;
-volatile uint16_t pending_powerup = 0;
+volatile uint16_t pending_powerup1 = 0;
+volatile uint16_t pending_powerup2 = 0;
 volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
@@ -621,17 +622,23 @@ for (y = HEIGHT - 1; y >= 0; y--) {
 
     if (isFull) {
         linesCleared++; 
-        
+        for (x = 0; x < WIDTH; x++) {
+          if(playing_field[y][x] == SLOW_DOWN || playing_field[y][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+            if(pending_powerup1 > 0){
+              pending_powerup2 = playing_field[y][x];
+              powerupsInTheField--;
+            }
+            else{
+            pending_powerup1 = playing_field[y][x];
+            powerupsInTheField--;
+            }
+          }
+      }
         // Fai scendere tutto ciò che c'è sopra
         // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
         int c, r;
         for (r = y; r > 0; r--) {
             for (c = 0; c < WIDTH; c++) {
-
-                if(playing_field[r-1][c] == SLOW_DOWN || playing_field[r-1][c] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
-                  pending_powerup = playing_field[r-1][c];
-                  powerupsInTheField--;
-                }
                 playing_field[r][c] = playing_field[r-1][c];
             }
         }
@@ -710,11 +717,17 @@ void handlePieceLock(void) {
 
     // se rilevo un powerup quando elimino le righe lo attivo qui 
     // inserito qui perchè matrice del playing field stabile 
-    if(pending_powerup != 0){
+    if(pending_powerup1 != 0){
       powerUpFlag = 1;
-      activePowerUp(pending_powerup);
+      activePowerUp(pending_powerup1);
       powerUpFlag = 0;
-      pending_powerup = 0; // reset del powerup 
+      pending_powerup1 = 0; // reset del powerup 
+    }
+    if(pending_powerup2 != 0){
+      powerUpFlag = 1;
+      activePowerUp(pending_powerup2);
+      powerUpFlag = 0;
+      pending_powerup2 = 0; // reset del powerup 
     }
     
 
