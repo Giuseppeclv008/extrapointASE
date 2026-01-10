@@ -153,14 +153,8 @@ void RIT_IRQHandler (void)
 					}
 						
 				}
-				else if (current_joy == JOY_DOWN){ //permette di far accellerare il pezzo mentre ho JOYDOWN se muovo in contemporanea il potenziometro 
-					if(LPC_TIM0->MR0 != current_period/2){
-						LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte 
-					}
-				}
-				old_joy = current_joy;
-
 			}
+				old_joy = current_joy;
 	}
 		/* *********************************************** */
 		/* gestione di KEY 1, debouncing con RIT		   */ 
