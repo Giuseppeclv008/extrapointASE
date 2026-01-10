@@ -126,11 +126,13 @@ void RIT_IRQHandler (void)
 						rotatePiece();
 						break;
 					case JOY_DOWN:
-
-						LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
-						LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+						if(slowDownTicks == 0){
+							LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
+							LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 											// necessario perchè se modifico ed MR0 ha superato il conteggio 
 											// il timer non verrà mai resettato e il pezzo resta sospeso
+						}
+						
 						break;
 					case JOY_LEFT:
 						movePieceLeft();
@@ -235,8 +237,7 @@ void RIT_IRQHandler (void)
 		if(slowDownTicks == 0){
 			// sono passati 15 secondi 
 			LPC_TIM0->MR0 = current_period;
-			GUI_RefreshScreen();
-			GUI_DrawInterface();
+			GUI_Text(10, 300, (uint8_t*)"SlowDown ON", Black, Black);
 		}
 	}
 	/*  ***********************************************  */

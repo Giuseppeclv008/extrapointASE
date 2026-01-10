@@ -69,8 +69,9 @@ void ADC_IRQHandler(void) {
 			  new_period = max_period - reduction;
 		  }
 		  // se il powerup di slowdown è attivo non devo modificare il match register
+		  current_period = new_period;
 		  if(slowDownTicks == 0){
-			current_period = new_period;
+	
 			disable_timer(0);
 			reset_timer(0);
 			init_timer(0, new_period);
