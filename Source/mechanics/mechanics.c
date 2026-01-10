@@ -12,13 +12,12 @@
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint16_t highest_row = HEIGHT;
-volatile uint16_t pending_powerup1 = 0;
-volatile uint16_t pending_powerup2 = 0;
+volatile uint16_t pending_powerup[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
 volatile uint16_t slowDownActive = 0; // da rimuovere 
-volatile uint16_t clear_half_lines_active = 0; // da rimuovere
+
 
 volatile uint32_t HighScore = 0;
 volatile uint32_t score = 0;
@@ -558,6 +557,17 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
 /* *************** */
 
 
+
+void addPendingPowerup(POWERUP type){
+  int i;
+  for(i = 0; i < WIDTH; i++){
+    if(pending_powerup[i] == 0){
+      pending_powerup[i] = type;
+      return;
+    }
+  }
+}
+
 void slowDown(void){
 
   slowDownActive++; //verifico quante volte viene attivato slowdown
@@ -566,7 +576,7 @@ void slowDown(void){
 
 
 void clearHalfLines(void){
-  int i, r, c;
+  int i, r, c, x, j;
   uint16_t lines_occupied = HEIGHT - highest_row;
   uint16_t linesRemoved = 0;
   uint16_t lines_to_clear; 
@@ -577,7 +587,18 @@ void clearHalfLines(void){
   if(lines_to_clear == 0 && lines_occupied > 0) lines_to_clear = 1;
   
   for(i = lines_to_clear; i > 0; i--){
-      // Shift down logic adapted from deleteFullLines
+
+    for( x = 0; x < WIDTH; x++){
+      if(playing_field[HEIGHT-1][x] == SLOW_DOWN || playing_field[HEIGHT-1][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+        
+       addPendingPowerup(playing_field[HEIGHT-1][x]);
+       if(powerupsInTheField > 0) powerupsInTheField--;
+      }
+
+      }
+    }
+    
+    // Shift down logic adapted from deleteFullLines
       // We target the bottom row (HEIGHT - 1) to shift everything down
       for (r = HEIGHT - 1; r > 0; r--) {
           for (c = 0; c < WIDTH; c++) {
@@ -622,31 +643,45 @@ void spawnPowerUp(void){
 
 
 
+
 void activePowerUp(POWERUP type){
-  if(powerUpFlag == 1){
     if(type == CLEAR_H_LINES){
 
       clearHalfLines();
-      if(pending_powerup1 == CLEAR_H_LINES) pending_powerup1 = 0;
-      if(pending_powerup2 == CLEAR_H_LINES) pending_powerup2 = 0;
-      clear_half_lines_active ++;
+
     }
     else if(type == SLOW_DOWN){
       slowDown();
-      if(pending_powerup1 == SLOW_DOWN) pending_powerup1 = 0;
-      if(pending_powerup2 == SLOW_DOWN) pending_powerup2 = 0;
-
     }
-  
-  }
 }
   
+
+void powerUpCheck(void){
+  // se rilevo un powerup quando elimino le righe lo attivo qui 
+  // inserito qui perchè matrice del playing field stabile 
+  int i;
+  while(pending_powerup[0] != 0){
+    POWERUP typeToExecute = pending_powerup[0];
+
+    //shift della coda dei powerups
+    for(i = 0; i < WIDTH-1; i++){
+      pending_powerup[i] = pending_powerup[i+1];
+    }
+    pending_powerup[WIDTH-1] = 0; //pulisco l'ultimo elemento 
+    powerUpFlag = 1;
+    activePowerUp(typeToExecute);
+    powerUpFlag = 0;
+  }
+  
+}
+
+
 /* END POWERUP SECTION */
 
 
 
 uint16_t deleteFullLines(void) {
-int y, x;
+int y, x, i;
 uint8_t linesCleared = 0;
 // Scansioniamo dal basso (riga 19) verso l'alto
 for (y = HEIGHT - 1; y >= 0; y--) {
@@ -663,16 +698,12 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         linesCleared++; 
         for (x = 0; x < WIDTH; x++) {
           if(playing_field[y][x] == SLOW_DOWN || playing_field[y][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
-            if(pending_powerup1 > 0){
-              pending_powerup2 = playing_field[y][x];
-              powerupsInTheField--;
-            }
-            else{
-            pending_powerup1 = playing_field[y][x];
-            powerupsInTheField--;
-            }
+            
+            addPendingPowerup(playing_field[y][x]);
+            if(powerupsInTheField > 0) powerupsInTheField--;
           }
-      }
+
+            }
         // Fai scendere tutto ciò che c'è sopra
         // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
         int c, r;
@@ -728,21 +759,7 @@ void handlePieceLock(void) {
     assignScore(linesRemoved, previous_lines_cleared);
 
     }
-
-    // se rilevo un powerup quando elimino le righe lo attivo qui 
-    // inserito qui perchè matrice del playing field stabile 
-    if(pending_powerup1 != 0){
-      powerUpFlag = 1;
-      activePowerUp(pending_powerup1);
-      powerUpFlag = 0;
-      pending_powerup1 = 0; // reset del powerup 
-    }
-    if(pending_powerup2 != 0){
-      powerUpFlag = 1;
-      activePowerUp(pending_powerup2);
-      powerUpFlag = 0;
-      pending_powerup2 = 0; // reset del powerup 
-    }
-
+    
+    powerUpCheck(); 
 }
 
