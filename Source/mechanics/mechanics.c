@@ -646,7 +646,11 @@ void spawnPowerUp(void){
     uint16_t randomX = rand() % WIDTH;
     uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
     for( attempts =  100; attempts > 0; attempts--){
-
+      if(randomY >= HEIGHT || randomX >= WIDTH){
+        randomY =(rand() % occupied_lines) + highest_row;
+        randomX = rand() % WIDTH;
+        continue;
+      }
       if (playing_field[randomY][randomX] != 0) {
         playing_field[randomY][randomX] = SLOW_DOWN;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
         GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
@@ -719,7 +723,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
             if(powerupsInTheField > 0) powerupsInTheField--;
           }
 
-            }
+        }
         // Fai scendere tutto ciò che c'è sopra
         // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
         int c, r;
