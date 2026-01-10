@@ -148,7 +148,7 @@ void RIT_IRQHandler (void)
 		else {
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = currentPeriod;  // velocità normale 1 square al secondo
+			LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
 			}
 		}
 		old_joy = current_joy;

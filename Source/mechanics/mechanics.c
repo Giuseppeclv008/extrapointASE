@@ -567,7 +567,7 @@ void addPendingPowerup(POWERUP type){
 
 void slowDown(void){
 
-  slowDownActive++; //verifico quante volte viene attivato slowdown
+
 
 }
 

@@ -45,7 +45,7 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 
 */
 
-volatile uint64_t current_period;
+volatile uint64_t current_period = NORMAL_PERIOD;
 
 void ADC_IRQHandler(void) {
   	
