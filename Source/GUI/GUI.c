@@ -34,8 +34,8 @@ void GUI_DrawInterface(void){
     // Valore Punteggio
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"00000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
     
-    char highScoreStr[9];
-    sprintf(highScoreStr, "%08d", HighScore);
+    char highScoreStr[22];
+    sprintf(highScoreStr, "%08llu", HighScore);
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
@@ -52,11 +52,11 @@ void GUI_DrawInterface(void){
 }
 void GUI_UpdateScore(uint64_t previous_score){
     uint64_t sccore_to_erase = previous_score;
-    uint16_t score_str_erase[9]; 
+    uint16_t score_str_erase[22]; 
     uint32_t score_to_display = score;
-    uint16_t score_str[9]; 
-    sprintf((char*)score_str, "%08u", score_to_display);
-    sprintf((char*)score_str_erase,"%08u", sccore_to_erase);
+    uint16_t score_str[22]; 
+    sprintf((char*)score_str, "%08llu", score_to_display);
+    sprintf((char*)score_str_erase,"%08llu", sccore_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
@@ -66,10 +66,10 @@ void GUI_UpdateScore(uint64_t previous_score){
 void GUI_UpdateHighScore(uint64_t previous_highscore){
     // Aggiorna l'high score visualizzato
     uint64_t highscore_to_display = HighScore;
-    uint16_t highscore_str_erase[9]; 
-    uint16_t highscore_str[9];
-    sprintf((char*)highscore_str,"%08u", highscore_to_display);
-    sprintf((char*)highscore_str_erase,"%08u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    uint16_t highscore_str_erase[22]; 
+    uint16_t highscore_str[22];
+    sprintf((char*)highscore_str,"%08llu", highscore_to_display);
+    sprintf((char*)highscore_str_erase,"%08llu", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
    
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
