@@ -638,12 +638,14 @@ void clearHalfLines(void){
 
 void spawnPowerUp(void){
     uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
+    if(highest_row >= HEIGHT) return;
     uint16_t occupied_lines = HEIGHT - highest_row;
     uint16_t powerUpType = powerUpTypes[rand() % 2]; 
 
     uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
                                                                     // più il valore è alto più sono in basso
     uint16_t randomX = rand() % WIDTH;
+
     uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
     for( attempts =  100; attempts > 0; attempts--){
       if(randomY >= HEIGHT || randomX >= WIDTH){
@@ -651,7 +653,7 @@ void spawnPowerUp(void){
         randomX = rand() % WIDTH;
         continue;
       }
-      if (playing_field[randomY][randomX] != 0) {
+      if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
         playing_field[randomY][randomX] = SLOW_DOWN;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
         GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
         break;
@@ -717,9 +719,10 @@ for (y = HEIGHT - 1; y >= 0; y--) {
     if (isFull) {
         linesCleared++; 
         for (x = 0; x < WIDTH; x++) {
-          if(playing_field[y][x] == SLOW_DOWN || playing_field[y][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+          uint16_t val = playing_field[y][x];
+          if(val == SLOW_DOWN || val == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
             
-            addPendingPowerup(playing_field[y][x]);
+            addPendingPowerup(val);
             if(powerupsInTheField > 0) powerupsInTheField--;
           }
 
