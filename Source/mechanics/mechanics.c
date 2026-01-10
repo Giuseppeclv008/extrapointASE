@@ -19,8 +19,8 @@ volatile uint16_t powerupsInTheField = 0; // da rimuovere
 volatile uint16_t slowDownActive = 0; // da rimuovere 
 
 
-volatile uint32_t HighScore = 0;
-volatile uint32_t score = 0;
+volatile uint64_t HighScore = 0;
+volatile uint64_t score = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
 volatile uint8_t paused; // the playing state is represented by !paused 
@@ -474,7 +474,7 @@ void movePieceDown(void) {
   if(tryMoveDown()){
     GUI_DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
     currentPiece.y++;
-    int previous_score = score;
+    uint64_t previous_score = score;
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
     GUI_UpdateScore(previous_score);
     GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione

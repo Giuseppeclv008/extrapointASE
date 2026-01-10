@@ -5,8 +5,8 @@
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
-extern volatile uint32_t HighScore;
-extern volatile uint32_t score;
+extern volatile uint64_t HighScore;
+extern volatile uint64_t score;
 extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
 void GUI_DrawInterface(void){
@@ -32,10 +32,10 @@ void GUI_DrawInterface(void){
     // Etichetta Punteggio
     GUI_Text(SCORE_X, SCORE_Y, (uint8_t*)"SCORE", SCORE_COLOR, BACKGROUND_COLOR );
     // Valore Punteggio
-    GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
+    GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"00000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
     
-    char highScoreStr[7];
-    sprintf(highScoreStr, "%06d", HighScore);
+    char highScoreStr[9];
+    sprintf(highScoreStr, "%08d", HighScore);
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
@@ -50,26 +50,26 @@ void GUI_DrawInterface(void){
 
     //opzionalmente aggiungere la sezione per il next piece
 }
-void GUI_UpdateScore(int previous_score){
-    uint32_t sccore_to_erase = previous_score;
-    uint8_t score_str_erase[7]; // 6 cifre + terminatore null
+void GUI_UpdateScore(uint64_t previous_score){
+    uint64_t sccore_to_erase = previous_score;
+    uint16_t score_str_erase[9]; 
     uint32_t score_to_display = score;
-    uint8_t score_str[7]; // 6 cifre + terminatore null
-    sprintf((char*)score_str, "%06u", score_to_display);
-    sprintf((char*)score_str_erase,"%06u", sccore_to_erase);
+    uint16_t score_str[9]; 
+    sprintf((char*)score_str, "%08u", score_to_display);
+    sprintf((char*)score_str_erase,"%08u", sccore_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
 
 }
 
-void GUI_UpdateHighScore(int previous_highscore){
+void GUI_UpdateHighScore(uint64_t previous_highscore){
     // Aggiorna l'high score visualizzato
-    uint32_t highscore_to_display = HighScore;
-    uint8_t highscore_str_erase[7]; // 6 cifre + terminatore null
-    uint8_t highscore_str[7]; // 6 cifre + terminatore null
-    sprintf((char*)highscore_str,"%06u", highscore_to_display);
-    sprintf((char*)highscore_str_erase,"%06u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    uint64_t highscore_to_display = HighScore;
+    uint16_t highscore_str_erase[9]; 
+    uint16_t highscore_str[9];
+    sprintf((char*)highscore_str,"%08u", highscore_to_display);
+    sprintf((char*)highscore_str_erase,"%08u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
    
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
