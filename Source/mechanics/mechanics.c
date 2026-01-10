@@ -12,7 +12,7 @@
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint16_t highest_row = HEIGHT;
-volatile uint16_t pending_powerup[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+volatile uint16_t pending_powerups[10];
 volatile uint16_t powerUpFlag = 0;
 
 volatile uint16_t powerupsInTheField = 0; // da rimuovere 
@@ -193,10 +193,15 @@ const uint8_t TETROMINOS[7][4][4][4] = {
           {0,0,0,0} }
     }
 };
-
+void inizializePendingPowerups(void){
+  int i;
+  for(i = 0; i < WIDTH; i++){
+    pending_powerups[i] = 0;
+  }
+}
 void initializeGame(void) {
     initializePlayingField();
-		
+		inizializePendingPowerups();
     score = 0;
     game_started = 0;
     game_over = 0;
@@ -558,8 +563,8 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
 void addPendingPowerup(POWERUP type){
   int i;
   for(i = 0; i < WIDTH; i++){
-    if(pending_powerup[i] == 0){
-      pending_powerup[i] = type;
+    if(pending_powerups[i] == 0){
+      pending_powerups[i] = type;
       return;
     }
   }
@@ -618,10 +623,10 @@ void clearHalfLines(void){
 
 
 void spawnPowerUp(void){
-    uint16_t powerUpType = CLEAR_H_LINES; // DA MODIFICARE 
-    uint16_t occupied_lines = (HEIGHT-1) - highest_row;
+    uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
+    uint16_t occupied_lines = HEIGHT - highest_row;
 
-    uint16_t randomY = rand() % (occupied_lines + 1) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
+    uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
                                                                     // più il valore è alto più sono in basso
     uint16_t randomX = rand() % WIDTH;
     uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
@@ -632,7 +637,7 @@ void spawnPowerUp(void){
         GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[powerUpType - 12]);
         break;
       }
-      randomY = rand() % (occupied_lines + 1) + highest_row;
+      randomY =(rand() % occupied_lines) + highest_row;
       randomX = rand() % WIDTH;
     }
 }
@@ -656,14 +661,14 @@ void powerUpCheck(void){
   // se rilevo un powerup quando elimino le righe lo attivo qui 
   // inserito qui perchè matrice del playing field stabile 
   int i;
-  while(pending_powerup[0] != 0){
-    POWERUP typeToExecute = pending_powerup[0];
+  while(pending_powerups[0] != 0){
+    POWERUP typeToExecute = pending_powerups[0];
 
     //shift della coda dei powerups
     for(i = 0; i < WIDTH-1; i++){
-      pending_powerup[i] = pending_powerup[i+1];
+      pending_powerups[i] = pending_powerups[i+1];
     }
-    pending_powerup[WIDTH-1] = 0; //pulisco l'ultimo elemento 
+    pending_powerups[WIDTH-1] = 0; //pulisco l'ultimo elemento 
     powerUpFlag = 1;
     activePowerUp(typeToExecute);
     powerUpFlag = 0;
