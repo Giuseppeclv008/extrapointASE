@@ -150,7 +150,7 @@ void RIT_IRQHandler (void)
 			else {
 				// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 				if(current_joy != JOY_DOWN){
-					if(	LPC_TIM0->MR0 != current_period){
+					if(	LPC_TIM0->MR0 != current_period && slowDownTicks == 0){
 						LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
 					
 					}
@@ -237,7 +237,7 @@ void RIT_IRQHandler (void)
 		if(slowDownTicks == 0){
 			// sono passati 15 secondi 
 			LPC_TIM0->MR0 = current_period;
-			GUI_Text(10, 300, (uint8_t*)"SlowDown ON", Black, Black);
+			GUI_Text(165, 300, (uint8_t*)"SlowDown ON", Black, Black);
 		}
 	}
 	/*  ***********************************************  */
