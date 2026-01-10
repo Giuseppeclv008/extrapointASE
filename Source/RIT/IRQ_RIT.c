@@ -15,6 +15,7 @@
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
 #include "../music/music.h"
+#include "../adc/adc.h"
 
 
 #define RIT_SEMIMINIMA 8
@@ -29,7 +30,7 @@ volatile uint8_t down2 = 0;
 extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
-
+extern volatile uint64_t current_period;
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
@@ -113,59 +114,60 @@ void RIT_IRQHandler (void)
 	// il joystick non interrompere mai il RIT
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
-	uint64_t current_period = LPC_TIM0->MR0;
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
-	// ADC_start_conversion();
+	ADC_start_conversion();
 
 	if(game_started && !paused && !game_over) {
-		if (current_joy != old_joy) {
-			switch(current_joy){
-				case JOY_UP:
-					rotatePiece();
-					break;
-				case JOY_DOWN:
+			if (current_joy != old_joy) {
+				switch(current_joy){
+					case JOY_UP:
+						rotatePiece();
+						break;
+					case JOY_DOWN:
 
-					LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
-					LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-										// necessario perchè se modifico ed MR0 ha superato il conteggio 
-										// il timer non verrà mai resettato e il pezzo resta sospeso
-					break;
-				case JOY_LEFT:
-					movePieceLeft();
-					break;
-				case JOY_RIGHT:
-					movePieceRight();
-					break;
-				case JOY_SEL:
-					// Azione per select
-					break;
-				default:
-					break;
+						LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
+						LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+											// necessario perchè se modifico ed MR0 ha superato il conteggio 
+											// il timer non verrà mai resettato e il pezzo resta sospeso
+						break;
+					case JOY_LEFT:
+						movePieceLeft();
+						break;
+					case JOY_RIGHT:
+						movePieceRight();
+						break;
+					case JOY_SEL:
+						// Azione per select
+						break;
+					default:
+						break;
+				}
 			}
-		}
-		else {
-			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
-			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = NORMAL_PERIOD;  // velocità normale 1 square al secondo
+			else {
+				// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
+				if(current_joy != JOY_DOWN){
+					if(	LPC_TIM0->MR0 != current_period){
+						LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
+					
+					}
+						
+				}
 			}
-		}
-		old_joy = current_joy;
-
+				old_joy = current_joy;
 	}
-	
-	/* *********************************************** */
-	/* gestione di KEY 1, debouncing con RIT		   */ 
-	/* *********************************************** */
-	// nell'if verifico se il pin P2.11 (KEY1) è ancora basso (premuto)
-	// se è ancora basso incremento il contatore down
-	// se è stato rilasciato (alto) resetto il contatore down
-	// in base al valore di down eseguo l'azione corrispondente
-	// disabilito EINT1 per evitare che l'interrupt del tasto interferisca
-	// se LPC_PINCON->PINSEL4 è pari a 00 allora sono in modalità GPIO, semplice Input/Output GP
-	// se sono in modalità EINT1, sono in "01" e sono collegato al controller degli interrupt esterni 
-	// verifico quindi nell'if che il pin sia in modalità GPIO (00)
-	
+		/* *********************************************** */
+		/* gestione di KEY 1, debouncing con RIT		   */ 
+		/* *********************************************** */
+		// nell'if verifico se il pin P2.11 (KEY1) è ancora basso (premuto)
+		// se è ancora basso incremento il contatore down
+		// se è stato rilasciato (alto) resetto il contatore down
+		// in base al valore di down eseguo l'azione corrispondente
+		// disabilito EINT1 per evitare che l'interrupt del tasto interferisca
+		// se LPC_PINCON->PINSEL4 è pari a 00 allora sono in modalità GPIO, semplice Input/Output GP
+		// se sono in modalità EINT1, sono in "01" e sono collegato al controller degli interrupt esterni 
+		// verifico quindi nell'if che il pin sia in modalità GPIO (00)
+		
 	if(down1>=1){
 		if((LPC_GPIO2->FIOPIN & (1<<11)) == 0){	// KEY1 ancora premuto , attivo basso 
 			// sul FIOPIN leggo lo stato del pin P2.11 (KEY1)
@@ -249,7 +251,6 @@ void RIT_IRQHandler (void)
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
-	
 
 			
 	
