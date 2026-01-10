@@ -31,6 +31,8 @@ extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint64_t current_period;
+extern volatile int slowDownTicks;
+
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
@@ -117,7 +119,6 @@ void RIT_IRQHandler (void)
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
 	ADC_start_conversion();
-
 	if(game_started && !paused && !game_over) {
 			if (current_joy != old_joy) {
 				switch(current_joy){
@@ -229,7 +230,15 @@ void RIT_IRQHandler (void)
 			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
 		}
 	}
-
+	if(slowDownTicks > 0){
+		slowDownTicks--;
+		if(slowDownTicks == 0){
+			// sono passati 15 secondi 
+			LPC_TIM0->MR0 = current_period;
+			GUI_RefreshScreen();
+			GUI_DrawInterface();
+		}
+	}
 	/*  ***********************************************  */
 	/* 					 SONG PART						 */
 	/*  ***********************************************  */

@@ -4,6 +4,8 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
+#include "adc/adc.h"
+#include "timer/timer.h"
 
 #define HEIGHT 20
 #define WIDTH 10
@@ -24,6 +26,10 @@ volatile uint8_t paused; // the playing state is represented by !paused
 volatile uint16_t lines_cleared = 0;
 volatile uint8_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
+
+// variabili globali per il conteggio dello slowdown, 15 secondi = 300 Ticks, perchè RIT scatta ogni 50ms
+volatile int slowDownTicks = 0; 
+extern volatile uint64_t current_period;
 
 const uint16_t TETROMINO_COLORS[7] = { 
     Cyan,    // I
@@ -571,7 +577,15 @@ void addPendingPowerup(POWERUP type){
 }
 
 void slowDown(void){
+  if(current_period < NORMAL_PERIOD){
+    LPC_TIM0->MR0 = NORMAL_PERIOD;
+    LPC_TIM0->TC = 0;
 
+    slowDownTicks = 300;
+
+    GUI_Text(10, 300, (uint8_t*)"SlowDown ON", White, Red);
+  }
+  
 
 
 }
@@ -633,8 +647,8 @@ void spawnPowerUp(void){
     for( attempts =  100; attempts > 0; attempts--){
 
       if (playing_field[randomY][randomX] != 0) {
-        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
-        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[powerUpType - 12]);
+        playing_field[randomY][randomX] = SLOW_DOWN;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
+        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
         break;
       }
       randomY =(rand() % occupied_lines) + highest_row;
