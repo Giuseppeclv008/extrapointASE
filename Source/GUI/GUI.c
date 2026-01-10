@@ -77,7 +77,7 @@ void GUI_UpdateHighScore(int previous_highscore){
 
 void GUI_UpdateClearedLines(int previous_lines_cleared){
     // Aggiorna il numero di linee cancellate visualizzato
-    uint32_t lines_to_display = lines_cleared;
+    uint16_t lines_to_display = lines_cleared;
     uint8_t lines_str_erase[4]; // 3 cifre + terminatore nulle
     uint8_t lines_str[4]; // 3 cifre + terminatore nulle
     sprintf((char*)lines_str_erase,"%03u", previous_lines_cleared);
