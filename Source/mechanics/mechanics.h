@@ -37,8 +37,8 @@ typedef struct {
 extern volatile uint8_t timer_tick;
 extern volatile uint8_t hardDrop_flag;
 extern volatile uint16_t playing_field[HEIGHT][WIDTH];
-extern volatile uint32_t score;
-extern volatile uint32_t HighScore;
+extern volatile uint64_t score;
+extern volatile uint64_t HighScore;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint8_t paused;
