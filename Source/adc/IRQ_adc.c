@@ -12,6 +12,7 @@
 #include "adc.h"
 #include "../led/led.h"
 #include "../timer/timer.h"
+#include "mechanics/mechanics.h"
 
 /*----------------------------------------------------------------------------
   A/D IRQ: Executed when A/D Conversion is ready (signal from ADC peripheral)
@@ -44,7 +45,7 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 523Hz	k=1062		c5
 
 */
-
+extern volatile int slowDownTicks ;
 volatile uint64_t current_period = NORMAL_PERIOD;
 
 void ADC_IRQHandler(void) {
