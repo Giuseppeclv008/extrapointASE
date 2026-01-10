@@ -596,7 +596,6 @@ void clearHalfLines(void){
       }
 
       }
-    }
     
     // Shift down logic adapted from deleteFullLines
       // We target the bottom row (HEIGHT - 1) to shift everything down
