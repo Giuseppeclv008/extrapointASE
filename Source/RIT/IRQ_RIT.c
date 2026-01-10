@@ -114,7 +114,6 @@ void RIT_IRQHandler (void)
 	// il joystick non interrompere mai il RIT
 	static uint8_t old_joy = 0;
 	uint8_t current_joy = joystick_read();
-	uint64_t current_period = LPC_TIM0->MR0;
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
 	ADC_start_conversion();
@@ -148,7 +147,15 @@ void RIT_IRQHandler (void)
 		else {
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
+				if(	LPC_TIM0->MR0 != current_period;){
+					LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
+				
+				}
+					
+			}
+			else if (current_joy == JOY_DOWN){ //permette di far accellerare il pezzo mentre ho JOYDOWN se muovo in contemporanea il potenziometro 
+				if(LPC_TIM0->MR0 != current_period/2){
+					LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte 
 			}
 		}
 		old_joy = current_joy;
