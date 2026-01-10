@@ -583,7 +583,7 @@ void slowDown(void){
 
     slowDownTicks = 300;
 
-    GUI_Text(10, 300, (uint8_t*)"SlowDown ON", White, Red);
+    GUI_Text(165, 300, (uint8_t*)"SlowDown ON", White, Red);
   }
   
 
