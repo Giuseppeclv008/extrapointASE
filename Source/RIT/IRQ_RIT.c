@@ -15,6 +15,7 @@
 #include "../timer/timer.h"
 #include "../GUI/GUI.h"
 #include "../music/music.h"
+#include "../adc/adc.h"
 
 
 #define RIT_SEMIMINIMA 8
@@ -29,7 +30,7 @@ volatile uint8_t down2 = 0;
 extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
-
+extern volatile uint64_t current_period;
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
@@ -147,7 +148,7 @@ void RIT_IRQHandler (void)
 		else {
 			// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 			if(current_joy != JOY_DOWN){
-			LPC_TIM0->MR0 = NORMAL_PERIOD;  // velocità normale 1 square al secondo
+			LPC_TIM0->MR0 = currentPeriod;  // velocità normale 1 square al secondo
 			}
 		}
 		old_joy = current_joy;

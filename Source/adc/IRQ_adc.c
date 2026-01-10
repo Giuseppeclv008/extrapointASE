@@ -45,6 +45,7 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 
 */
 
+volatile uint64_t current_period;
 
 void ADC_IRQHandler(void) {
   	
@@ -66,7 +67,7 @@ void ADC_IRQHandler(void) {
 		  }else{
 			  new_period = max_period - reduction;
 		  }
-		  
+		  current_period = new_period;
 		  disable_timer(0);
 		  reset_timer(0);
 		  init_timer(0, new_period);
