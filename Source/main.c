@@ -25,8 +25,8 @@
 
 
 // external variables from mechanics.c
-extern volatile uint32_t score;
-extern volatile uint32_t HighScore;
+extern volatile uint64_t score;
+extern volatile uint64_t HighScore;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint8_t paused;

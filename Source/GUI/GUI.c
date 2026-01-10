@@ -53,7 +53,7 @@ void GUI_DrawInterface(void){
 void GUI_UpdateScore(uint64_t previous_score){
     uint64_t sccore_to_erase = previous_score;
     uint16_t score_str_erase[22]; 
-    uint32_t score_to_display = score;
+    uint64_t score_to_display = score;
     uint16_t score_str[22]; 
     sprintf((char*)score_str, "%08llu", score_to_display);
     sprintf((char*)score_str_erase,"%08llu", sccore_to_erase);
