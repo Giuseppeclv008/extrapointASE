@@ -778,7 +778,7 @@ void handlePieceLock(void) {
       if(lines_to_next_powerup >= 1){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
-        lines_to_next_powerup = lines_to_next_powerup - 5;
+        lines_to_next_powerup = lines_to_next_powerup - 1;
     }
     assignScore(linesRemoved, previous_lines_cleared);
 
