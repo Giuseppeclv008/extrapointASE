@@ -749,6 +749,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
     }
 }
 highest_row += linesCleared; // Aggiorna la variabile globale 
+if(highest_row > HEIGHT) highest_row = HEIGHT;
 lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
