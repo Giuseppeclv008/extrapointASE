@@ -115,20 +115,8 @@ NOTE song[] = {
     {pause, time_croma * 4}
 };
 
-// Suono acuto e rapido per Clear Lines
-NOTE sfx_clear_lines[] = {
-    {c3, time_semicroma},
-    {e3, time_semicroma},
-    {g3, time_semicroma},
-    {c4, time_croma}
-};
-
-// Suono discendente per Slow Down
-NOTE sfx_slow_down[] = {
-    {a3, time_croma},
-    {f3, time_croma},
-    {d3, time_croma * 2}
-};
+extern  NOTE sfx_clear_lines[];
+extern  NOTE sfx_slow_down[];
 
 void RIT_IRQHandler (void)
 {			
