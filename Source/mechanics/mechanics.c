@@ -582,12 +582,8 @@ void slowDown(void){
     LPC_TIM0->TC = 0;
 
     slowDownTicks = 300;
-
-    GUI_Text(165, 300, (uint8_t*)"SlowDown ON", White, Red);
+    GUI_SlowDown();
   }
-  
-
-
 }
 
 
