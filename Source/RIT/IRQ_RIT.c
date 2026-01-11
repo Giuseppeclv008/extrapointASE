@@ -32,6 +32,7 @@ extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint64_t current_period;
 extern volatile int slowDownTicks;
+volatile uint8_t flag_hard_drop = 0;
 
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
@@ -218,7 +219,7 @@ void RIT_IRQHandler (void)
 			switch(down2){
 			case 2: 
 				if(!paused && game_started){
-					hardDrop();
+					flag_hard_drop = 1;
 				}
 				break;
 			default:
