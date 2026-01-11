@@ -102,8 +102,8 @@ int main (void) {
 				movePieceDown();
 			}
 
-			if(hardDrop_flag == 1){
-				hardDrop_flag = 0;
+			if(flag_hard_drop == 1){
+				flag_hard_drop = 0;
 				hardDrop();
 			}
 			__ASM("wfi");
