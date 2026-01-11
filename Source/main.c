@@ -35,6 +35,8 @@ extern unsigned char led_value;					/* defined in lib_led								*/
 
 /* extern variable from IRQ_timer.c*/
 extern volatile uint8_t timer_tick;
+/* extern variable from IRQ_RIT.c*/
+extern volatile uint8_t flag_hard_drop;
 
 #ifdef SIMULATOR
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
@@ -100,6 +102,10 @@ int main (void) {
 				movePieceDown();
 			}
 
+			if(flag_hard_drop == 1){
+				flag_hard_drop = 0;
+				hardDrop();
+			}
 			__ASM("wfi");
 		}
 		else if(game_over){

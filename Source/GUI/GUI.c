@@ -9,6 +9,7 @@ extern volatile uint64_t HighScore;
 extern volatile uint64_t score;
 extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
+
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -78,13 +79,14 @@ void GUI_UpdateHighScore(uint64_t previous_highscore){
 void GUI_UpdateClearedLines(int previous_lines_cleared){
     // Aggiorna il numero di linee cancellate visualizzato
     uint16_t lines_to_display = lines_cleared;
-    uint8_t lines_str_erase[4]; // 3 cifre + terminatore nulle
-    uint8_t lines_str[4]; // 3 cifre + terminatore nulle
+    uint8_t lines_str_erase[10]; // 3 cifre + terminatore nulle
+    uint8_t lines_str[10]; // 3 cifre + terminatore nulle
     sprintf((char*)lines_str_erase,"%03u", previous_lines_cleared);
     sprintf((char*)lines_str,"%03u", lines_to_display);
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il numero precedente
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
+
 
 void GUI_RefreshInterface(){
     GUI_DrawInterface();
@@ -157,6 +159,13 @@ void GUI_gameOverScreen(void){
 void GUI_clearGameOverScreen(void){
     // Cancella la schermata di game over
     GUI_RefreshInterface();
+}
+
+void GUI_SlowDown(void){
+    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown", White, Red);
+}
+void GUI_clearSlowDown(void){
+    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown OFF", Black, Black);
 }
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){
