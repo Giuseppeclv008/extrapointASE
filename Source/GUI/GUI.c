@@ -9,9 +9,7 @@ extern volatile uint64_t HighScore;
 extern volatile uint64_t score;
 extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
-void GUI_SlowDown(void){
-    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown ON", White, Red);
-}
+
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -89,9 +87,7 @@ void GUI_UpdateClearedLines(int previous_lines_cleared){
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
 
-void GUI_SlowDown(void){
-    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown ON", White, Red);
-}
+
 void GUI_RefreshInterface(){
     GUI_DrawInterface();
     // Aggiorna il high score
@@ -166,7 +162,7 @@ void GUI_clearGameOverScreen(void){
 }
 
 void GUI_SlowDown(void){
-    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown ON", White, Red);
+    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown", White, Red);
 }
 void GUI_clearSlowDown(void){
     GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown OFF", Black, Black);
