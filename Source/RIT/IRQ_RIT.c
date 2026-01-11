@@ -31,6 +31,9 @@ extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint64_t current_period;
+extern volatile int slowDownTicks;
+volatile uint8_t flag_hard_drop = 0;
+
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
@@ -117,7 +120,6 @@ void RIT_IRQHandler (void)
 	// entriamo nel blocco se il joystick cambia stato rispetto all'ultima lettura
 
 	ADC_start_conversion();
-
 	if(game_started && !paused && !game_over) {
 			if (current_joy != old_joy) {
 				switch(current_joy){
@@ -125,11 +127,13 @@ void RIT_IRQHandler (void)
 						rotatePiece();
 						break;
 					case JOY_DOWN:
-
-						LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
-						LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+						if(slowDownTicks == 0){
+							LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
+							LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
 											// necessario perchè se modifico ed MR0 ha superato il conteggio 
 											// il timer non verrà mai resettato e il pezzo resta sospeso
+						}
+						
 						break;
 					case JOY_LEFT:
 						movePieceLeft();
@@ -147,7 +151,7 @@ void RIT_IRQHandler (void)
 			else {
 				// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN
 				if(current_joy != JOY_DOWN){
-					if(	LPC_TIM0->MR0 != current_period){
+					if(	LPC_TIM0->MR0 != current_period && slowDownTicks == 0){
 						LPC_TIM0->MR0 = current_period;  // velocità normale 1 square al secondo
 					
 					}
@@ -215,7 +219,7 @@ void RIT_IRQHandler (void)
 			switch(down2){
 			case 2: 
 				if(!paused && game_started){
-					hardDrop();
+					flag_hard_drop = 1;
 				}
 				break;
 			default:
@@ -229,7 +233,14 @@ void RIT_IRQHandler (void)
 			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
 		}
 	}
-
+	if(slowDownTicks != 0 && slowDownTicks > 0 && !paused){
+		slowDownTicks--;
+	}
+	if(slowDownTicks == 0){
+		// sono passati 15 secondi 
+		LPC_TIM0->MR0 = current_period;
+		GUI_clearSlowDown();
+	}
 	/*  ***********************************************  */
 	/* 					 SONG PART						 */
 	/*  ***********************************************  */

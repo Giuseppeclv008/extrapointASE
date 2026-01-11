@@ -4,6 +4,8 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
+#include "adc/adc.h"
+#include "timer/timer.h"
 
 #define HEIGHT 20
 #define WIDTH 10
@@ -24,6 +26,10 @@ volatile uint8_t paused; // the playing state is represented by !paused
 volatile uint16_t lines_cleared = 0;
 volatile uint8_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
+
+// variabili globali per il conteggio dello slowdown, 15 secondi = 300 Ticks, perchè RIT scatta ogni 50ms
+volatile int slowDownTicks = 0; 
+extern volatile uint64_t current_period;
 
 const uint16_t TETROMINO_COLORS[7] = { 
     Cyan,    // I
@@ -571,9 +577,13 @@ void addPendingPowerup(POWERUP type){
 }
 
 void slowDown(void){
+  if(current_period < NORMAL_PERIOD){
+    LPC_TIM0->MR0 = NORMAL_PERIOD;
+    LPC_TIM0->TC = 0;
 
-
-
+    slowDownTicks = 300;
+    GUI_SlowDown();
+  }
 }
 
 
@@ -624,18 +634,24 @@ void clearHalfLines(void){
 
 void spawnPowerUp(void){
     uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
+    if(highest_row >= HEIGHT) return;
     uint16_t occupied_lines = HEIGHT - highest_row;
     uint16_t powerUpType = powerUpTypes[rand() % 2]; 
 
     uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
                                                                     // più il valore è alto più sono in basso
     uint16_t randomX = rand() % WIDTH;
+
     uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
     for( attempts =  100; attempts > 0; attempts--){
-
-      if (playing_field[randomY][randomX] != 0) {
+      if(randomY >= HEIGHT || randomX >= WIDTH){
+        randomY =(rand() % occupied_lines) + highest_row;
+        randomX = rand() % WIDTH;
+        continue;
+      }
+      if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
         playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
-        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[powerUpType - 12]);
+        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
         break;
       }
       randomY =(rand() % occupied_lines) + highest_row;
@@ -699,13 +715,14 @@ for (y = HEIGHT - 1; y >= 0; y--) {
     if (isFull) {
         linesCleared++; 
         for (x = 0; x < WIDTH; x++) {
-          if(playing_field[y][x] == SLOW_DOWN || playing_field[y][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+          uint16_t val = playing_field[y][x];
+          if(val == SLOW_DOWN || val == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
             
-            addPendingPowerup(playing_field[y][x]);
+            addPendingPowerup(val);
             if(powerupsInTheField > 0) powerupsInTheField--;
           }
 
-            }
+        }
         // Fai scendere tutto ciò che c'è sopra
         // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
         int c, r;
@@ -728,6 +745,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
     }
 }
 highest_row += linesCleared; // Aggiorna la variabile globale 
+if(highest_row > HEIGHT) highest_row = HEIGHT;
 lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
@@ -748,12 +766,7 @@ void handlePieceLock(void) {
     // faccio comparire un PowerUp 
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
-      
-      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-      /*  TO DO MODIFICARE LA CONDIZIONE DELL'IF QUI SOTTO CORRETTAMENTE COME lines_to_next_powerup >= 5 */
-      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-      
-      if(lines_to_next_powerup >= 1){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
         lines_to_next_powerup = lines_to_next_powerup - 5;

@@ -24,6 +24,10 @@
 #define HIGH_SCORE_Y 120
 #define CLEARED_LINES_Y 200
 
+// COORDINATE SLOWDOWN
+#define SLOWDOWN_X 165
+#define SLOWDOWN_Y 300
+
 // COLORI COMPONENTI STATICHE GUI
 #define BACKGROUND_COLOR Black
 #define FIELD_BORDER_COLOR White
@@ -47,6 +51,8 @@ void GUI_RefreshScreen(void);
 void GUI_clearGameOverScreen(void);
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color);
 void GUI_DrawCurrentPiece(uint16_t color);
+void GUI_SlowDown(void);
+void GUI_clearSlowDown(void);
 
 
 #endif
