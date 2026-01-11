@@ -126,7 +126,7 @@ void GUI_DrawPowerUpSymbol(uint16_t x, uint16_t y, uint16_t type){
             LCD_SetPoint(x_start + 3, y_start + i, symbolColor);
         }
         for(i = 3; i < BLOCK_SIZE - 3 ; i++){
-            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor)
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor);
         }
         for(i = BLOCK_SIZE/2; i < BLOCK_SIZE - 3 ; i++){
             LCD_SetPoint(x_start + BLOCK_SIZE - 4, y_start + i, symbolColor);

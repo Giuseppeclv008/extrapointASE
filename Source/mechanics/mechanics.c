@@ -36,6 +36,9 @@ extern volatile uint64_t current_period;
 volatile uint8_t play_sfx_flag = 0; 
 volatile NOTE* current_sfx_ptr = NULL;
 volatile int sfx_note_count = 0;
+extern  NOTE sfx_clear_lines[];
+extern  NOTE sfx_slow_down[];
+
 
 const uint16_t TETROMINO_COLORS[7] = { 
     Cyan,    // I

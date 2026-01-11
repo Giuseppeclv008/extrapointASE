@@ -116,7 +116,7 @@ NOTE song[] = {
 };
 
 // Suono acuto e rapido per Clear Lines
-extern NOTE sfx_clear_lines[] = {
+NOTE sfx_clear_lines[] = {
     {c3, time_semicroma},
     {e3, time_semicroma},
     {g3, time_semicroma},
@@ -124,7 +124,7 @@ extern NOTE sfx_clear_lines[] = {
 };
 
 // Suono discendente per Slow Down
-extern NOTE sfx_slow_down[] = {
+NOTE sfx_slow_down[] = {
     {a3, time_croma},
     {f3, time_croma},
     {d3, time_croma * 2}
