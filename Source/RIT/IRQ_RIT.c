@@ -253,11 +253,12 @@ void RIT_IRQHandler (void)
 	}
 	if(slowDownTicks != 0 && slowDownTicks > 0 && !paused){
 		slowDownTicks--;
+		if(slowDownTicks == 0) GUI_clearSlowDown();
 	}
 	if(slowDownTicks == 0){
 		// sono passati 15 secondi 
 		LPC_TIM0->MR0 = current_period;
-		GUI_clearSlowDown();
+
 	}
 	/*  ***********************************************  */
 	/* 				SONG PART & SFX	 				     */
