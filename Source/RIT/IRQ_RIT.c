@@ -233,13 +233,13 @@ void RIT_IRQHandler (void)
 			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
 		}
 	}
-	if(slowDownTicks > 0){
+	if(slowDownTicks != 0){
 		slowDownTicks--;
-		if(slowDownTicks == 0){
-			// sono passati 15 secondi 
-			LPC_TIM0->MR0 = current_period;
-			GUI_Text(165, 300, (uint8_t*)"SlowDown ON", Black, Black);
-		}
+	}
+	if(slowDownTicks == 0){
+		// sono passati 15 secondi 
+		LPC_TIM0->MR0 = current_period;
+		GUI_Text(165, 300, (uint8_t*)"SlowDown ON", Black, Black);
 	}
 	/*  ***********************************************  */
 	/* 					 SONG PART						 */

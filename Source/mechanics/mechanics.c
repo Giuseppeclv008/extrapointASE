@@ -654,7 +654,7 @@ void spawnPowerUp(void){
         continue;
       }
       if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
-        playing_field[randomY][randomX] = SLOW_DOWN;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
+        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
         GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
         break;
       }
@@ -770,15 +770,10 @@ void handlePieceLock(void) {
     // faccio comparire un PowerUp 
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
-      
-      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-      /*  TO DO MODIFICARE LA CONDIZIONE DELL'IF QUI SOTTO CORRETTAMENTE COME lines_to_next_powerup >= 5 */
-      /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-      
-      if(lines_to_next_powerup >= 1){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
-        lines_to_next_powerup = lines_to_next_powerup - 1;
+        lines_to_next_powerup = lines_to_next_powerup - 5;
     }
     assignScore(linesRemoved, previous_lines_cleared);
 
