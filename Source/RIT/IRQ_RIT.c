@@ -34,83 +34,101 @@ extern volatile uint64_t current_period;
 extern volatile int slowDownTicks;
 volatile uint8_t flag_hard_drop = 0;
 
+extern volatile uint8_t play_sfx_flag;
+extern volatile NOTE* current_sfx_ptr;
+extern volatile int sfx_note_count;
+
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
     // Battuta 1: E (lunga), B, C
-    {e5, time_croma * 2},
-    {b4, time_croma},
-    {c5, time_croma},
+    {e4, time_croma * 2},
+    {b3, time_croma},
+    {c4, time_croma},
     
     // Battuta 2: D (lunga), C, B
-    {d5, time_croma * 2},
-    {c5, time_croma},
-    {b4, time_croma},
+    {d4, time_croma * 2},
+    {c4, time_croma},
+    {b3, time_croma},
     
     // Battuta 3: A (lunga), A, C
-    {a4, time_croma * 2},
-    {a4, time_croma},
-    {c5, time_croma},
+    {a3, time_croma * 2},
+    {a3, time_croma},
+    {c4, time_croma},
     
     // Battuta 4: E (lunga), D, C
-    {e5, time_croma * 2},
-    {d5, time_croma},
-    {c5, time_croma},
+    {e4, time_croma * 2},
+    {d4, time_croma},
+    {c4, time_croma},
     
     // Battuta 5: B (molto lunga), C
-    {b4, time_croma * 3},
-    {c5, time_croma},
+    {b3, time_croma * 3},
+    {c4, time_croma},
     
     // Battuta 6: D (lunga), E (lunga)
-    {d5, time_croma * 2},
-    {e5, time_croma * 2},
+    {d4, time_croma * 2},
+    {e4, time_croma * 2},
     
     // Battuta 7: C (lunga), A (lunga)
-    {c5, time_croma * 2},
-    {a4, time_croma * 2},
+    {c4, time_croma * 2},
+    {a3, time_croma * 2},
     
     // Battuta 8: A (lunga), Pausa
-    {a4, time_croma * 2},
+    {a3, time_croma * 2},
     {pause, time_croma * 2},
 
     // --- PARTE B (Ponte Alto) ---
 
     // Battuta 9: D (molto lunga), F
-    {d5, time_croma * 3},
-    {f5, time_croma},
+    {d4, time_croma * 3},
+    {f4, time_croma},
     
     // Battuta 10: A (lunga), G, F
-    {a5, time_croma * 2},
-    {g5, time_croma},
-    {f5, time_croma},
+    {a4, time_croma * 2},
+    {g4, time_croma},
+    {f4, time_croma},
     
     // Battuta 11: E (molto lunga), C
-    {e5, time_croma * 3},
-    {c5, time_croma},
+    {e4, time_croma * 3},
+    {c4, time_croma},
     
     // Battuta 12: E (lunga), D, C
-    {e5, time_croma * 2},
-    {d5, time_croma},
-    {c5, time_croma},
+    {e4, time_croma * 2},
+    {d4, time_croma},
+    {c4, time_croma},
     
     // Battuta 13: B (lunga), B, C
-    {b4, time_croma * 2},
-    {b4, time_croma},
-    {c5, time_croma},
+    {b3, time_croma * 2},
+    {b3, time_croma},
+    {c4, time_croma},
     
     // Battuta 14: D (lunga), E (lunga)
-    {d5, time_croma * 2},
-    {e5, time_croma * 2},
+    {d4, time_croma * 2},
+    {e4, time_croma * 2},
     
     // Battuta 15: C (lunga), A (lunga)
-    {c5, time_croma * 2},
-    {a4, time_croma * 2},
+    {c4, time_croma * 2},
+    {a3, time_croma * 2},
     
     // Battuta 16: A (lunga), Pausa finale
-    {a4, time_croma * 2},
+    {a3, time_croma * 2},
     {pause, time_croma * 4}
 };
 
+// Suono acuto e rapido per Clear Lines
+extern NOTE sfx_clear_lines[] = {
+    {c3, time_semicroma},
+    {e3, time_semicroma},
+    {g3, time_semicroma},
+    {c4, time_croma}
+};
+
+// Suono discendente per Slow Down
+extern NOTE sfx_slow_down[] = {
+    {a3, time_croma},
+    {f3, time_croma},
+    {d3, time_croma * 2}
+};
 
 void RIT_IRQHandler (void)
 {			
@@ -242,23 +260,49 @@ void RIT_IRQHandler (void)
 		GUI_clearSlowDown();
 	}
 	/*  ***********************************************  */
-	/* 					 SONG PART						 */
+	/* 				SONG PART & SFX	 				     */
 	/*  ***********************************************  */
-	/* static int currentNote = 0;
+
+
+	
+	// Variabili statiche per la gestione dello stato SFX all'interno del RIT
+	static int currentSfxNoteIndex = 0;
+	static int sfxTicks = 0;
+	static int currentNote = 0;
 	static int ticks = 0;
-	if(!isNotePlaying())
-	{
-		++ticks;
-		if(ticks == UPTICKS)
+	if (play_sfx_flag){
+		if(!isNotePlaying())
 		{
-		ticks = 0;
-		playNote(song[currentNote++]);
+			++sfxTicks;
+			if(sfxTicks == UPTICKS)
+			{
+				sfxTicks = 0;
+				playNote(current_sfx_ptr[currentSfxNoteIndex++]);
+			}
 		}
+		if(currentSfxNoteIndex >= sfx_note_count)
+		{
+			play_sfx_flag = 0;
+			currentSfxNoteIndex = 0;
+			sfxTicks = 0;
+		}
+	}else if (game_started && !paused && !game_over){
+		if(!isNotePlaying())
+		{
+			++ticks;
+			if(ticks == UPTICKS)
+			{
+				ticks = 0;
+				playNote(song[currentNote++]);
+			}
+		}
+		if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
+		{
+			currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
+		}
+			
 	}
-	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
-	{
-		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
-	}*/
+
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
