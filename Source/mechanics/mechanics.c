@@ -746,7 +746,7 @@ void applyRandomMalus(void){
   }
 
   if(highest_row > 0) highest_row--; // ci alziamo di una riga, highest_row aumenta --> indice di riga diventa minore
-  GUI_RefreshScreen()
+  GUI_RefreshScreen();
 
 }
 
@@ -830,9 +830,9 @@ void handlePieceLock(void) {
         lines_to_next_powerup = lines_to_next_powerup - 5;
       }
 
-      if(lines_to_next_malus >= 10){
+      if(lines_to_next_malus >= 1){
         applyRandomMalus();
-        lines_to_next_malus = lines_to_next_malus - 10;
+        lines_to_next_malus = lines_to_next_malus - 1;
 
         if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
       }
