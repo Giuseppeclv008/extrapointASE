@@ -31,20 +31,22 @@ volatile ActiveTetromino currentPiece;
 volatile int slowDownTicks = 0; 
 extern volatile uint64_t current_period;
 
-const uint16_t TETROMINO_COLORS[7] = { 
+const uint16_t TETROMINO_COLORS[8] = { 
     Cyan,    // I
     Yellow,  // O
     Magenta, // T
     Blue,    // J   
     Orange,  // L 
     Green,   // S
-    Red      // Z
+    Red,      // Z
+    DarkPurple // MALUS
 };
 
 uint16_t POWERUP_COLORS[2] = { 
   White, // ClearHalfLines
   Grey // SlowDown
 };
+
 
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
@@ -696,6 +698,60 @@ void powerUpCheck(void){
 
 /* END POWERUP SECTION */
 
+/* RANDOM MALUS SECTION */
+
+void applyRandomMalus(void){
+  int r, c;
+
+  for(c = 0; c < WIDTH; c++){
+    // Prima di applicare il malus controllo se ci sono elementi sulla riga più alta possibile
+    // del playing game, se ho almeno un blocco avrò sicuramente gameover dopo l'applicazione del malus 
+    if(playing_field[0][c] !=  0){
+      game_over = 1;
+      game_started = 0;
+      paused = 1;
+      GUI_gameOverScreen();
+      return;
+    }
+  }
+
+  for(r = 0; r < HEIGHT -1 ; r++){
+    for(c = 0; c < WIDTH; c++){
+      // sposto tutte le righe in alto di un pezzo 
+      playing_field[r][c] = playing_field[r+1][c];
+    }
+  }  
+
+  // Creazione della riga malus: utilizzo un vettore malusRow per gestire 7 blocchi pieni 
+  // e 7 blocchi vuoti 
+  uint16_t malusRow[WIDTH];
+
+  for(c = 0; c < 7; c++) malusRow[c] = 9; // 9 è il valore corrispondente per le righe Malus
+                                          // l'accesso nel vettore dei colori viene fatto sottraendo 1 al valore nel playing field
+  for(c = 7; c < WIDTH; c++) malusRow[c] = 0; 
+
+  // algoritmo di shuffle degli elementi del vettore 
+  // Fisher-Yates - swap semplificato 
+  int swapIndex;
+  uint16_t temp;
+  for (c = 0; c < WIDTH; c++) {
+    swapIndex = rand() % WIDTH;
+    temp = malusRow[c];
+    malusRow[c] = malusRow[swapIndex];
+    malusRow[swapIndex] = temp;
+  }
+  
+  for(c = 0; c < WIDTH; c++){
+    playing_field[HEIGHT-1][c] = malusRow[c];
+  }
+
+  if(highest_row > 0) highest_row--; // ci alziamo di una riga, highest_row aumenta --> indice di riga diventa minore
+  GUI_RefreshScreen()
+
+}
+
+/* END OF RANDOM MALUS SECTION */
+
 
 
 uint16_t deleteFullLines(void) {
@@ -706,7 +762,7 @@ for (y = HEIGHT - 1; y >= 0; y--) {
     int isFull = 1;
     
     for (x = 0; x < WIDTH; x++) {
-        if (playing_field[y][x] == 0) {
+        if (playing_field[y][x] == 0) { // se la riga che considero è quella del malus non devo considerarla piena 
             isFull = 0;
             break;
         }
@@ -752,6 +808,7 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 
 
 static uint16_t lines_to_next_powerup = 0;
+static uint16_t lines_to_next_malus = 0;
 void handlePieceLock(void) {
  
   
@@ -766,15 +823,23 @@ void handlePieceLock(void) {
     // faccio comparire un PowerUp 
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
+      lines_to_next_malus += linesRemoved;
       if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
         lines_to_next_powerup = lines_to_next_powerup - 5;
-    }
-    assignScore(linesRemoved, previous_lines_cleared);
+      }
 
+      if(lines_to_next_malus >= 10){
+        applyRandomMalus();
+        lines_to_next_malus = lines_to_next_malus - 10;
+
+        if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
+      }
+      
+      assignScore(linesRemoved, previous_lines_cleared);
     }
-    
+      
     powerUpCheck(); 
 }
 
