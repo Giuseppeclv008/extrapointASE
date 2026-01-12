@@ -746,7 +746,7 @@ void applyRandomMalus(void){
   }
 
   if(highest_row > 0) highest_row--; // ci alziamo di una riga, highest_row aumenta --> indice di riga diventa minore
-  GUI_RefreshScreen()
+  GUI_RefreshScreen();
 
 }
 
