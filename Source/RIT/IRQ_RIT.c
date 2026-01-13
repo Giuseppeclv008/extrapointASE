@@ -286,7 +286,7 @@ void RIT_IRQHandler (void)
 			{
 				ticks = 0;
 
-				NOTE original_note = song[currentNote];
+				NOTE original_note = song[currentNote++];
 				uint32_t current_speed_reg = LPC_TIM0->MR0;
 				
 				uint32_t scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) / NORMAL_PERIOD;
