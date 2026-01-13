@@ -99,12 +99,18 @@ int main (void) {
 			{
 			timer_tick=0;
 			int previous_score = score;
+				NVIC_DisableIRQ(RIT_IRQn);
 				movePieceDown();
+				NVIC_EnableIRQ(RIT_IRQn);
+
 			}
 
 			if(flag_hard_drop == 1){
 				flag_hard_drop = 0;
+				NVIC_DisableIRQ(RIT_IRQn);
 				hardDrop();
+				NVIC_EnableIRQ(RIT_IRQn);
+			
 			}
 			__ASM("wfi");
 		}
