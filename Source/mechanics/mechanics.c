@@ -17,6 +17,8 @@ volatile uint16_t playing_field[HEIGHT][WIDTH] ;
 volatile uint16_t highest_row = HEIGHT;
 volatile uint16_t pending_powerups[10];
 volatile uint16_t powerUpFlag = 0;
+volatile uint16_t lines_to_next_powerup = 0;
+volatile uint16_t lines_to_next_malus = 0;
 
 volatile uint16_t powerupsInTheField = 0; 
 volatile uint64_t HighScore = 0;
@@ -238,6 +240,8 @@ void initializeGame(void) {
     game_over = 0;
     lines_cleared = 0;
     paused = 1;
+    lines_to_next_powerup = 0;
+    lines_to_next_malus = 0;
     init_piece();
 }
 
@@ -845,8 +849,7 @@ return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
 
-static uint16_t lines_to_next_powerup = 0;
-static uint16_t lines_to_next_malus = 0;
+
 void handlePieceLock(void) {
  
   
@@ -862,6 +865,7 @@ void handlePieceLock(void) {
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
       lines_to_next_malus += linesRemoved;
+
       if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
         spawnPowerUp();
         powerupsInTheField ++;
