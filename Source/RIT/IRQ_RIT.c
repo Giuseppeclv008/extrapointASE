@@ -302,7 +302,7 @@ void RIT_IRQHandler (void)
 
 				current_speed_reg = LPC_TIM0->MR0;
 
-				scaled_duration =  = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) / NORMAL_PERIOD;
+				scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) / NORMAL_PERIOD;
 
 				if(scaled_duration < 1) scaled_duration = 1;
 
