@@ -285,7 +285,18 @@ void RIT_IRQHandler (void)
 			if(ticks == UPTICKS)
 			{
 				ticks = 0;
-				playNote(song[currentNote++]);
+
+				NOTE original_note = song[currentNote];
+				uint32_t current_speed_reg = LPC_TIM0->MR0;
+				
+				uint32_t scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) / NORMAL_PERIOD;
+				
+				if(scaled_duration == 0) scaled_duration = 1;
+
+				NOTE new_note;
+				new_note.freq = original_note.freq;
+				new_note.duration = scaled_duration;
+				playNote(new_note);
 			}
 		}
 		if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
