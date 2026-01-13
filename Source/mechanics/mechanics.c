@@ -37,21 +37,6 @@ volatile uint8_t play_sfx_flag = 0;
 volatile NOTE* current_sfx_ptr = NULL;
 volatile int sfx_note_count = 0;
 
-// Suono acuto e rapido per Clear Lines
-NOTE sfx_clear_lines[] = {
-  {c3, time_semicroma},
-  {e3, time_semicroma},
-  {g3, time_semicroma},
-  {c4, time_croma}
-};
-
-// Suono discendente per Slow Down
-NOTE sfx_slow_down[] = {
-  {a3, time_croma},
-  {f3, time_croma},
-  {d3, time_croma * 2}
-};
-
 
 const uint16_t TETROMINO_COLORS[8] = { 
     Cyan,    // I
