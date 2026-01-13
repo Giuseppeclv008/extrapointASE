@@ -46,7 +46,7 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 
 */
 extern volatile int slowDownTicks ;
-volatile uint64_t current_period = NORMAL_PERIOD;
+volatile uint32_t current_period; = NORMAL_PERIOD;
 
 void ADC_IRQHandler(void) {
   	

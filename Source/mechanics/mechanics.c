@@ -32,7 +32,7 @@ volatile ActiveTetromino currentPiece;
 
 // variabili globali per il conteggio dello slowdown, 15 secondi = 300 Ticks, perchè RIT scatta ogni 50ms
 volatile int slowDownTicks = 0; 
-extern volatile uint64_t current_period;
+extern volatile uint32_t current_period;
 
 //variabili globali per gli effetti sonori 
 volatile uint8_t play_sfx_flag = 0; 

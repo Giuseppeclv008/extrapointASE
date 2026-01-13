@@ -30,7 +30,7 @@ volatile uint8_t down2 = 0;
 extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
-extern volatile uint64_t current_period;
+extern volatile uint32_t current_period;
 extern volatile int slowDownTicks;
 volatile uint8_t flag_hard_drop = 0;
 
@@ -245,14 +245,15 @@ void RIT_IRQHandler (void)
 			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
 		}
 	}
-	if(slowDownTicks != 0 && slowDownTicks > 0 && !paused){
-		slowDownTicks--;
-		if(slowDownTicks == 0) GUI_clearSlowDown();
-	}
-	if(slowDownTicks == 0){
-		// sono passati 15 secondi 
-		LPC_TIM0->MR0 = current_period;
+	// gestione slowdown 
+	if(game_started && !paused && !game_over){
+		if(slowDownTicks > 0) slowDownTicks--;
 
+		if(slowDownTicks == 0){
+			GUI_clearSlowDown();
+			LPC_TIM0->MR0 = current_period;
+			if(LPC_TIM0-> TC >= current_period) LPC_TIM0->TC = current_period-1;
+		} 
 	}
 	/*  ***********************************************  */
 	/* 				SONG PART & SFX	 				     */
