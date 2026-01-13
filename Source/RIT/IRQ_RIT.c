@@ -302,7 +302,7 @@ void RIT_IRQHandler (void)
 
 				current_speed_reg = LPC_TIM0->MR0;
 
-				scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) / NORMAL_PERIOD;
+				scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) ;
 
 				if(scaled_duration < 1) scaled_duration = 1;
 
@@ -319,4 +319,21 @@ void RIT_IRQHandler (void)
 }
 
 			
-	
+		/*  ***********************************************  */
+	/* 					 SONG PART						 */
+	/*  ***********************************************  */
+	/* static int currentNote = 0;
+	static int ticks = 0;
+	if(!isNotePlaying())
+	{
+		++ticks;
+		if(ticks == UPTICKS)
+		{
+		ticks = 0;
+		playNote(song[currentNote++]);
+		}
+	}
+	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
+	{
+		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
+	}*/
