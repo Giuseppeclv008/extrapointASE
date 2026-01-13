@@ -35,6 +35,10 @@ extern unsigned char led_value;					/* defined in lib_led								*/
 
 /* extern variable from IRQ_timer.c*/
 extern volatile uint8_t timer_tick;
+extern volatile uint8_t move_right;
+extern volatile uint8_t move_left;
+extern volatile uint8_t rotates;
+
 /* extern variable from IRQ_RIT.c*/
 extern volatile uint8_t flag_hard_drop;
 
@@ -104,6 +108,25 @@ int main (void) {
 				NVIC_EnableIRQ(RIT_IRQn);
 
 			}
+			else if (move_right == 1){
+				move_right = 0;
+				NVIC_DisableIRQ(RIT_IRQn);
+				movePieceRight();
+				NVIC_EnableIRQ(RIT_IRQn);
+			}
+			else if (move_left == 1){
+				move_left = 0;
+				NVIC_DisableIRQ(RIT_IRQn);
+				movePieceLeft();
+				NVIC_EnableIRQ(RIT_IRQn);
+			}
+			else if (rotate == 1){
+				rotate = 0;
+				NVIC_DisableIRQ(RIT_IRQn);
+				rotatePiece();
+				NVIC_EnableIRQ(RIT_IRQn);
+			}
+
 
 			if(flag_hard_drop == 1){
 				flag_hard_drop = 0;

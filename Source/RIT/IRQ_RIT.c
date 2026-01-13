@@ -27,6 +27,11 @@
 
 volatile uint8_t down1 = 0;
 volatile uint8_t down2 = 0;
+
+volatile uint8_t move_right = 0;
+volatile uint8_t move_left = 0;
+volatile uint8_t rotate = 0;
+
 extern volatile uint8_t paused;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
@@ -135,7 +140,7 @@ void RIT_IRQHandler (void)
 				NVIC_DisableIRQ(TIMER0_IRQn);
 				switch(current_joy){
 					case JOY_UP:
-						rotatePiece();
+						rotate = 1;
 						break;
 					case JOY_DOWN:
 						if(slowDownTicks == 0){
@@ -147,10 +152,10 @@ void RIT_IRQHandler (void)
 						
 						break;
 					case JOY_LEFT:
-						movePieceLeft();
+						move_left = 1;
 						break;
 					case JOY_RIGHT:
-						movePieceRight();
+						move_right = 1;
 						break;
 					case JOY_SEL:
 						// Azione per select
@@ -245,14 +250,15 @@ void RIT_IRQHandler (void)
 			LPC_PINCON->PINSEL4 |= (1 << 24);		/* riconfigura pin come EINT */
 		}
 	}
-	// gestione slowdown 
+	// GESTIONE SLOWDOWN
 	if(game_started && !paused && !game_over){
-		if(slowDownTicks > 0) slowDownTicks--;
-
-		if(slowDownTicks == 0){
-			GUI_clearSlowDown();
-			LPC_TIM0->MR0 = current_period;
-			if(LPC_TIM0-> TC >= current_period) LPC_TIM0->TC = current_period-1;
+		if(slowDownTicks > 0){
+			slowDownTicks--;
+			if(slowDownTicks == 0){
+				GUI_clearSlowDown();
+				LPC_TIM0->MR0 = current_period;
+				if(LPC_TIM0-> TC >= current_period) LPC_TIM0->TC = current_period-1;
+			} 
 		} 
 	}
 	/*  ***********************************************  */
