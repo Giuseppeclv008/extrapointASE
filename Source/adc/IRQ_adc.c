@@ -12,6 +12,7 @@
 #include "adc.h"
 #include "../led/led.h"
 #include "../timer/timer.h"
+#include "mechanics/mechanics.h"
 
 /*----------------------------------------------------------------------------
   A/D IRQ: Executed when A/D Conversion is ready (signal from ADC peripheral)
@@ -44,35 +45,44 @@ unsigned short AD_last = 0xFF;     /* Last converted value               */
 523Hz	k=1062		c5
 
 */
-
+extern volatile int slowDownTicks ;
+volatile uint64_t current_period = NORMAL_PERIOD;
 
 void ADC_IRQHandler(void) {
   	
 	AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
-	uint32_t diff = AD_current - AD_last;
-	uint32_t new_period
+	int diff = (int)AD_current - (int)AD_last;
+	uint32_t new_period;
 	if(diff < 0) diff = -diff ;
   
 	  if(diff > 40){
 		  uint32_t max_period = NORMAL_PERIOD;
+		  uint32_t min_period = 5000000;
+		  // fattore di scala: (25M - 5M) / 4095 = 4885
 		  uint32_t decrement = 4884;
 		  uint32_t reduction = AD_current * decrement; 
   
-		  if(reduction >= (max_period - 5000000))
+		  if(reduction >= (max_period - min_period))
 		  {
-			  new_period = 5000000;
-		  }{
+			  new_period = min_period;
+		  }else{
 			  new_period = max_period - reduction;
 		  }
-		  
-		  disable_timer(0);
-		  reset_timer(0);
-		  init_timer(0, new_period);
-		  enable_timer(0);
+		  // se il powerup di slowdown è attivo non devo modificare il match register
+		  current_period = new_period;
+		  if(slowDownTicks == 0){
+	
+				LPC_TIM0->MR0 = new_period;
+				if(LPC_TIM0->TC >= new_period){
+					LPC_TIM0->TC = new_period-1; //forzo al conteggio
+				}
+			}
 		  AD_last = AD_current;
-	  }
+		}
 	  
-  }
+}
+  
+
   
   
 

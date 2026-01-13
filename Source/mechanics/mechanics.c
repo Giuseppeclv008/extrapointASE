@@ -4,28 +4,54 @@
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "GUI/GUI.h"
+#include "adc/adc.h"
+#include "timer/timer.h"
+#include "music/music.h"
 
 #define HEIGHT 20
 #define WIDTH 10
-#define PIECE_I_INDEX 0 // Indice del pezzo I nell'array TETROMINOS
-#define PIECE_O_INDEX 1 // Indice del pezzo O nell'array TETROMINOS
-#define PIECE_T_INDEX 2 // Indice del pezzo T nell'array TETROMINOS
-#define PIECE_J_INDEX 3 // Indice del pezzo J nell'array TETROMINOS
-#define PIECE_L_INDEX 4 // Indice del pezzo L nell'array TETROMINOS
-#define PIECE_S_INDEX 5 // Indice del pezzo S nell'array TETROMINOS
-#define PIECE_Z_INDEX 6 // Indice del pezzo Z nell'array TETROMINOS
 
 
 // variabili globali
 volatile uint16_t playing_field[HEIGHT][WIDTH] ;
-volatile uint32_t score;
-volatile uint32_t HighScore = 0;
+volatile uint16_t highest_row = HEIGHT;
+volatile uint16_t pending_powerups[10];
+volatile uint16_t powerUpFlag = 0;
+
+volatile uint16_t powerupsInTheField = 0; // da rimuovere 
+volatile uint64_t HighScore = 0;
+volatile uint64_t score = 0;
 volatile uint8_t game_started ;
 volatile uint8_t game_over ;
 volatile uint8_t paused; // the playing state is represented by !paused 
 volatile uint16_t lines_cleared = 0;
 volatile uint8_t hardDrop_flag;
 volatile ActiveTetromino currentPiece;
+
+// variabili globali per il conteggio dello slowdown, 15 secondi = 300 Ticks, perchè RIT scatta ogni 50ms
+volatile int slowDownTicks = 0; 
+extern volatile uint64_t current_period;
+
+//variabili globali per gli effetti sonori 
+volatile uint8_t play_sfx_flag = 0; 
+volatile NOTE* current_sfx_ptr = NULL;
+volatile int sfx_note_count = 0;
+
+// Suono acuto e rapido per Clear Lines
+NOTE sfx_clear_lines[] = {
+  {c3, time_semicroma},
+  {e3, time_semicroma},
+  {g3, time_semicroma},
+  {c4, time_croma}
+};
+
+// Suono discendente per Slow Down
+NOTE sfx_slow_down[] = {
+  {a3, time_croma},
+  {f3, time_croma},
+  {d3, time_croma * 2}
+};
+
 
 const uint16_t TETROMINO_COLORS[7] = { 
     Cyan,    // I
@@ -36,6 +62,12 @@ const uint16_t TETROMINO_COLORS[7] = {
     Green,   // S
     Red      // Z
 };
+
+uint16_t POWERUP_COLORS[2] = { 
+  White, // ClearHalfLines
+  Grey // SlowDown
+};
+
 // Usiamo uint8_t perché ci basta 0 o 1, non serve un intero a 32 bit.
 //matrice di matrici 4x4, ognuna delle 7 righe è dedicata ad un pezzo diverso 
 // per orgni riga ho 4 colonne rappresentanti tutte le possibili rotazioni del pezzo 
@@ -189,10 +221,15 @@ const uint8_t TETROMINOS[7][4][4][4] = {
           {0,0,0,0} }
     }
 };
-
+void inizializePendingPowerups(void){
+  int i;
+  for(i = 0; i < WIDTH; i++){
+    pending_powerups[i] = 0;
+  }
+}
 void initializeGame(void) {
     initializePlayingField();
-		srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
+		inizializePendingPowerups();
     score = 0;
     game_started = 0;
     game_over = 0;
@@ -352,8 +389,12 @@ uint8_t tryMoveDown(void){
   if (canMoveDown()) {
       return 1; // può muoversi giù
   } else {
+
+      NVIC_DisableIRQ(RIT_IRQn);
       handlePieceLock();
       SpawnNewPiece();
+
+      NVIC_EnableIRQ(RIT_IRQn);
       return 0; // non può muoversi giù
   }
 }
@@ -467,7 +508,7 @@ void movePieceDown(void) {
   if(tryMoveDown()){
     GUI_DrawCurrentPiece(BACKGROUND_COLOR); // cancello il pezzo dalla posizione attuale
     currentPiece.y++;
-    int previous_score = score;
+    uint64_t previous_score = score;
     score += 1; // aumenta il punteggio ad ogni discesa del pezzo
     GUI_UpdateScore(previous_score);
     GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]); // disegno il pezzo nella nuova posizione
@@ -496,6 +537,12 @@ void lockPiece(void) {
               int fieldY = currentPiece.y + r;
               if (fieldY >= 0 && fieldY < HEIGHT && fieldX >= 0 && fieldX < WIDTH) {
                   if(currentPiece.shape[r][c] == 1){
+                    if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
+                                                                   // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
+                                                                   // uso il segno < perchè più sono in alto più fiedlY è piccola
+                    if(fieldY < highest_row) highest_row = fieldY; // quando viene inserito un quadrato in alto me ne salvo la coordinata 
+                                                                   // per poter calcolare a quanto ammontano le linee da cancellare in clearHalfLines
+                                                                   // uso il segno < perchè più sono in alto più fiedlY è piccola
                     playing_field[fieldY][fieldX] = currentPiece.type + 1 ; 
                     // aumento di 1 per evitare confusione fra gli spazi vuoti e gli spazi pieni 
                     // fondamentali per il check delle linee piene 
@@ -511,8 +558,182 @@ void lockPiece(void) {
   score += 10; // aumenta il punteggio quando un pezzo viene bloccato
 }
 
+void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
+
+  if (linesRemoved > 0) {
+    uint32_t previous_score = score;
+    uint16_t linesToAssignPoints = linesRemoved;
+
+    GUI_UpdateClearedLines(previous_lines_cleared);
+    GUI_RefreshScreen();
+    while(linesToAssignPoints >= 4){
+      // A. Assegna un punteggio bonus
+      score += 600; // Bonus extra 
+      linesToAssignPoints = linesToAssignPoints - 4;
+    }
+ 
+    // Punteggio normale per 1, 2 o 3 linee
+    switch(linesToAssignPoints) {
+        
+        case 1: score += 100; break;
+        case 2: score += 200; break;
+        case 3: score += 300; break;
+
+    }
+      GUI_UpdateScore(previous_score);
+  }
+
+}
+
+
+/* *************** */
+/*    POWERUPS    */
+/* *************** */
+
+
+
+void addPendingPowerup(POWERUP type){
+  int i;
+  for(i = 0; i < WIDTH; i++){
+    if(pending_powerups[i] == 0){
+      pending_powerups[i] = type;
+      return;
+    }
+  }
+}
+
+void slowDown(void){
+  if(current_period < NORMAL_PERIOD){
+    LPC_TIM0->MR0 = NORMAL_PERIOD;
+    LPC_TIM0->TC = 0;
+
+    slowDownTicks = 300;
+    GUI_SlowDown();
+  }
+}
+
+
+void clearHalfLines(void){
+  int i, r, c, x, j;
+  uint16_t lines_occupied = HEIGHT - highest_row;
+  uint16_t linesRemoved = 0;
+  uint16_t lines_to_clear; 
+  
+  if(lines_occupied == 0) return;
+
+  lines_to_clear = lines_occupied / 2;
+  if(lines_to_clear == 0 && lines_occupied > 0) lines_to_clear = 1;
+  
+  for(i = lines_to_clear; i > 0; i--){
+
+    for( x = 0; x < WIDTH; x++){
+      if(playing_field[HEIGHT-1][x] == SLOW_DOWN || playing_field[HEIGHT-1][x] == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+        
+       addPendingPowerup(playing_field[HEIGHT-1][x]);
+       if(powerupsInTheField > 0) powerupsInTheField--;
+      }
+
+      }
+    
+    // Shift down logic adapted from deleteFullLines
+      // We target the bottom row (HEIGHT - 1) to shift everything down
+      for (r = HEIGHT - 1; r > 0; r--) {
+          for (c = 0; c < WIDTH; c++) {
+              playing_field[r][c] = playing_field[r-1][c];
+          }
+      }
+      // Clear the new top row
+      for (c = 0; c < WIDTH; c++) {
+          playing_field[0][c] = 0;
+      }
+      linesRemoved++;
+  }
+  uint16_t previous_lines_cleared = lines_cleared;
+  lines_cleared += linesRemoved;
+  highest_row += lines_to_clear;
+  if(highest_row > HEIGHT) highest_row = HEIGHT;
+
+  assignScore(linesRemoved, previous_lines_cleared);
+  GUI_RefreshScreen();
+}
+
+
+void spawnPowerUp(void){
+    uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
+    if(highest_row >= HEIGHT) return;
+    uint16_t occupied_lines = HEIGHT - highest_row;
+    uint16_t powerUpType = powerUpTypes[rand() % 2]; 
+
+    uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
+                                                                    // più il valore è alto più sono in basso
+    uint16_t randomX = rand() % WIDTH;
+
+    uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
+    for( attempts =  100; attempts > 0; attempts--){
+      if(randomY >= HEIGHT || randomX >= WIDTH){
+        randomY =(rand() % occupied_lines) + highest_row;
+        randomX = rand() % WIDTH;
+        continue;
+      }
+      if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
+        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
+        GUI_DrawPowerUpSymbol(randomX, randomY, powerUpType);
+        break;
+      }
+      randomY =(rand() % occupied_lines) + highest_row;
+      randomX = rand() % WIDTH;
+    }
+}
+
+
+
+
+void activePowerUp(POWERUP type){
+    if(type == CLEAR_H_LINES){
+      current_sfx_ptr = sfx_clear_lines;
+      sfx_note_count = sizeof(sfx_clear_lines) / sizeof(NOTE);
+      play_sfx_flag = 1;
+
+      clearHalfLines();
+
+    }
+    else if(type == SLOW_DOWN){
+
+      current_sfx_ptr = sfx_slow_down;
+      sfx_note_count = sizeof(sfx_slow_down) / sizeof(NOTE);
+      play_sfx_flag = 1;
+
+      slowDown();
+    }
+}
+  
+
+void powerUpCheck(void){
+  // se rilevo un powerup quando elimino le righe lo attivo qui 
+  // inserito qui perchè matrice del playing field stabile 
+  int i;
+  while(pending_powerups[0] != 0){
+    POWERUP typeToExecute = pending_powerups[0];
+
+    //shift della coda dei powerups
+    for(i = 0; i < WIDTH-1; i++){
+      pending_powerups[i] = pending_powerups[i+1];
+    }
+    pending_powerups[WIDTH-1] = 0; //pulisco l'ultimo elemento 
+    powerUpFlag = 1;
+    activePowerUp(typeToExecute);
+    powerUpFlag = 0;
+  }
+  
+}
+
+
+/* END POWERUP SECTION */
+
+
+
 uint16_t deleteFullLines(void) {
-int y, x;
+int y, x, i;
 uint8_t linesCleared = 0;
 // Scansioniamo dal basso (riga 19) verso l'alto
 for (y = HEIGHT - 1; y >= 0; y--) {
@@ -527,7 +748,15 @@ for (y = HEIGHT - 1; y >= 0; y--) {
 
     if (isFull) {
         linesCleared++; 
-        
+        for (x = 0; x < WIDTH; x++) {
+          uint16_t val = playing_field[y][x];
+          if(val == SLOW_DOWN || val == CLEAR_H_LINES){ //attivazione del powerup quando cancello una riga che lo contiene
+            
+            addPendingPowerup(val);
+            if(powerupsInTheField > 0) powerupsInTheField--;
+          }
+
+        }
         // Fai scendere tutto ciò che c'è sopra
         // (Copia la riga y-1 in y, y-2 in y-1, ecc...)
         int c, r;
@@ -545,45 +774,41 @@ for (y = HEIGHT - 1; y >= 0; y--) {
         // IMPORTANTE: Poiché tutto è sceso, dobbiamo ricontrollare 
         // la riga attuale 'y' al prossimo giro, quindi incrementiamo y
         // (che verrà decrementato dal for loop subito dopo)
+        // ricordiamo che più è grande y più in basso ci troviamo nel playing field 
         y++; 
     }
 }
+highest_row += linesCleared; // Aggiorna la variabile globale 
+if(highest_row > HEIGHT) highest_row = HEIGHT;
 lines_cleared = lines_cleared + linesCleared; // Aggiorna la variabile globale
 return linesCleared; // Restituisce 0, 1, 2, 3 o 4
 }
 
+
+static uint16_t lines_to_next_powerup = 0;
 void handlePieceLock(void) {
-    uint32_t previous_score = score;
+ 
+  
     if(hardDrop_flag == 1) GUI_DrawCurrentPiece(TETROMINO_COLORS[currentPiece.type]);
     // 1. Solidifica il pezzo nella matrice del playing_field
     lockPiece();
+    
     // 2. Controlla le linee e ottieni il numero
     uint16_t previous_lines_cleared = lines_cleared;
     uint16_t linesRemoved = deleteFullLines();
-
-    // 3. LOGICA PUNTEGGIO SPECIALE
-    if (linesRemoved > 0) {
-      GUI_UpdateClearedLines(previous_lines_cleared);
-      GUI_RefreshScreen();
-
-        // Caso "TETRIS": 4 Linee cancellate con il pezzo I
-        if (linesRemoved == 4) {
-
-            // A. Assegna un punteggio bonus enorme
-            score += 600; // Bonus extra per il TETRIS
-            
-        } else {
-            // Punteggio normale per 1, 2 o 3 linee
-            // Esempio classico Nintendo: 40, 100, 300 punti
-            switch(linesRemoved) {
-                
-                case 1: score += 100; break;
-                case 2: score += 200; break;
-                case 3: score += 300; break;
-
-            }
-
-        }
+    // Quando puliamo delle linee e il numero di linee pulite raggiunge un multiplo di 5 
+    // faccio comparire un PowerUp 
+    if(linesRemoved > 0){
+      lines_to_next_powerup += linesRemoved;
+      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+        spawnPowerUp();
+        powerupsInTheField ++;
+        lines_to_next_powerup = lines_to_next_powerup - 5;
     }
-    GUI_UpdateScore(previous_score);
+    assignScore(linesRemoved, previous_lines_cleared);
+
+    }
+    
+    powerUpCheck(); 
 }
+

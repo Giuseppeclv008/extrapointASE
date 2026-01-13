@@ -5,10 +5,11 @@
 ** File:        GUI.c
 ** Descriptions:    Funzioni per la gestione della GUI del gioco
 *********************************************************************************************************/
-extern volatile uint32_t HighScore;
-extern volatile uint32_t score;
+extern volatile uint64_t HighScore;
+extern volatile uint64_t score;
 extern volatile uint32_t lines_cleared;
 extern const uint16_t TETROMINO_COLORS[7];
+
 void GUI_DrawInterface(void){
     //Disegna il bordo del playing field e la sezione con il punteggio 
     LCD_Clear(BACKGROUND_COLOR);
@@ -32,10 +33,10 @@ void GUI_DrawInterface(void){
     // Etichetta Punteggio
     GUI_Text(SCORE_X, SCORE_Y, (uint8_t*)"SCORE", SCORE_COLOR, BACKGROUND_COLOR );
     // Valore Punteggio
-    GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
+    GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)"00000000", NUMBER_COLOR, BACKGROUND_COLOR) ; //punteggio iniziale 0
     
-    char highScoreStr[7];
-    sprintf(highScoreStr, "%06d", HighScore);
+    char highScoreStr[22];
+    sprintf(highScoreStr, "%08llu", HighScore);
     // Etichetta High Score
     GUI_Text(SCORE_X, HIGH_SCORE_Y, (uint8_t*)"HI-SCORE", SCORE_COLOR, BACKGROUND_COLOR);
     // Valore High Score
@@ -50,26 +51,25 @@ void GUI_DrawInterface(void){
 
     //opzionalmente aggiungere la sezione per il next piece
 }
-void GUI_UpdateScore(int previous_score){
-    uint32_t sccore_to_erase = previous_score;
-    uint8_t score_str_erase[7]; // 6 cifre + terminatore null
-    uint32_t score_to_display = score;
-    uint8_t score_str[7]; // 6 cifre + terminatore null
-    sprintf((char*)score_str, "%06u", score_to_display);
-    sprintf((char*)score_str_erase,"%06u", sccore_to_erase);
+void GUI_UpdateScore(uint64_t previous_score){
+    uint64_t score_to_erase = previous_score;
+    uint16_t score_str_erase[22]; 
+    uint64_t score_to_display = score;
+    uint16_t score_str[22]; 
+    sprintf((char*)score_str, "%08llu", score_to_display);
+    sprintf((char*)score_str_erase,"%08llu", score_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
-
 }
 
-void GUI_UpdateHighScore(int previous_highscore){
+void GUI_UpdateHighScore(uint64_t previous_highscore){
     // Aggiorna l'high score visualizzato
-    uint32_t highscore_to_display = HighScore;
-    uint8_t highscore_str_erase[7]; // 6 cifre + terminatore null
-    uint8_t highscore_str[7]; // 6 cifre + terminatore null
-    sprintf((char*)highscore_str,"%06u", highscore_to_display);
-    sprintf((char*)highscore_str_erase,"%06u", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
+    uint64_t highscore_to_display = HighScore;
+    uint16_t highscore_str_erase[22]; 
+    uint16_t highscore_str[22];
+    sprintf((char*)highscore_str,"%08llu", highscore_to_display);
+    sprintf((char*)highscore_str_erase,"%08llu", HighScore); // sottraggo 1 per essere sicuro di cancellare il valore precedente
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello l'high score
    
     GUI_Text(SCORE_X, HIGH_SCORE_Y + 20,(uint8_t*) highscore_str, NUMBER_COLOR, BACKGROUND_COLOR);
@@ -77,14 +77,15 @@ void GUI_UpdateHighScore(int previous_highscore){
 
 void GUI_UpdateClearedLines(int previous_lines_cleared){
     // Aggiorna il numero di linee cancellate visualizzato
-    uint32_t lines_to_display = lines_cleared;
-    uint8_t lines_str_erase[4]; // 3 cifre + terminatore nulle
-    uint8_t lines_str[4]; // 3 cifre + terminatore nulle
+    uint16_t lines_to_display = lines_cleared;
+    uint8_t lines_str_erase[10]; // 3 cifre + terminatore nulle
+    uint8_t lines_str[10]; // 3 cifre + terminatore nulle
     sprintf((char*)lines_str_erase,"%03u", previous_lines_cleared);
     sprintf((char*)lines_str,"%03u", lines_to_display);
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il numero precedente
     GUI_Text(SCORE_X, CLEARED_LINES_Y + 20,(uint8_t*) lines_str, NUMBER_COLOR, BACKGROUND_COLOR);
 }
+
 
 void GUI_RefreshInterface(){
     GUI_DrawInterface();
@@ -94,6 +95,46 @@ void GUI_RefreshInterface(){
     GUI_UpdateScore(score);
     // Aggiorna il numero di linee cancellate
     GUI_UpdateClearedLines(lines_cleared);
+
+}
+
+
+void GUI_DrawPowerUpSymbol(uint16_t x, uint16_t y, uint16_t type){
+    int x_start = FIELD_X + (x * BLOCK_SIZE);
+    int y_start = FIELD_Y + (y * BLOCK_SIZE);
+    int i;
+
+    uint16_t symbolColor = Black;
+
+    GUI_DrawBlock(x, y, POWERUP_COLORS[type-12]);
+
+    if(type == CLEAR_H_LINES){
+        // disegna una H
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor);
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2) - 3, symbolColor);
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2) + 3, symbolColor);
+        }
+    }
+    else if(type == SLOW_DOWN ) {
+        // disegna una S
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + 3, symbolColor);
+        }
+        for(i = 3; i < BLOCK_SIZE/2 ; i++){
+            LCD_SetPoint(x_start + 3, y_start + i, symbolColor);
+        }
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor);
+        }
+        for(i = BLOCK_SIZE/2; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + BLOCK_SIZE - 4, y_start + i, symbolColor);
+        }
+        for( i = 3; i < BLOCK_SIZE -3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + BLOCK_SIZE - 4, symbolColor);
+        }
+        
+    }
 
 }
 void GUI_RefreshScreen(){
@@ -108,15 +149,23 @@ void GUI_RefreshScreen(){
         for (c = 0; c < WIDTH; c++) {
             if (playing_field[r][c] > 0) { // utilizzo la condizione > 0 perchè tutti i blocchi nel playing field sono rappresentati da valori >0
                                             // prevengo anche di provocare memory fault accedendo in un indice negativo
-                GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
-                                                                              // logica implementata per il corretto funzionamento di deleteLines
+
+
+                if(playing_field[r][c] == SLOW_DOWN || playing_field[r][c] == CLEAR_H_LINES){
+                    GUI_DrawPowerUpSymbol(c, r, playing_field[r][c]);
+                }  
+                else{
+                    GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1
+                    // logica implementata per il corretto funzionamento di deleteLines
+                }
+
                 isRowEmpty = 0;
             }
             else{
                 GUI_DrawBlock(c, r, BACKGROUND_COLOR);
             }
         }
-        if(isRowEmpty){
+        if(isRowEmpty){   // GESTIRE CASO IN CUI LE LINEE ELIMINATE SIANO MAGGIORI DI 4 AGGIUNGERE UN PASSAGGIO DI VARIABILE 
             empty_rows_consecutive++;
             if(empty_rows_consecutive >= 4) return; // se disegnamo 4 righe vuote consecutive siamo certi che tutto ciò che è sopra è già nero.
         }
@@ -149,6 +198,13 @@ void GUI_gameOverScreen(void){
 void GUI_clearGameOverScreen(void){
     // Cancella la schermata di game over
     GUI_RefreshInterface();
+}
+
+void GUI_SlowDown(void){
+    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown", White, Red);
+}
+void GUI_clearSlowDown(void){
+    GUI_Text(SLOWDOWN_X, SLOWDOWN_Y, (uint8_t*)"SlowDown OFF", Black, Black);
 }
 
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color){

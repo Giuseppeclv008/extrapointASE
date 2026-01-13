@@ -65,6 +65,7 @@
 #define Grey           0xF7DE
 #define Blue           0x001F
 #define Blue2          0x051F
+#define Purple         0xF81F
 #define Red            0xF800
 #define Orange         0xFD20
 #define Magenta        0xF81F

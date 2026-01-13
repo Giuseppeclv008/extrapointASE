@@ -25,8 +25,8 @@
 
 
 // external variables from mechanics.c
-extern volatile uint32_t score;
-extern volatile uint32_t HighScore;
+extern volatile uint64_t score;
+extern volatile uint64_t HighScore;
 extern volatile uint8_t game_started;
 extern volatile uint8_t game_over;
 extern volatile uint8_t paused;
@@ -35,6 +35,8 @@ extern unsigned char led_value;					/* defined in lib_led								*/
 
 /* extern variable from IRQ_timer.c*/
 extern volatile uint8_t timer_tick;
+/* extern variable from IRQ_RIT.c*/
+extern volatile uint8_t flag_hard_drop;
 
 #ifdef SIMULATOR
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
@@ -64,12 +66,13 @@ int main (void) {
    LCD_Initialization();
    GUI_DrawInterface();
    GUI_pauseScreen();
-	
-   LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
+	 
+	enable_RIT(); // accendo il RIT qui perchè il RITCOUNT è necessario per la modifica del seed x
+	LED_On(1);  // accendo il led 1 per indicare che il gioco è in pausa
+
    initializeGame();
 
 	// abilito gli interupt dopo aver eseguito le operazioni più "costose"
-  	 enable_RIT();
 	enable_timer(0);
 
    
@@ -79,11 +82,12 @@ int main (void) {
    
 	while(1){
 		if (first){
-			
+	
 			// main game loop
 			while(paused){
 				__ASM("wfi");
 			}
+			srand(LPC_RIT->RICOUNTER); // inizializzo il seme del generatore di numeri casuali, modifica il seed ad ogni reset
 				SpawnNewPiece();
 				first = 0;
 				game_started = 1;
@@ -98,6 +102,10 @@ int main (void) {
 				movePieceDown();
 			}
 
+			if(flag_hard_drop == 1){
+				flag_hard_drop = 0;
+				hardDrop();
+			}
 			__ASM("wfi");
 		}
 		else if(game_over){

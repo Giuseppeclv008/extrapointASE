@@ -24,6 +24,10 @@
 #define HIGH_SCORE_Y 120
 #define CLEARED_LINES_Y 200
 
+// COORDINATE SLOWDOWN
+#define SLOWDOWN_X 165
+#define SLOWDOWN_Y 300
+
 // COLORI COMPONENTI STATICHE GUI
 #define BACKGROUND_COLOR Black
 #define FIELD_BORDER_COLOR White
@@ -33,12 +37,13 @@
 #define NUMBER_COLOR White
 #define BLOCK_BORDER_COLOR White
 
+
 // PROTOTIPI DELLE FUNZIONI 
 void GUI_DrawInterface(void);
 void GUI_RefreshInterface(void);
-void GUI_UpdateScore(int previous_score);
+void GUI_UpdateScore(uint64_t previous_score);
 void GUI_UpdateClearedLines(int previous_lines_cleared);
-void GUI_UpdateHighScore(int previous_highscore);
+void GUI_UpdateHighScore(uint64_t previous_highscore);
 void GUI_pauseScreen(void);
 void GUI_resumeScreen(void);
 void GUI_gameOverScreen(void);
@@ -46,6 +51,8 @@ void GUI_RefreshScreen(void);
 void GUI_clearGameOverScreen(void);
 void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color);
 void GUI_DrawCurrentPiece(uint16_t color);
-
+void GUI_SlowDown(void);
+void GUI_clearSlowDown(void);
+void GUI_DrawPowerUpSymbol(uint16_t x, uint16_t y, uint16_t type);
 
 #endif
