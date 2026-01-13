@@ -132,6 +132,7 @@ void RIT_IRQHandler (void)
 	ADC_start_conversion();
 	if(game_started && !paused && !game_over) {
 			if (current_joy != old_joy) {
+				NVIC_DisableIRQ(TIMER0_IRQn);
 				switch(current_joy){
 					case JOY_UP:
 						rotatePiece();
@@ -157,6 +158,7 @@ void RIT_IRQHandler (void)
 					default:
 						break;
 				}
+				NVIC_EnableIRQ(TIMER0_IRQn);
 			}
 			else {
 				// riporto la velocità del pezzo a quella normale se il current_joy non è JOY_DOWN

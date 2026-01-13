@@ -662,9 +662,12 @@ void clearHalfLines(void){
 
 
 void spawnPowerUp(void){
-    uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
     if(highest_row >= HEIGHT) return;
+
     uint16_t occupied_lines = HEIGHT - highest_row;
+    if(occupied_lines == 0) return;
+
+    uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
     uint16_t powerUpType = powerUpTypes[rand() % 2]; 
 
     uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 

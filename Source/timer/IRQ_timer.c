@@ -38,9 +38,11 @@ uint16_t SinTable[45] =                                       /* ÕýÏÒ±í   
 void TIMER0_IRQHandler (void)
 {
 	LPC_TIM0->IR |= 1;	
+	NVIC_DisableIRQ(RIT_IRQn);
 	if(!paused && !game_over && game_started) {
 		timer_tick = 1;
 	}
+	NVIC_EnableIRQ(RIT_IRQn);
 	return;
 }
 
