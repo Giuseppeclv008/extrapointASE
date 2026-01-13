@@ -592,12 +592,111 @@ void assignScore(uint16_t linesRemoved, uint16_t  previous_lines_cleared){
 
 }
 
+/* RANDOM MALUS SECTION */
+
+void applyRandomMalus(void){
+  int r, c;
+
+  for(c = 0; c < WIDTH; c++){
+    // Prima di applicare il malus controllo se ci sono elementi sulla riga più alta possibile
+    // del playing game, se ho almeno un blocco avrò sicuramente gameover dopo l'applicazione del malus 
+    if(playing_field[0][c] !=  0){
+      game_over = 1;
+      game_started = 0;
+      paused = 1;
+      GUI_gameOverScreen();
+      return;
+    }
+  }
+
+  for(r = 0; r < HEIGHT -1 ; r++){
+    for(c = 0; c < WIDTH; c++){
+      // sposto tutte le righe in alto di un pezzo 
+      playing_field[r][c] = playing_field[r+1][c];
+    }
+  }  
+
+  // Creazione della riga malus: utilizzo un vettore malusRow per gestire 7 blocchi pieni 
+  // e 7 blocchi vuoti 
+  uint16_t malusRow[WIDTH];
+
+  for(c = 0; c < 7; c++) malusRow[c] = 9; // 9 è il valore corrispondente per le righe Malus
+                                          // l'accesso nel vettore dei colori viene fatto sottraendo 1 al valore nel playing field
+  for(c = 7; c < WIDTH; c++) malusRow[c] = 0; 
+
+  // algoritmo di shuffle degli elementi del vettore 
+  // Fisher-Yates - swap semplificato 
+  int swapIndex;
+  uint16_t temp;
+  for (c = 0; c < WIDTH; c++) {
+    swapIndex = rand() % WIDTH;
+    temp = malusRow[c];
+    malusRow[c] = malusRow[swapIndex];
+    malusRow[swapIndex] = temp;
+  }
+  
+  for(c = 0; c < WIDTH; c++){
+    playing_field[HEIGHT-1][c] = malusRow[c];
+  }
+
+  if(highest_row > 0) highest_row--; // ci alziamo di una riga, highest_row aumenta --> indice di riga diventa minore
+  GUI_RefreshScreen();
+
+}
+void checkRandomMalusSpawn(void){
+  if(lines_to_next_malus >= 10){ 
+
+    applyRandomMalus();
+    lines_to_next_malus = lines_to_next_malus - 10; // MODIFICARE TO DO A >= 10
+    
+  
+    if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
+  }
+}
+
+/* END OF RANDOM MALUS SECTION */
 
 /* *************** */
 /*    POWERUPS    */
 /* *************** */
 
+void spawnPowerUp(void){
+  if(highest_row >= HEIGHT) return;
 
+  uint16_t occupied_lines = HEIGHT - highest_row;
+  if(occupied_lines == 0) return;
+
+  uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
+  uint16_t powerUpType = powerUpTypes[rand() % 2]; 
+
+  uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
+                                                                  // più il valore è alto più sono in basso
+  uint16_t randomX = rand() % WIDTH;
+
+  uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
+  for( attempts =  100; attempts > 0; attempts--){
+    if(randomY >= HEIGHT || randomX >= WIDTH){
+      randomY =(rand() % occupied_lines) + highest_row;
+      randomX = rand() % WIDTH;
+      continue;
+    }
+    if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
+      playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
+      GUI_DrawPowerUpSymbol(randomX, randomY, powerUpType);
+      break;
+    }
+    randomY =(rand() % occupied_lines) + highest_row;
+    randomX = rand() % WIDTH;
+  }
+}
+
+void checkPowerUpSpawn(){
+  if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
+    spawnPowerUp();
+    powerupsInTheField ++;
+    lines_to_next_powerup = lines_to_next_powerup - 5;
+  }
+}
 
 void addPendingPowerup(POWERUP type){
   int i;
@@ -656,47 +755,19 @@ void clearHalfLines(void){
       linesRemoved++;
   }
   uint16_t previous_lines_cleared = lines_cleared;
+
+  lines_to_next_malus += linesRemoved;
+  lines_to_next_powerup += linesRemoved;
+  
   lines_cleared += linesRemoved;
   highest_row += lines_to_clear;
   if(highest_row > HEIGHT) highest_row = HEIGHT;
 
+  checkPowerUpSpawn();
+  checkRandomMalusSpawn();
   assignScore(linesRemoved, previous_lines_cleared);
   GUI_RefreshScreen();
 }
-
-
-void spawnPowerUp(void){
-    if(highest_row >= HEIGHT) return;
-
-    uint16_t occupied_lines = HEIGHT - highest_row;
-    if(occupied_lines == 0) return;
-
-    uint16_t powerUpTypes[2] = {CLEAR_H_LINES, SLOW_DOWN};
-    uint16_t powerUpType = powerUpTypes[rand() % 2]; 
-
-    uint16_t randomY = (rand() % occupied_lines) + highest_row ; // la somma con highest_row mi fornisce l'oofset adatto 
-                                                                    // più il valore è alto più sono in basso
-    uint16_t randomX = rand() % WIDTH;
-
-    uint32_t attempts ; // imposto un limite di tentativi per l'inserimento di un powerup, evito loop infiniti 
-    for( attempts =  100; attempts > 0; attempts--){
-      if(randomY >= HEIGHT || randomX >= WIDTH){
-        randomY =(rand() % occupied_lines) + highest_row;
-        randomX = rand() % WIDTH;
-        continue;
-      }
-      if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
-        playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
-        GUI_DrawPowerUpSymbol(randomX, randomY, powerUpType);
-        break;
-      }
-      randomY =(rand() % occupied_lines) + highest_row;
-      randomX = rand() % WIDTH;
-    }
-}
-
-
-
 
 void activePowerUp(POWERUP type){
     if(type == CLEAR_H_LINES){
@@ -740,59 +811,7 @@ void powerUpCheck(void){
 
 /* END POWERUP SECTION */
 
-/* RANDOM MALUS SECTION */
 
-void applyRandomMalus(void){
-  int r, c;
-
-  for(c = 0; c < WIDTH; c++){
-    // Prima di applicare il malus controllo se ci sono elementi sulla riga più alta possibile
-    // del playing game, se ho almeno un blocco avrò sicuramente gameover dopo l'applicazione del malus 
-    if(playing_field[0][c] !=  0){
-      game_over = 1;
-      game_started = 0;
-      paused = 1;
-      GUI_gameOverScreen();
-      return;
-    }
-  }
-
-  for(r = 0; r < HEIGHT -1 ; r++){
-    for(c = 0; c < WIDTH; c++){
-      // sposto tutte le righe in alto di un pezzo 
-      playing_field[r][c] = playing_field[r+1][c];
-    }
-  }  
-
-  // Creazione della riga malus: utilizzo un vettore malusRow per gestire 7 blocchi pieni 
-  // e 7 blocchi vuoti 
-  uint16_t malusRow[WIDTH];
-
-  for(c = 0; c < 7; c++) malusRow[c] = 9; // 9 è il valore corrispondente per le righe Malus
-                                          // l'accesso nel vettore dei colori viene fatto sottraendo 1 al valore nel playing field
-  for(c = 7; c < WIDTH; c++) malusRow[c] = 0; 
-
-  // algoritmo di shuffle degli elementi del vettore 
-  // Fisher-Yates - swap semplificato 
-  int swapIndex;
-  uint16_t temp;
-  for (c = 0; c < WIDTH; c++) {
-    swapIndex = rand() % WIDTH;
-    temp = malusRow[c];
-    malusRow[c] = malusRow[swapIndex];
-    malusRow[swapIndex] = temp;
-  }
-  
-  for(c = 0; c < WIDTH; c++){
-    playing_field[HEIGHT-1][c] = malusRow[c];
-  }
-
-  if(highest_row > 0) highest_row--; // ci alziamo di una riga, highest_row aumenta --> indice di riga diventa minore
-  GUI_RefreshScreen();
-
-}
-
-/* END OF RANDOM MALUS SECTION */
 
 
 
@@ -865,21 +884,8 @@ void handlePieceLock(void) {
     if(linesRemoved > 0){
       lines_to_next_powerup += linesRemoved;
       lines_to_next_malus += linesRemoved;
-
-      if(lines_to_next_powerup >= 5){ // in questo modo gestisco i casi in cui cleared_lines non sia precisamente multiplo di 5 
-        spawnPowerUp();
-        powerupsInTheField ++;
-        lines_to_next_powerup = lines_to_next_powerup - 5;
-      }
-      if(lines_to_next_malus >= 10){ 
-
-        applyRandomMalus();
-        lines_to_next_malus = lines_to_next_malus - 10; // MODIFICARE TO DO A >= 10
-        
-
-        if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
-      }
-      
+      checkPowerUpSpawn();
+      checkRandomMalusSpawn();
       assignScore(linesRemoved, previous_lines_cleared);
     }
       
