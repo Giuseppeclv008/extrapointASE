@@ -38,79 +38,85 @@ NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
     // Battuta 1: E (lunga), B, C
-    {e5, time_croma * 2},
-    {b4, time_croma},
-    {c5, time_croma},
+    // Originale: *2, *1, *1 -> Nuovo: *1, /2, /2
+    {e5, time_croma}, 
+    {b4, time_croma / 2},
+    {c5, time_croma / 2},
     
     // Battuta 2: D (lunga), C, B
-    {d5, time_croma * 2},
-    {c5, time_croma},
-    {b4, time_croma},
+    {d5, time_croma},
+    {c5, time_croma / 2},
+    {b4, time_croma / 2},
     
     // Battuta 3: A (lunga), A, C
-    {a4, time_croma * 2},
     {a4, time_croma},
-    {c5, time_croma},
+    {a4, time_croma / 2},
+    {c5, time_croma / 2},
     
     // Battuta 4: E (lunga), D, C
-    {e5, time_croma * 2},
-    {d5, time_croma},
-    {c5, time_croma},
+    {e5, time_croma},
+    {d5, time_croma / 2},
+    {c5, time_croma / 2},
     
     // Battuta 5: B (molto lunga), C
-    {b4, time_croma * 3},
-    {c5, time_croma},
+    // Originale: *3, *1 -> Nuovo: *3/2, /2
+    {b4, (time_croma * 3) / 2}, 
+    {c5, time_croma / 2},
     
     // Battuta 6: D (lunga), E (lunga)
-    {d5, time_croma * 2},
-    {e5, time_croma * 2},
+    {d5, time_croma},
+    {e5, time_croma},
     
     // Battuta 7: C (lunga), A (lunga)
-    {c5, time_croma * 2},
-    {a4, time_croma * 2},
+    {c5, time_croma},
+    {a4, time_croma},
     
     // Battuta 8: A (lunga), Pausa
-    {a4, time_croma * 2},
-    {pause, time_croma * 2},
+    // Originale: *2, *2 -> Nuovo: *1, *1
+    {a4, time_croma},
+    {pause, time_croma},
 
     // --- PARTE B (Ponte Alto) ---
 
     // Battuta 9: D (molto lunga), F
-    {d5, time_croma * 3},
-    {f5, time_croma},
+    {d5, (time_croma * 3) / 2},
+    {f5, time_croma / 2},
     
     // Battuta 10: A (lunga), G, F
-    {a5, time_croma * 2},
-    {g5, time_croma},
-    {f5, time_croma},
+    {a5, time_croma},
+    {g5, time_croma / 2},
+    {f5, time_croma / 2},
     
     // Battuta 11: E (molto lunga), C
-    {e5, time_croma * 3},
-    {c5, time_croma},
+    {e5, (time_croma * 3) / 2},
+    {c5, time_croma / 2},
     
     // Battuta 12: E (lunga), D, C
-    {e5, time_croma * 2},
-    {d5, time_croma},
-    {c5, time_croma},
+    {e5, time_croma},
+    {d5, time_croma / 2},
+    {c5, time_croma / 2},
     
     // Battuta 13: B (lunga), B, C
-    {b4, time_croma * 2},
     {b4, time_croma},
-    {c5, time_croma},
+    {b4, time_croma / 2},
+    {c5, time_croma / 2},
     
     // Battuta 14: D (lunga), E (lunga)
-    {d5, time_croma * 2},
-    {e5, time_croma * 2},
+    {d5, time_croma},
+    {e5, time_croma},
     
     // Battuta 15: C (lunga), A (lunga)
-    {c5, time_croma * 2},
-    {a4, time_croma * 2},
+    {c5, time_croma},
+    {a4, time_croma},
     
     // Battuta 16: A (lunga), Pausa finale
-    {a4, time_croma * 2},
-    {pause, time_croma * 4}
+    // Originale: *2, *4 -> Nuovo: *1, *2
+    {a4, time_croma},
+    {pause, time_croma * 2}
 };
 
+extern  NOTE sfx_clear_lines[];
+extern  NOTE sfx_slow_down[];
 
 void RIT_IRQHandler (void)
 {			
@@ -243,29 +249,48 @@ void RIT_IRQHandler (void)
 
 	}
 	/*  ***********************************************  */
-	/* 					 SONG PART						 */
+	/* 				SONG PART & SFX	 				     */
 	/*  ***********************************************  */
-	if(game_started && !paused && !game_over){
-		static int currentNote = 0;
-		static int ticks = 0;
+	
+	// Variabili statiche per la gestione dello stato SFX all'interno del RIT
+	static int currentSfxNoteIndex = 0;
+	static int sfxTicks = 0;
+	static int currentNote = 0;
+	static int ticks = 0;
+	if (play_sfx_flag){
+		if(!isNotePlaying())
+		{
+			++sfxTicks;
+			if(sfxTicks == UPTICKS)
+			{
+				sfxTicks = 0;
+				playNote(current_sfx_ptr[currentSfxNoteIndex++]);
+			}
+		}
+		if(currentSfxNoteIndex >= sfx_note_count)
+		{
+			play_sfx_flag = 0;
+			currentSfxNoteIndex = 0;
+			sfxTicks = 0;
+		}
+	}else if (game_started && !paused && !game_over){
 		if(!isNotePlaying())
 		{
 			++ticks;
 			if(ticks == UPTICKS)
 			{
-			ticks = 0;
-			playNote(song[currentNote++]);
+				ticks = 0;
+				playNote(song[currentNote++]);
 			}
 		}
 		if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
 		{
 			currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
 		}
+			
 	}
-	
+
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }
-
-			
 	
