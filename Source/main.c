@@ -37,7 +37,7 @@ extern unsigned char led_value;					/* defined in lib_led								*/
 extern volatile uint8_t timer_tick;
 extern volatile uint8_t move_right;
 extern volatile uint8_t move_left;
-extern volatile uint8_t rotates;
+extern volatile uint8_t rotate;
 
 /* extern variable from IRQ_RIT.c*/
 extern volatile uint8_t flag_hard_drop;
