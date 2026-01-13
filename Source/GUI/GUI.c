@@ -52,16 +52,15 @@ void GUI_DrawInterface(void){
     //opzionalmente aggiungere la sezione per il next piece
 }
 void GUI_UpdateScore(uint64_t previous_score){
-    uint64_t sccore_to_erase = previous_score;
+    uint64_t score_to_erase = previous_score;
     uint16_t score_str_erase[22]; 
     uint64_t score_to_display = score;
     uint16_t score_str[22]; 
     sprintf((char*)score_str, "%08llu", score_to_display);
-    sprintf((char*)score_str_erase,"%08llu", sccore_to_erase);
+    sprintf((char*)score_str_erase,"%08llu", score_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
-
 }
 
 void GUI_UpdateHighScore(uint64_t previous_highscore){
@@ -98,6 +97,46 @@ void GUI_RefreshInterface(){
     GUI_UpdateClearedLines(lines_cleared);
 
 }
+
+
+void GUI_DrawPowerUpSymbol(uint16_t x, uint16_t y, uint16_t type){
+    int x_start = FIELD_X + (x * BLOCK_SIZE);
+    int y_start = FIELD_Y + (y * BLOCK_SIZE);
+    int i;
+
+    uint16_t symbolColor = Black;
+
+    GUI_DrawBlock(x, y, POWERUP_COLORS[type-12]);
+
+    if(type == CLEAR_H_LINES){
+        // disegna una H
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor);
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2) - 3, symbolColor);
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2) + 3, symbolColor);
+        }
+    }
+    else if(type == SLOW_DOWN ) {
+        // disegna una S
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + 3, symbolColor);
+        }
+        for(i = 3; i < BLOCK_SIZE/2 ; i++){
+            LCD_SetPoint(x_start + 3, y_start + i, symbolColor);
+        }
+        for(i = 3; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + (BLOCK_SIZE/2), symbolColor);
+        }
+        for(i = BLOCK_SIZE/2; i < BLOCK_SIZE - 3 ; i++){
+            LCD_SetPoint(x_start + BLOCK_SIZE - 4, y_start + i, symbolColor);
+        }
+        for( i = 3; i < BLOCK_SIZE -3 ; i++){
+            LCD_SetPoint(x_start + i, y_start + BLOCK_SIZE - 4, symbolColor);
+        }
+        
+    }
+
+}
 void GUI_RefreshScreen(){
     int r, c;
     int empty_rows_consecutive = 0; // contatore per le righe vuote, se ne trovo più di 4 consecutive ritorno dalla funzione
@@ -113,7 +152,7 @@ void GUI_RefreshScreen(){
 
 
                 if(playing_field[r][c] == SLOW_DOWN || playing_field[r][c] == CLEAR_H_LINES){
-                    GUI_DrawBlock(c, r, POWERUP_COLORS[playing_field[r][c]-12]); // coloro in maniera corretta i blocchi dei powerup quando faccio refresh
+                    GUI_DrawPowerUpSymbol(c, r, playing_field[r][c]);
                 }  
                 else{
                     GUI_DrawBlock(c, r, TETROMINO_COLORS[playing_field[r][c]-1]); //aggiungo il -1 perchè quando utilizzo il lock piece incremento di 1

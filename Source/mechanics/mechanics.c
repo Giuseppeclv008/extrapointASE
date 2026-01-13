@@ -6,6 +6,7 @@
 #include "GUI/GUI.h"
 #include "adc/adc.h"
 #include "timer/timer.h"
+#include "music/music.h"
 
 #define HEIGHT 20
 #define WIDTH 10
@@ -30,6 +31,27 @@ volatile ActiveTetromino currentPiece;
 // variabili globali per il conteggio dello slowdown, 15 secondi = 300 Ticks, perchè RIT scatta ogni 50ms
 volatile int slowDownTicks = 0; 
 extern volatile uint64_t current_period;
+
+//variabili globali per gli effetti sonori 
+volatile uint8_t play_sfx_flag = 0; 
+volatile NOTE* current_sfx_ptr = NULL;
+volatile int sfx_note_count = 0;
+
+// Suono acuto e rapido per Clear Lines
+NOTE sfx_clear_lines[] = {
+  {c3, time_semicroma},
+  {e3, time_semicroma},
+  {g3, time_semicroma},
+  {c4, time_croma}
+};
+
+// Suono discendente per Slow Down
+NOTE sfx_slow_down[] = {
+  {a3, time_croma},
+  {f3, time_croma},
+  {d3, time_croma * 2}
+};
+
 
 const uint16_t TETROMINO_COLORS[8] = { 
     Cyan,    // I
@@ -369,8 +391,12 @@ uint8_t tryMoveDown(void){
   if (canMoveDown()) {
       return 1; // può muoversi giù
   } else {
+
+      NVIC_DisableIRQ(RIT_IRQn);
       handlePieceLock();
       SpawnNewPiece();
+
+      NVIC_EnableIRQ(RIT_IRQn);
       return 0; // non può muoversi giù
   }
 }
@@ -653,7 +679,7 @@ void spawnPowerUp(void){
       }
       if (playing_field[randomY][randomX] != 0 && playing_field[randomY][randomX] < 12 ) {
         playing_field[randomY][randomX] = powerUpType;  // se trovo un blocco diverso da 0 lo sostituisco con un powerup ed esco dal loop  
-        GUI_DrawBlock(randomX, randomY, POWERUP_COLORS[SLOW_DOWN-12]);
+        GUI_DrawPowerUpSymbol(randomX, randomY, powerUpType);
         break;
       }
       randomY =(rand() % occupied_lines) + highest_row;
@@ -666,11 +692,19 @@ void spawnPowerUp(void){
 
 void activePowerUp(POWERUP type){
     if(type == CLEAR_H_LINES){
+      current_sfx_ptr = sfx_clear_lines;
+      sfx_note_count = sizeof(sfx_clear_lines) / sizeof(NOTE);
+      play_sfx_flag = 1;
 
       clearHalfLines();
 
     }
     else if(type == SLOW_DOWN){
+
+      current_sfx_ptr = sfx_slow_down;
+      sfx_note_count = sizeof(sfx_slow_down) / sizeof(NOTE);
+      play_sfx_flag = 1;
+
       slowDown();
     }
 }

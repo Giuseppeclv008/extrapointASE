@@ -245,21 +245,24 @@ void RIT_IRQHandler (void)
 	/*  ***********************************************  */
 	/* 					 SONG PART						 */
 	/*  ***********************************************  */
-	/* static int currentNote = 0;
-	static int ticks = 0;
-	if(!isNotePlaying())
-	{
-		++ticks;
-		if(ticks == UPTICKS)
+	if(game_started && !paused && !game_over){
+		static int currentNote = 0;
+		static int ticks = 0;
+		if(!isNotePlaying())
 		{
-		ticks = 0;
-		playNote(song[currentNote++]);
+			++ticks;
+			if(ticks == UPTICKS)
+			{
+			ticks = 0;
+			playNote(song[currentNote++]);
+			}
+		}
+		if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
+		{
+			currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
 		}
 	}
-	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
-	{
-		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
-	}*/
+	
 	LPC_RIT->RICTRL |= 1;	
 	return;
 }

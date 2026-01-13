@@ -53,6 +53,6 @@ void GUI_DrawBlock(uint16_t x, uint16_t y, uint16_t color);
 void GUI_DrawCurrentPiece(uint16_t color);
 void GUI_SlowDown(void);
 void GUI_clearSlowDown(void);
-
+void GUI_DrawPowerUpSymbol(uint16_t x, uint16_t y, uint16_t type);
 
 #endif
