@@ -18,7 +18,7 @@ volatile uint16_t highest_row = HEIGHT;
 volatile uint16_t pending_powerups[10];
 volatile uint16_t powerUpFlag = 0;
 
-volatile uint16_t powerupsInTheField = 0; // da rimuovere 
+volatile uint16_t powerupsInTheField = 0; 
 volatile uint64_t HighScore = 0;
 volatile uint64_t score = 0;
 volatile uint8_t game_started ;
@@ -864,15 +864,10 @@ void handlePieceLock(void) {
         powerupsInTheField ++;
         lines_to_next_powerup = lines_to_next_powerup - 5;
       }
+      if(lines_to_next_malus >= 10){ 
 
-
-      // MODIFICARE TO DO A >= 10
-
-
-      if(lines_to_next_malus >= 1){ 
-        // MODIFICARE TO DO A >= 10
         applyRandomMalus();
-        lines_to_next_malus = lines_to_next_malus - 1; // MODIFICARE TO DO A >= 10
+        lines_to_next_malus = lines_to_next_malus - 10; // MODIFICARE TO DO A >= 10
         
 
         if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
