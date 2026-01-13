@@ -34,6 +34,10 @@ extern volatile uint64_t current_period;
 extern volatile int slowDownTicks;
 volatile uint8_t flag_hard_drop = 0;
 
+extern volatile uint8_t play_sfx_flag;
+extern volatile NOTE* current_sfx_ptr;
+extern volatile int sfx_note_count;
+
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
@@ -251,7 +255,7 @@ void RIT_IRQHandler (void)
 	/*  ***********************************************  */
 	/* 				SONG PART & SFX	 				     */
 	/*  ***********************************************  */
-	
+
 	// Variabili statiche per la gestione dello stato SFX all'interno del RIT
 	static int currentSfxNoteIndex = 0;
 	static int sfxTicks = 0;
