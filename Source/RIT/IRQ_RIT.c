@@ -34,89 +34,83 @@ extern volatile uint64_t current_period;
 extern volatile int slowDownTicks;
 volatile uint8_t flag_hard_drop = 0;
 
-extern volatile uint8_t play_sfx_flag;
-extern volatile NOTE* current_sfx_ptr;
-extern volatile int sfx_note_count;
-
 NOTE song[] = {
     // --- PARTE A (Melodia Principale) ---
     
     // Battuta 1: E (lunga), B, C
-    {e4, time_croma * 2},
-    {b3, time_croma},
-    {c4, time_croma},
+    {e5, time_croma * 2},
+    {b4, time_croma},
+    {c5, time_croma},
     
     // Battuta 2: D (lunga), C, B
-    {d4, time_croma * 2},
-    {c4, time_croma},
-    {b3, time_croma},
+    {d5, time_croma * 2},
+    {c5, time_croma},
+    {b4, time_croma},
     
     // Battuta 3: A (lunga), A, C
-    {a3, time_croma * 2},
-    {a3, time_croma},
-    {c4, time_croma},
+    {a4, time_croma * 2},
+    {a4, time_croma},
+    {c5, time_croma},
     
     // Battuta 4: E (lunga), D, C
-    {e4, time_croma * 2},
-    {d4, time_croma},
-    {c4, time_croma},
+    {e5, time_croma * 2},
+    {d5, time_croma},
+    {c5, time_croma},
     
     // Battuta 5: B (molto lunga), C
-    {b3, time_croma * 3},
-    {c4, time_croma},
+    {b4, time_croma * 3},
+    {c5, time_croma},
     
     // Battuta 6: D (lunga), E (lunga)
-    {d4, time_croma * 2},
-    {e4, time_croma * 2},
+    {d5, time_croma * 2},
+    {e5, time_croma * 2},
     
     // Battuta 7: C (lunga), A (lunga)
-    {c4, time_croma * 2},
-    {a3, time_croma * 2},
+    {c5, time_croma * 2},
+    {a4, time_croma * 2},
     
     // Battuta 8: A (lunga), Pausa
-    {a3, time_croma * 2},
+    {a4, time_croma * 2},
     {pause, time_croma * 2},
 
     // --- PARTE B (Ponte Alto) ---
 
     // Battuta 9: D (molto lunga), F
-    {d4, time_croma * 3},
-    {f4, time_croma},
+    {d5, time_croma * 3},
+    {f5, time_croma},
     
     // Battuta 10: A (lunga), G, F
-    {a4, time_croma * 2},
-    {g4, time_croma},
-    {f4, time_croma},
+    {a5, time_croma * 2},
+    {g5, time_croma},
+    {f5, time_croma},
     
     // Battuta 11: E (molto lunga), C
-    {e4, time_croma * 3},
-    {c4, time_croma},
+    {e5, time_croma * 3},
+    {c5, time_croma},
     
     // Battuta 12: E (lunga), D, C
-    {e4, time_croma * 2},
-    {d4, time_croma},
-    {c4, time_croma},
+    {e5, time_croma * 2},
+    {d5, time_croma},
+    {c5, time_croma},
     
     // Battuta 13: B (lunga), B, C
-    {b3, time_croma * 2},
-    {b3, time_croma},
-    {c4, time_croma},
+    {b4, time_croma * 2},
+    {b4, time_croma},
+    {c5, time_croma},
     
     // Battuta 14: D (lunga), E (lunga)
-    {d4, time_croma * 2},
-    {e4, time_croma * 2},
+    {d5, time_croma * 2},
+    {e5, time_croma * 2},
     
     // Battuta 15: C (lunga), A (lunga)
-    {c4, time_croma * 2},
-    {a3, time_croma * 2},
+    {c5, time_croma * 2},
+    {a4, time_croma * 2},
     
     // Battuta 16: A (lunga), Pausa finale
-    {a3, time_croma * 2},
+    {a4, time_croma * 2},
     {pause, time_croma * 4}
 };
 
-extern  NOTE sfx_clear_lines[];
-extern  NOTE sfx_slow_down[];
 
 void RIT_IRQHandler (void)
 {			
@@ -134,13 +128,10 @@ void RIT_IRQHandler (void)
 						break;
 					case JOY_DOWN:
 						if(slowDownTicks == 0){
-							uint32_t fast_period = current_period / 2;
-
-							LPC_TIM0->MR0 = fast_period; // velocità aumentata di 2 volte
-
-							if(LPC_TIM0->TC >= fast_period){
-								LPC_TIM0->TC = fast_period-1; //forzo al conteggio
-							}
+							LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
+							LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
+											// necessario perchè se modifico ed MR0 ha superato il conteggio 
+											// il timer non verrà mai resettato e il pezzo resta sospeso
 						}
 						
 						break;
@@ -252,77 +243,9 @@ void RIT_IRQHandler (void)
 
 	}
 	/*  ***********************************************  */
-	/* 				SONG PART & SFX	 				     */
-	/*  ***********************************************  */
-
-
-	
-	// Variabili statiche per la gestione dello stato SFX all'interno del RIT
-	static int currentSfxNoteIndex = 0;
-	static int sfxTicks = 0;
-	static int currentNote = 0;
-	static int ticks = 0;
-	if (play_sfx_flag){
-		if(!isNotePlaying())
-		{
-			++sfxTicks;
-			if(sfxTicks == UPTICKS)
-			{
-				sfxTicks = 0;
-				playNote(current_sfx_ptr[currentSfxNoteIndex++]);
-			}
-		}
-		if(currentSfxNoteIndex >= sfx_note_count)
-		{
-			play_sfx_flag = 0;
-			currentSfxNoteIndex = 0;
-			sfxTicks = 0;
-		}
-	}else if (game_started && !paused && !game_over){
-		if(!isNotePlaying())
-		{
-			++ticks;
-			if(ticks == UPTICKS)
-			{
-				
-				int song_length = sizeof(song)/sizeof(song[0]);
-				NOTE original_note;
-				uint32_t current_speed_reg; 
-				uint32_t scaled_duration;
-				NOTE new_note;
-
-				ticks = 0;
-
-
-				if(currentNote >= song_length) currentNote = 0;
-
-
-				original_note = song[currentNote];
-				currentNote++;
-
-				current_speed_reg = LPC_TIM0->MR0;
-
-				scaled_duration = (uint32_t) ((uint64_t) original_note.duration * current_speed_reg) ;
-
-				if(scaled_duration < 1) scaled_duration = 1;
-
-				new_note.freq = original_note.freq;
-				new_note.duration = scaled_duration;
-
-				playNote(new_note);
-			}
-		}
-	}
-
-	LPC_RIT->RICTRL |= 1;	
-	return;
-}
-
-			
-		/*  ***********************************************  */
 	/* 					 SONG PART						 */
 	/*  ***********************************************  */
-	/* static int currentNote = 0;
+	static int currentNote = 0;
 	static int ticks = 0;
 	if(!isNotePlaying())
 	{
@@ -336,4 +259,10 @@ void RIT_IRQHandler (void)
 	if(currentNote == (sizeof(song)/sizeof(song[0])) ) 
 	{
 		currentNote = 0; // resetto la musica a partire dal primo elemento nell'arrey delle note 
-	}*/
+	}
+	LPC_RIT->RICTRL |= 1;	
+	return;
+}
+
+			
+	
