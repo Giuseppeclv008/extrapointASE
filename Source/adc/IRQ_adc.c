@@ -72,16 +72,17 @@ void ADC_IRQHandler(void) {
 		  current_period = new_period;
 		  if(slowDownTicks == 0){
 	
-			disable_timer(0);
-			reset_timer(0);
-			init_timer(0, new_period);
-			enable_timer(0);
-		  }
-	
+				LPC_TIM0->MR0 = new_period;
+				if(LPC_TIM0->TC >= new_period){
+					LPC_TIM0->TC = new_period-1; //forzo al conteggio
+				}
+			}
 		  AD_last = AD_current;
-	  }
+		}
 	  
-  }
+}
+  
+
   
   
 

@@ -134,10 +134,13 @@ void RIT_IRQHandler (void)
 						break;
 					case JOY_DOWN:
 						if(slowDownTicks == 0){
-							LPC_TIM0->MR0 = current_period/2; // velocità aumentata di 2 volte
-							LPC_TIM0->TC = 0;  // Reset immediato del contatore per applicare subito la velocità
-											// necessario perchè se modifico ed MR0 ha superato il conteggio 
-											// il timer non verrà mai resettato e il pezzo resta sospeso
+							uint32_t fast_period = current_period / 2;
+
+							LPC_TIM0->MR0 = fast_period; // velocità aumentata di 2 volte
+
+							if(LPC_TIM0->TC >= fast_period){
+								LPC_TIM0->TC = fast_period-1; //forzo al conteggio
+							}
 						}
 						
 						break;
