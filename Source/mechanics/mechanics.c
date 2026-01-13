@@ -226,6 +226,12 @@ NOTE sfx_slow_down[] = {
   {d3, time_croma * 2}
 };
 
+NOTE sfx_malus[] = {
+  {a3, time_semicroma},
+  {e3, time_semicroma},
+  {c3, time_croma}     // Nota bassa finale
+};
+
 void inizializePendingPowerups(void){
   int i;
   for(i = 0; i < WIDTH; i++){
@@ -609,6 +615,10 @@ void applyRandomMalus(void){
     }
   }
 
+  current_sfx_ptr = sfx_malus;
+  sfx_note_count = sizeof(sfx_malus) / sizeof(NOTE);
+  play_sfx_flag = 1;
+  
   for(r = 0; r < HEIGHT -1 ; r++){
     for(c = 0; c < WIDTH; c++){
       // sposto tutte le righe in alto di un pezzo 

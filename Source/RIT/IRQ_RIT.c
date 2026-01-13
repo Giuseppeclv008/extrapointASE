@@ -126,6 +126,7 @@ NOTE song[] = {
 
 extern  NOTE sfx_clear_lines[];
 extern  NOTE sfx_slow_down[];
+extern	NOTE sfx_malus[];
 
 void RIT_IRQHandler (void)
 {			
