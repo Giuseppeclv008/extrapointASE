@@ -389,8 +389,12 @@ uint8_t tryMoveDown(void){
   if (canMoveDown()) {
       return 1; // può muoversi giù
   } else {
+
+      NVIC_DisableIRQ(RIT_IRQn);
       handlePieceLock();
       SpawnNewPiece();
+
+      NVIC_EnableIRQ(RIT_IRQn);
       return 0; // non può muoversi giù
   }
 }

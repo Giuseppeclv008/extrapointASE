@@ -52,16 +52,15 @@ void GUI_DrawInterface(void){
     //opzionalmente aggiungere la sezione per il next piece
 }
 void GUI_UpdateScore(uint64_t previous_score){
-    uint64_t sccore_to_erase = previous_score;
+    uint64_t score_to_erase = previous_score;
     uint16_t score_str_erase[22]; 
     uint64_t score_to_display = score;
     uint16_t score_str[22]; 
     sprintf((char*)score_str, "%08llu", score_to_display);
-    sprintf((char*)score_str_erase,"%08llu", sccore_to_erase);
+    sprintf((char*)score_str_erase,"%08llu", score_to_erase);
     GUI_Text(SCORE_X, SCORE_Y + 20,(uint8_t*) score_str_erase, BACKGROUND_COLOR, BACKGROUND_COLOR); // cancello il punteggio precedente
     // Aggiorna il punteggio visualizzato
     GUI_Text(SCORE_X, SCORE_Y + 20, (uint8_t*)score_str, NUMBER_COLOR, BACKGROUND_COLOR);
-
 }
 
 void GUI_UpdateHighScore(uint64_t previous_highscore){
