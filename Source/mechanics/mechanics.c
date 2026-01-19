@@ -657,10 +657,8 @@ void checkRandomMalusSpawn(void){
   if(lines_to_next_malus >= 10){ 
 
     applyRandomMalus();
-    lines_to_next_malus = lines_to_next_malus - 10; // MODIFICARE TO DO A >= 10
-    
-  
-    if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
+    lines_to_next_malus = lines_to_next_malus - 10;
+
   }
 }
 
@@ -896,6 +894,7 @@ void handlePieceLock(void) {
       lines_to_next_malus += linesRemoved;
       checkPowerUpSpawn();
       checkRandomMalusSpawn();
+      if(game_over) return; // evito il calcolo del punteggio se ho ottenuto gameover dovuto al malus
       assignScore(linesRemoved, previous_lines_cleared);
     }
       
