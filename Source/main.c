@@ -121,8 +121,7 @@ int main (void) {
 				rotatePiece();
 				NVIC_EnableIRQ(RIT_IRQn);
 			}
-
-
+			
 			if(flag_hard_drop == 1){
 				flag_hard_drop = 0;
 				NVIC_DisableIRQ(RIT_IRQn);
