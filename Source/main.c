@@ -76,18 +76,13 @@ int main (void) {
 
    initializeGame();
 
-	// abilito gli interupt dopo aver eseguito le operazioni più "costose"
+	// abilito gli interrupt dopo aver eseguito le operazioni più "costose"
 	enable_timer(0);
 
-   
-
-  
-
-   
 	while(1){
+		// main game loop
+		
 		if (first){
-	
-			// main game loop
 			while(paused){
 				__ASM("wfi");
 			}
